@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "target": "esnext",
+    "outDir": "./lib",
+    "rootDir": "./",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "noImplicitReturns": true,
+    "allowImportingTsExtensions": true
+  },
+  "exclude": ["node_modules", "dist", ".yarn"]
+}

@@ -1,0 +1,31 @@
+name: Cleanup stale branches
+description: Simple action for deleting stale branches
+author: Balvajs
+branding:
+  icon: git-branch
+  color: orange
+
+inputs:
+  days-to-delete:
+    required: false
+    description: Number of days without activity after which the branch will be deleted. Default is 90 days.
+    default: '90'
+
+  dry-run:
+    required: false
+    description: If set to true, the action will only log the branches that would be deleted, but will not delete them. Default is true.
+    default: 'true'
+
+  repository:
+    required: false
+    description: Repository name and owner in format owner/repo. Default is current repository.
+    default: ${{ github.repository }}
+
+  token:
+    required: false
+    description: GitHub token. Default is github.token
+    default: ${{ github.token }}
+
+runs:
+  using: 'node16'
+  main: 'dist/main.cjs'
