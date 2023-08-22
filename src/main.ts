@@ -40,17 +40,13 @@ const run = async () => {
       publishedAt < head.committedDate,
   )
 
+  debug(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`)
+
   if (!latestApprovedReviews.length) {
     console.log(chalk.green`No reviews to dismiss!`)
 
     return
   }
-
-  console.log(
-    `Approving reviews: ${latestApprovedReviews
-      .map(({ author }) => author?.login || 'unknownLogin')
-      .join(',')}`,
-  )
 
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
@@ -76,7 +72,7 @@ const run = async () => {
     console.log(
       chalk.green`Reviews to dismiss: ${reviewsToDismiss
         .map(({ author }) => author?.login || 'unknownLogin')
-        .join(',')}`,
+        .join()}`,
     )
 
     // if there are any files without owner, dismiss all reviews

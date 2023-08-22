@@ -25582,13 +25582,11 @@ var run = async () => {
   const latestApprovedReviews = latestReviews.filter(
     ({ state, publishedAt, commit }) => commit && state === "APPROVED" && publishedAt && publishedAt < head.committedDate
   );
+  (0, import_core5.debug)(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`);
   if (!latestApprovedReviews.length) {
     console.log(chalk3.green`No reviews to dismiss!`);
     return;
   }
-  console.log(
-    `Approving reviews: ${latestApprovedReviews.map(({ author }) => author?.login || "unknownLogin").join(",")}`
-  );
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
       octokit,
@@ -25604,7 +25602,7 @@ var run = async () => {
     }
     (0, import_core5.debug)(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`);
     console.log(
-      chalk3.green`Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join(",")}`
+      chalk3.green`Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join()}`
     );
     if (reviewsToDismissContext.filesWithoutOwner) {
       console.log(
