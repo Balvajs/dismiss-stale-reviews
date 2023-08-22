@@ -1,20 +1,20 @@
-## github-action-template
+## dismiss-stale-reviews
 
 Description
 
 ## Usage
 
 ```yaml
-name: 'github-action-template'
+name: 'dismiss-stale-reviews'
 on:
   schedule:
     - cron: '0 0 * * 1'
 
 jobs:
-  github-action-template:
+  dismiss-stale-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: balvajs/github-action-template@v1
+      - uses: balvajs/dismiss-stale-reviews@v1
 ```
 
 ## Inputs
