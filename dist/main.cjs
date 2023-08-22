@@ -23043,13 +23043,15 @@ var getTeamData = async ({
   organizationLogin,
   teamSlug
 }) => {
-  const { organization } = await octokit.graphql.paginate(
-    getPullRequestQuery,
-    {
-      orgLogin: organizationLogin,
-      teamSlug
-    }
-  );
+  const { organization } = await octokit.graphql.paginate(getPullRequestQuery, {
+    orgLogin: organizationLogin,
+    teamSlug
+  }).catch((e2) => {
+    console.error(
+      "Something went wrong during fetching team members data. Make sure that the github token has read access to organization members."
+    );
+    throw e2;
+  });
   if (!organization) {
     throw new Error(`Organization ${organization} could not be found!`);
   }

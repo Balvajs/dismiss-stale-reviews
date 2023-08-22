@@ -33,13 +33,18 @@ export const getTeamData = async ({
   organizationLogin: string
   teamSlug: string
 }) => {
-  const { organization } = await octokit.graphql.paginate<GetTeamDataQuery>(
-    getPullRequestQuery,
-    {
+  const { organization } = await octokit.graphql
+    .paginate<GetTeamDataQuery>(getPullRequestQuery, {
       orgLogin: organizationLogin,
       teamSlug,
-    } as GetTeamDataQueryVariables,
-  )
+    } as GetTeamDataQueryVariables)
+    // eslint-disable-next-line github/no-then
+    .catch(e => {
+      console.error(
+        'Something went wrong during fetching team members data. Make sure that the github token has read access to organization members.',
+      )
+      throw e
+    })
 
   if (!organization) {
     throw new Error(`Organization ${organization} could not be found!`)
