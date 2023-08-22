@@ -29,7 +29,6 @@ const run = async () => {
   } = await getGithubData({
     octokit,
     pullRequestId,
-    organizationLogin: context.repo.owner,
   })
 
   const latestApprovedReviews = latestReviews.filter(

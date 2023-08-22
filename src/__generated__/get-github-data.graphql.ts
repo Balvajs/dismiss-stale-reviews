@@ -1,13 +1,12 @@
 /* eslint-disable */
 /**
- * This file is generated, don’t edit it manually. Run `yarn generate` to re-generate.
+ * This file is generated, don’t edit it manually. Run `pnpm generate` to re-generate.
  */
 
 import * as Types from '../base-graphql-types.js'
 
 export type GetGithubDataQueryVariables = Types.Exact<{
   nodeId: Types.Scalars['ID']['input']
-  organizationLogin: Types.Scalars['String']['input']
 }>
 
 export type GetGithubDataQuery = {

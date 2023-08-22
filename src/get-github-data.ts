@@ -7,7 +7,7 @@ import type {
 } from './__generated__/get-github-data.graphql.ts'
 
 const getPullRequestQuery = /* GraphQL */ `
-  query getGithubData($nodeId: ID!, $organizationLogin: String!) {
+  query getGithubData($nodeId: ID!) {
     node(id: $nodeId) {
       __typename
       ... on PullRequest {
@@ -45,17 +45,14 @@ const getPullRequestQuery = /* GraphQL */ `
 export const getGithubData = async ({
   octokit,
   pullRequestId,
-  organizationLogin,
 }: {
   octokit: ReturnType<typeof getOctokit>
   pullRequestId: string
-  organizationLogin: string
 }) => {
   const { node: pullRequest } = await octokit.graphql<GetGithubDataQuery>(
     getPullRequestQuery,
     {
       nodeId: pullRequestId,
-      organizationLogin,
     } as GetGithubDataQueryVariables,
   )
 
