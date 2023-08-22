@@ -2,12 +2,12 @@ import { isPresent } from './type-guards.ts'
 import { getOctokit } from './get-octokit.ts'
 
 import type {
-  GetGithubDataQuery,
-  GetGithubDataQueryVariables,
-} from './__generated__/get-github-data.graphql.ts'
+  GetPrDataQuery,
+  GetPrDataQueryVariables,
+} from './__generated__/get-pr-data.graphql.ts'
 
 const getPullRequestQuery = /* GraphQL */ `
-  query getGithubData($nodeId: ID!) {
+  query getPrData($nodeId: ID!, $cursor: String) {
     node(id: $nodeId) {
       __typename
       ... on PullRequest {
@@ -20,7 +20,7 @@ const getPullRequestQuery = /* GraphQL */ `
             }
           }
         }
-        latestOpinionatedReviews(first: 100) {
+        latestOpinionatedReviews(first: 100, after: $cursor) {
           nodes {
             id
             state
@@ -42,18 +42,18 @@ const getPullRequestQuery = /* GraphQL */ `
   }
 `
 
-export const getGithubData = async ({
+export const getPrData = async ({
   octokit,
   pullRequestId,
 }: {
   octokit: ReturnType<typeof getOctokit>
   pullRequestId: string
 }) => {
-  const { node: pullRequest } = await octokit.graphql<GetGithubDataQuery>(
+  const { node: pullRequest } = await octokit.graphql.paginate<GetPrDataQuery>(
     getPullRequestQuery,
     {
       nodeId: pullRequestId,
-    } as GetGithubDataQueryVariables,
+    } as GetPrDataQueryVariables,
   )
 
   if (!pullRequest || pullRequest.__typename !== 'PullRequest') {

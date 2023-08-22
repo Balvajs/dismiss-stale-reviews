@@ -23012,6 +23012,58 @@ ${filesChangedByHeadCommit.join("\n")}`);
   return { reviewsWithoutHistory, groupedReviewsByCommit };
 };
 
+// src/type-guards.ts
+function isPresent(value) {
+  return value != null;
+}
+
+// src/get-team-data.ts
+var getPullRequestQuery = (
+  /* GraphQL */
+  `
+  query getTeamData($orgLogin: String!, $teamSlug: String!, $cursor: String) {
+    organization(login: $orgLogin) {
+      team(slug: $teamSlug) {
+        members(first: 100, after: $cursor) {
+          nodes {
+            login
+          }
+        }
+      }
+    }
+  }
+`
+);
+var getTeamData = async ({
+  octokit,
+  organizationLogin,
+  teamSlug
+}) => {
+  const { organization } = await octokit.graphql.paginate(
+    getPullRequestQuery,
+    {
+      orgLogin: organizationLogin,
+      teamSlug
+    }
+  );
+  if (!organization) {
+    throw new Error(`Organization ${organization} could not be found!`);
+  }
+  if (!organization.team) {
+    throw new Error(
+      `Team ${organization.team} could not be found in ${organization} organization!`
+    );
+  }
+  if (!organization.team.members.nodes) {
+    throw new Error(
+      `Cannot read members of ${organization.team} team in ${organization} organization!`
+    );
+  }
+  return {
+    members: organization.team.members.nodes.filter(isPresent).map(({ login }) => login)
+  };
+};
+
 // src/calculate-reviews-to-dismiss.ts
 var calculateReviewToDismiss = async ({
   latestReviews,
@@ -23039,74 +23091,52 @@ var calculateReviewToDismiss = async ({
     };
   }
   const reviewsToDismiss = [...reviewsWithoutHistory];
-  await Promise.all(
-    Object.values(groupedReviewsByCommit).map(
-      async ({ filesChangedByHeadCommit, reviews }) => {
-        const changedFilesOwners = [
-          ...new Set(
-            filesChangedByHeadCommit.map(({ owners }) => owners).flat()
-          )
-        ];
-        const changedFilesTeamOwners = changedFilesOwners.filter(
-          (owner) => owner.includes("/")
-        );
-        await Promise.all(
-          reviews.map(async (review) => {
-            const { author } = review;
-            (0, import_core2.debug)(`Check if ${author?.login} review should be dismissed`);
-            if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
-            author.login && changedFilesOwners.includes(`@${author.login}`)) {
-              (0, import_core2.debug)(
-                `User ${author?.login} is owner of changed files and their review should be dismissed`
-              );
-              reviewsToDismiss.push(review);
-              return;
-            }
-            if (!changedFilesTeamOwners.length) {
-              return;
-            }
-            await Promise.all(
-              changedFilesTeamOwners.map(async (teamOwnership) => {
-                const teamHandle = teamOwnership.replace("@", "").split("/");
-                try {
-                  (0, import_core2.debug)(
-                    `Check membership of ${author.login} in ${teamOwnership} team`
-                  );
-                  const {
-                    data: { state }
-                  } = await octokit.request(
-                    "GET /orgs/{org}/teams/{team_slug}/memberships/{username}",
-                    {
-                      org: teamHandle[0],
-                      team_slug: teamHandle[1],
-                      username: author.login,
-                      headers: {
-                        "X-GitHub-Api-Version": "2022-11-28"
-                      }
-                    }
-                  );
-                  if (state === "active") {
-                    (0, import_core2.debug)(
-                      `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`
-                    );
-                    reviewsToDismiss.push(review);
-                  }
-                } catch (e2) {
-                  if (e2 && typeof e2 === "object" && "status" in e2 && e2.status === 404) {
-                    (0, import_core2.debug)(
-                      `User ${author.login} is not member of ${teamOwnership} team`
-                    );
-                  } else {
-                    throw e2;
-                  }
-                }
-              })
+  const teamMembers = {};
+  for (const { filesChangedByHeadCommit, reviews } of Object.values(
+    groupedReviewsByCommit
+  )) {
+    const changedFilesOwners = [
+      ...new Set(filesChangedByHeadCommit.map(({ owners }) => owners).flat())
+    ];
+    const changedFilesTeamOwners = changedFilesOwners.filter((owner) => owner.includes("/")).map((teamOwnership) => teamOwnership.replace("@", ""));
+    await Promise.all(
+      changedFilesTeamOwners.filter((team) => !Object.keys(teamMembers).includes(team)).map(async (team) => {
+        const teamHandle = team.split("/");
+        teamMembers[team] = (await getTeamData({
+          octokit,
+          organizationLogin: teamHandle[0],
+          teamSlug: teamHandle[1]
+        })).members;
+      })
+    );
+    await Promise.all(
+      reviews.map(async (review) => {
+        const { author } = review;
+        (0, import_core2.debug)(`Check if ${author?.login} review should be dismissed`);
+        if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
+        author.login && changedFilesOwners.includes(`@${author.login}`)) {
+          (0, import_core2.debug)(
+            `User ${author?.login} is owner of changed files and their review should be dismissed`
+          );
+          reviewsToDismiss.push(review);
+          return;
+        }
+        if (!changedFilesTeamOwners.length) {
+          return;
+        }
+        for (const teamOwnership of changedFilesTeamOwners) {
+          if (teamMembers[teamOwnership]?.includes(author.login)) {
+            (0, import_core2.debug)(
+              `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`
             );
-          })
-        );
-      }
-    )
-  );
+            reviewsToDismiss.push(review);
+          } else {
+            (0, import_core2.debug)(`User ${author.login} is not member of ${teamOwnership} team`);
+          }
+        }
+      })
+    );
+  }
   return {
     reviewsToDismiss,
     reviewsWithoutHistory
@@ -23143,16 +23173,11 @@ var dismissReviews = async ({
   })
 );
 
-// src/type-guards.ts
-function isPresent(value) {
-  return value != null;
-}
-
-// src/get-github-data.ts
-var getPullRequestQuery = (
+// src/get-pr-data.ts
+var getPullRequestQuery2 = (
   /* GraphQL */
   `
-  query getGithubData($nodeId: ID!) {
+  query getPrData($nodeId: ID!, $cursor: String) {
     node(id: $nodeId) {
       __typename
       ... on PullRequest {
@@ -23165,7 +23190,7 @@ var getPullRequestQuery = (
             }
           }
         }
-        latestOpinionatedReviews(first: 100) {
+        latestOpinionatedReviews(first: 100, after: $cursor) {
           nodes {
             id
             state
@@ -23187,12 +23212,12 @@ var getPullRequestQuery = (
   }
 `
 );
-var getGithubData = async ({
+var getPrData = async ({
   octokit,
   pullRequestId
 }) => {
-  const { node: pullRequest } = await octokit.graphql(
-    getPullRequestQuery,
+  const { node: pullRequest } = await octokit.graphql.paginate(
+    getPullRequestQuery2,
     {
       nodeId: pullRequestId
     }
@@ -25537,7 +25562,7 @@ var run = async () => {
   const {
     commits: [{ commit: head }],
     latestReviews
-  } = await getGithubData({
+  } = await getPrData({
     octokit,
     pullRequestId
   });

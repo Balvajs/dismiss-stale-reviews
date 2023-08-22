@@ -3,7 +3,7 @@ import { Chalk } from 'chalk'
 
 import { calculateReviewToDismiss } from './calculate-reviews-to-dismiss.ts'
 import { dismissReviews } from './dismiss-reviews.ts'
-import { getGithubData } from './get-github-data.ts'
+import { getPrData } from './get-pr-data.ts'
 import { getOctokit } from './get-octokit.ts'
 import { getInputs } from './get-inputs.ts'
 
@@ -26,7 +26,7 @@ const run = async () => {
   const {
     commits: [{ commit: head }],
     latestReviews,
-  } = await getGithubData({
+  } = await getPrData({
     octokit,
     pullRequestId,
   })

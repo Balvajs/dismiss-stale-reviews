@@ -5,11 +5,12 @@
 
 import * as Types from '../base-graphql-types.js'
 
-export type GetGithubDataQueryVariables = Types.Exact<{
+export type GetPrDataQueryVariables = Types.Exact<{
   nodeId: Types.Scalars['ID']['input']
+  cursor: Types.InputMaybe<Types.Scalars['String']['input']>
 }>
 
-export type GetGithubDataQuery = {
+export type GetPrDataQuery = {
   readonly node:
     | { readonly __typename: 'AddedToMergeQueueEvent' }
     | { readonly __typename: 'AddedToProjectEvent' }
