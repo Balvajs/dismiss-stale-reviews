@@ -16,6 +16,10 @@ export type GetTeamDataQuery = {
     readonly team: {
       readonly members: {
         readonly nodes: ReadonlyArray<{ readonly login: string } | null> | null
+        readonly pageInfo: {
+          readonly hasNextPage: boolean
+          readonly endCursor: string | null
+        }
       }
     } | null
   } | null

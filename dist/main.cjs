@@ -23028,6 +23028,10 @@ var getPullRequestQuery = (
           nodes {
             login
           }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
         }
       }
     }
@@ -23205,6 +23209,10 @@ var getPullRequestQuery2 = (
               }
             }
             publishedAt
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }

@@ -36,6 +36,10 @@ const getPullRequestQuery = /* GraphQL */ `
             }
             publishedAt
           }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
         }
       }
     }

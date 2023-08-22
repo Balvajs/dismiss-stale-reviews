@@ -194,6 +194,10 @@ export type GetPrDataQuery = {
                 }
               | null
           } | null> | null
+          readonly pageInfo: {
+            readonly hasNextPage: boolean
+            readonly endCursor: string | null
+          }
         } | null
       }
     | { readonly __typename: 'PullRequestCommit' }

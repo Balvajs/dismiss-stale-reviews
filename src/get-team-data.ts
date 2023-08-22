@@ -14,6 +14,10 @@ const getPullRequestQuery = /* GraphQL */ `
           nodes {
             login
           }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
         }
       }
     }
