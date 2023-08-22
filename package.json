@@ -1,7 +1,6 @@
 {
   "name": "dismiss-stale-reviews",
   "version": "1.0.0",
-  "private": true,
   "main": "src/main.ts",
   "scripts": {
     "type-check": "tsc",
@@ -11,9 +10,10 @@
     "package": "tsup src/main.ts --clean --sourcemap",
     "test": "jest --passWithNoTests",
     "generate": "graphql-codegen-esm --config codegen.ts",
-    "all": "yarn type-check && yarn format-check && yarn lint && yarn package && yarn test",
+    "all": "pnpm type-check && pnpm format-check && pnpm lint && pnpm package && pnpm test",
     "semantic-release": "semantic-release",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -23,9 +23,9 @@
     "actions"
   ],
   "engines": {
-    "node": "=16"
+    "node": "=18"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "pnpm@8.6.12",
   "type": "module",
   "author": "Balvajs",
   "license": "MIT",
