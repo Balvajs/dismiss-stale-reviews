@@ -1,26 +1,27 @@
-## github-action-template
+## dismiss-stale-reviews
 
 Description
 
 ## Usage
 
 ```yaml
-name: 'github-action-template'
+name: 'dismiss-stale-reviews'
 on:
   schedule:
     - cron: '0 0 * * 1'
 
 jobs:
-  github-action-template:
+  dismiss-stale-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: balvajs/github-action-template@v1
+      - uses: balvajs/dismiss-stale-reviews@v1
 ```
 
 ## Inputs
 
-| INPUT | TYPE | DEFAULT | DESCRIPTION |
-| ----- | ---- | ------- | ----------- |
-|       |      |         |             |
+| INPUT        | TYPE     | DEFAULT                 | DESCRIPTION                                                                                                                              |
+| ------------ | -------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| token        | string   | `"${{ github.token }}"` | GitHub token with permissions to read organization. Default is github.token                                                              |
+| ignore-files | string[] | `[]`                    | List of file patterns that should be ignored -> no review will be dismissed based on these files changes. The list is new line separated |
 
 \* required

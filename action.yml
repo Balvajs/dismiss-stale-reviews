@@ -1,29 +1,17 @@
-name: Cleanup stale branches
-description: Simple action for deleting stale branches
+name: Dismiss stale PR reviews based on ownership
+description: Dismiss all reviews that are stale. The staleness is decided based on changed files and Codeowners file.
 author: Balvajs
 branding:
-  icon: git-branch
-  color: orange
+  icon: 'git-pull-request'
+  color: 'yellow'
 
 inputs:
-  days-to-delete:
+  ignore-files:
     required: false
-    description: Number of days without activity after which the branch will be deleted. Default is 90 days.
-    default: '90'
-
-  dry-run:
-    required: false
-    description: If set to true, the action will only log the branches that would be deleted, but will not delete them. Default is true.
-    default: 'true'
-
-  repository:
-    required: false
-    description: Repository name and owner in format owner/repo. Default is current repository.
-    default: ${{ github.repository }}
-
+    description: List of file patterns that should be ignored -> no review will be dismissed based on these files changes. The list is new line separated
   token:
     required: false
-    description: GitHub token. Default is github.token
+    description: GitHub token with permissions to read organization. Default is github.token
     default: ${{ github.token }}
 
 runs:
