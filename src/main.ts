@@ -1,5 +1,6 @@
 import { context } from '@actions/github'
 import { Chalk } from 'chalk'
+import { debug } from '@actions/core'
 
 import { calculateReviewToDismiss } from './calculate-reviews-to-dismiss.ts'
 import { dismissReviews } from './dismiss-reviews.ts'
@@ -69,6 +70,8 @@ const run = async () => {
 
       return
     }
+
+    debug(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`)
 
     console.log(
       chalk.green`Reviews to dismiss: ${reviewsToDismiss

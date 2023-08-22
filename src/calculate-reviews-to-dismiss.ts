@@ -93,7 +93,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
       reviews.map(async review => {
         const { author } = review
 
-        debug(`Check if ${author?.login} review should be dismissed`)
+        debug(`Check if review of user ${author?.login} should be dismissed`)
 
         if (
           !author ||
