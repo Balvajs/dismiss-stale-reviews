@@ -60,11 +60,18 @@ const run = async () => {
       ignoreFiles,
     })
 
+    const reviewsToDismiss = reviewsToDismissContext.filesWithoutOwner
+      ? latestApprovedReviews
+      : reviewsToDismissContext.reviewsToDismiss
+
+    if (!reviewsToDismiss.length) {
+      console.log(chalk.green`No reviews to dismiss!`)
+
+      return
+    }
+
     console.log(
-      chalk.green`Reviews to dismiss: ${(reviewsToDismissContext.filesWithoutOwner
-        ? latestApprovedReviews
-        : reviewsToDismissContext.reviewsToDismiss
-      )
+      chalk.green`Reviews to dismiss: ${reviewsToDismiss
         .map(({ author }) => author?.login || 'unknownLogin')
         .join(',')}`,
     )

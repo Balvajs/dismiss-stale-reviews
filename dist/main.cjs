@@ -25559,8 +25559,13 @@ var run = async () => {
       baseBranch: import_github.context.payload.pull_request?.base.ref,
       ignoreFiles
     });
+    const reviewsToDismiss = reviewsToDismissContext.filesWithoutOwner ? latestApprovedReviews : reviewsToDismissContext.reviewsToDismiss;
+    if (!reviewsToDismiss.length) {
+      console.log(chalk3.green`No reviews to dismiss!`);
+      return;
+    }
     console.log(
-      chalk3.green`Reviews to dismiss: ${(reviewsToDismissContext.filesWithoutOwner ? latestApprovedReviews : reviewsToDismissContext.reviewsToDismiss).map(({ author }) => author?.login || "unknownLogin").join(",")}`
+      chalk3.green`Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join(",")}`
     );
     if (reviewsToDismissContext.filesWithoutOwner) {
       console.log(
