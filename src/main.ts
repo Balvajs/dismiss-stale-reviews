@@ -45,6 +45,12 @@ const run = async () => {
     return
   }
 
+  console.log(
+    `Approving reviews: ${latestApprovedReviews
+      .map(({ author }) => author?.login || 'unknownLogin')
+      .join(',')}`,
+  )
+
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
       octokit,
@@ -56,11 +62,11 @@ const run = async () => {
 
     console.log(
       chalk.green`Reviews to dismiss: ${(reviewsToDismissContext.filesWithoutOwner
-        ? latestReviews
+        ? latestApprovedReviews
         : reviewsToDismissContext.reviewsToDismiss
       )
-        .map(({ author }) => author?.login)
-        .join(' ')}`,
+        .map(({ author }) => author?.login || 'unknownLogin')
+        .join(',')}`,
     )
 
     // if there are any files without owner, dismiss all reviews
@@ -74,7 +80,7 @@ const run = async () => {
 
       await dismissReviews({
         octokit,
-        reviewsToDismiss: latestReviews,
+        reviewsToDismiss: latestApprovedReviews,
         message: `
           <details>
             <summary>Because some files don’t have owner, all reviews are dismissed.</summary>

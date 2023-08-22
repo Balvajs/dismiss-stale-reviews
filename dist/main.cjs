@@ -25532,6 +25532,9 @@ var run = async () => {
     console.log(chalk3.green`No reviews to dismiss!`);
     return;
   }
+  console.log(
+    `Approving reviews: ${latestApprovedReviews.map(({ author }) => author?.login || "unknownLogin").join(",")}`
+  );
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
       octokit,
@@ -25541,7 +25544,7 @@ var run = async () => {
       ignoreFiles
     });
     console.log(
-      chalk3.green`Reviews to dismiss: ${(reviewsToDismissContext.filesWithoutOwner ? latestReviews : reviewsToDismissContext.reviewsToDismiss).map(({ author }) => author?.login).join(" ")}`
+      chalk3.green`Reviews to dismiss: ${(reviewsToDismissContext.filesWithoutOwner ? latestApprovedReviews : reviewsToDismissContext.reviewsToDismiss).map(({ author }) => author?.login || "unknownLogin").join(",")}`
     );
     if (reviewsToDismissContext.filesWithoutOwner) {
       console.log(
@@ -25552,7 +25555,7 @@ var run = async () => {
       );
       await dismissReviews({
         octokit,
-        reviewsToDismiss: latestReviews,
+        reviewsToDismiss: latestApprovedReviews,
         message: `
           <details>
             <summary>Because some files don\u2019t have owner, all reviews are dismissed.</summary>
