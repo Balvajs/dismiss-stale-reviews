@@ -25588,7 +25588,8 @@ var run = async () => {
         message: "Stale reviews were dismissed based on ownership"
       });
     }
-  } catch {
+  } catch (e2) {
+    console.error(e2);
     await dismissReviews({
       octokit,
       message: "Some error occurred in `dismiss-stale-reviews` action, all reviews are dismissed.",

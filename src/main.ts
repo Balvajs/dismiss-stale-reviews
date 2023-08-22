@@ -115,7 +115,8 @@ const run = async () => {
         message: 'Stale reviews were dismissed based on ownership',
       })
     }
-  } catch {
+  } catch (e) {
+    console.error(e)
     await dismissReviews({
       octokit,
       message:

@@ -7,8 +7,7 @@ Description
 ```yaml
 name: 'dismiss-stale-reviews'
 on:
-  schedule:
-    - cron: '0 0 * * 1'
+  pull_request:
 
 jobs:
   dismiss-stale-reviews:
