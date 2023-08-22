@@ -23136,7 +23136,7 @@ function isPresent(value) {
 var getPullRequestQuery = (
   /* GraphQL */
   `
-  query getGithubData($nodeId: ID!, $organizationLogin: String!) {
+  query getGithubData($nodeId: ID!) {
     node(id: $nodeId) {
       __typename
       ... on PullRequest {
@@ -23173,14 +23173,12 @@ var getPullRequestQuery = (
 );
 var getGithubData = async ({
   octokit,
-  pullRequestId,
-  organizationLogin
+  pullRequestId
 }) => {
   const { node: pullRequest } = await octokit.graphql(
     getPullRequestQuery,
     {
-      nodeId: pullRequestId,
-      organizationLogin
+      nodeId: pullRequestId
     }
   );
   if (!pullRequest || pullRequest.__typename !== "PullRequest") {
@@ -25525,8 +25523,7 @@ var run = async () => {
     latestReviews
   } = await getGithubData({
     octokit,
-    pullRequestId,
-    organizationLogin: import_github.context.repo.owner
+    pullRequestId
   });
   const latestApprovedReviews = latestReviews.filter(
     ({ state, publishedAt, commit }) => commit && state === "APPROVED" && publishedAt && publishedAt < head.committedDate
