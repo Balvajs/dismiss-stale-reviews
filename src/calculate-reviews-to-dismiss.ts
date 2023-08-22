@@ -1,3 +1,4 @@
+import { debug } from '@actions/core'
 import { groupReviewsByCommit } from './group-reviews-by-commit.ts'
 import { getOctokit } from './get-octokit.ts'
 
@@ -71,11 +72,16 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
           reviews.map(async review => {
             const { author } = review
 
+            debug(`Check if ${author?.login} review should be dismissed`)
+
             if (
               !author ||
               // if review author is mentioned directly as an owner of changed files, dismiss their review
               (author.login && changedFilesOwners.includes(`@${author.login}`))
             ) {
+              debug(
+                `User ${author?.login} is owner of changed files and their review should be dismissed`,
+              )
               reviewsToDismiss.push(review)
 
               return
@@ -92,6 +98,10 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
                 // check if the user is member of the owner team
                 try {
+                  debug(
+                    `Check membership of ${author.login} in ${teamOwnership} team`,
+                  )
+
                   const {
                     data: { state },
                   } = await octokit.request(
@@ -108,6 +118,9 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
                   // if the user is active member of the owner team, dismiss user's review
                   if (state === 'active') {
+                    debug(
+                      `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`,
+                    )
                     reviewsToDismiss.push(review)
                   }
                 } catch (e) {
@@ -118,6 +131,9 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
                     e.status === 404
                   ) {
                     // do nothing, 404 means that the user is not a member
+                    debug(
+                      `User ${author.login} is not member of ${teamOwnership} team`,
+                    )
                   } else {
                     throw e
                   }

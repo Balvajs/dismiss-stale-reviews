@@ -263,7 +263,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug3("making CONNECT request");
+      debug4("making CONNECT request");
       var connectReq = self2.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -283,7 +283,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug3(
+          debug4(
             "tunneling socket could not be established, statusCode=%d",
             res.statusCode
           );
@@ -295,7 +295,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug3("got illegal response body from proxy");
+          debug4("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -303,13 +303,13 @@ var require_tunnel = __commonJS({
           self2.removeSocket(placeholder);
           return;
         }
-        debug3("tunneling connection has established");
+        debug4("tunneling connection has established");
         self2.sockets[self2.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError2(cause) {
         connectReq.removeAllListeners();
-        debug3(
+        debug4(
           "tunneling socket could not be established, cause=%s\n",
           cause.message,
           cause.stack
@@ -371,9 +371,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug3;
+    var debug4;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug3 = function() {
+      debug4 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -383,10 +383,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug3 = function() {
+      debug4 = function() {
       };
     }
-    exports.debug = debug3;
+    exports.debug = debug4;
   }
 });
 
@@ -8508,10 +8508,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports.isDebug = isDebug;
-    function debug3(message) {
+    function debug4(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports.debug = debug3;
+    exports.debug = debug4;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -8738,11 +8738,11 @@ var require_common = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug3(...args) {
-          if (!debug3.enabled) {
+        function debug4(...args) {
+          if (!debug4.enabled) {
             return;
           }
-          const self2 = debug3;
+          const self2 = debug4;
           const curr = Number(/* @__PURE__ */ new Date());
           const ms = curr - (prevTime || curr);
           self2.diff = ms;
@@ -8772,12 +8772,12 @@ var require_common = __commonJS({
           const logFn = self2.log || createDebug.log;
           logFn.apply(self2, args);
         }
-        debug3.namespace = namespace;
-        debug3.useColors = createDebug.useColors();
-        debug3.color = createDebug.selectColor(namespace);
-        debug3.extend = extend;
-        debug3.destroy = createDebug.destroy;
-        Object.defineProperty(debug3, "enabled", {
+        debug4.namespace = namespace;
+        debug4.useColors = createDebug.useColors();
+        debug4.color = createDebug.selectColor(namespace);
+        debug4.extend = extend;
+        debug4.destroy = createDebug.destroy;
+        Object.defineProperty(debug4, "enabled", {
           enumerable: true,
           configurable: false,
           get: () => {
@@ -8795,9 +8795,9 @@ var require_common = __commonJS({
           }
         });
         if (typeof createDebug.init === "function") {
-          createDebug.init(debug3);
+          createDebug.init(debug4);
         }
-        return debug3;
+        return debug4;
       }
       function extend(namespace, delimiter) {
         const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
@@ -9309,11 +9309,11 @@ var require_node = __commonJS({
     function load() {
       return process.env.DEBUG;
     }
-    function init(debug3) {
-      debug3.inspectOpts = {};
+    function init(debug4) {
+      debug4.inspectOpts = {};
       const keys = Object.keys(exports.inspectOpts);
       for (let i2 = 0; i2 < keys.length; i2++) {
-        debug3.inspectOpts[keys[i2]] = exports.inspectOpts[keys[i2]];
+        debug4.inspectOpts[keys[i2]] = exports.inspectOpts[keys[i2]];
       }
     }
     module2.exports = require_common()(exports);
@@ -10622,7 +10622,7 @@ var require_minimatch = __commonJS({
       this.parseNegate();
       var set2 = this.globSet = this.braceExpand();
       if (options.debug)
-        this.debug = function debug3() {
+        this.debug = function debug4() {
           console.error.apply(console, arguments);
         };
       this.debug(this.pattern, set2);
@@ -17674,6 +17674,9 @@ Object.defineProperties(createChalk.prototype, styles2);
 var chalk = createChalk();
 var chalkStderr = createChalk({ level: stderrColor ? stderrColor.level : 0 });
 
+// src/calculate-reviews-to-dismiss.ts
+var import_core2 = __toESM(require_core(), 1);
+
 // src/group-reviews-by-commit.ts
 var import_core = __toESM(require_core(), 1);
 
@@ -23050,8 +23053,12 @@ var calculateReviewToDismiss = async ({
         await Promise.all(
           reviews.map(async (review) => {
             const { author } = review;
+            (0, import_core2.debug)(`Check if ${author?.login} review should be dismissed`);
             if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
             author.login && changedFilesOwners.includes(`@${author.login}`)) {
+              (0, import_core2.debug)(
+                `User ${author?.login} is owner of changed files and their review should be dismissed`
+              );
               reviewsToDismiss.push(review);
               return;
             }
@@ -23062,6 +23069,9 @@ var calculateReviewToDismiss = async ({
               changedFilesTeamOwners.map(async (teamOwnership) => {
                 const teamHandle = teamOwnership.replace("@", "").split("/");
                 try {
+                  (0, import_core2.debug)(
+                    `Check membership of ${author.login} in ${teamOwnership} team`
+                  );
                   const {
                     data: { state }
                   } = await octokit.request(
@@ -23076,10 +23086,16 @@ var calculateReviewToDismiss = async ({
                     }
                   );
                   if (state === "active") {
+                    (0, import_core2.debug)(
+                      `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`
+                    );
                     reviewsToDismiss.push(review);
                   }
                 } catch (e2) {
                   if (e2 && typeof e2 === "object" && "status" in e2 && e2.status === 404) {
+                    (0, import_core2.debug)(
+                      `User ${author.login} is not member of ${teamOwnership} team`
+                    );
                   } else {
                     throw e2;
                   }
@@ -25496,10 +25512,10 @@ var getOctokit = ({ ghToken }) => {
 };
 
 // src/get-inputs.ts
-var import_core3 = __toESM(require_core(), 1);
+var import_core4 = __toESM(require_core(), 1);
 var getInputs = () => {
-  const ghToken = (0, import_core3.getInput)("token", { required: true });
-  const ignoreFiles = (0, import_core3.getMultilineInput)("ignore-files");
+  const ghToken = (0, import_core4.getInput)("token", { required: true });
+  const ignoreFiles = (0, import_core4.getMultilineInput)("ignore-files");
   return {
     ghToken,
     ignoreFiles
