@@ -1,6 +1,22 @@
 ## dismiss-stale-reviews
 
-Description
+Action for dismissing stale code reviews based on CODEOWNERS.
+
+GitHub has a branch protection rule that enables `dismissing all reviews when new commits are pushed`:
+![GitHub branch protection rule for dismissing all reviews when new commits are pushed](/docs/github-default-dismiss-approvals.png)
+
+However, in most cases, we want to treat reviews as stale only if the approver is the codeowner of files changed in the new commits.
+
+This action is checking all approvals upon every commit push and removes reviews only from codeowners of changed files.
+![Stale reviews dismissed based on ownership](/docs/dismiss-reviews-based-on-ownership.png)
+
+## Edge cases
+
+There are some situations when it can’t be decided what should be dismissed. In those situations, the action defaults to GitHub’s default behavior - dismissing all reviews.
+
+#### Some of the changed files don’t have an owner
+
+#### The action isn’t able to find
 
 ## Usage
 
