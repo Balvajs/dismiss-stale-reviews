@@ -25551,19 +25551,36 @@ var getOctokit = ({ ghToken }) => {
 
 // src/get-inputs.ts
 var import_core4 = __toESM(require_core(), 1);
+function isValidDismissActionInput(dismissAction) {
+  return dismissAction === "dismiss-all" || dismissAction === "dismiss-none";
+}
 var getInputs = () => {
   const ghToken = (0, import_core4.getInput)("token", { required: true });
   const ignoreFiles = (0, import_core4.getMultilineInput)("ignore-files");
+  const noOwnerAction = (0, import_core4.getInput)("no-owner-action", { required: true });
+  const forcePushAction = (0, import_core4.getInput)("force-push-action", { required: true });
+  if (!isValidDismissActionInput(noOwnerAction)) {
+    throw new Error(
+      `The no-owner-action input accepts only "dismiss-all" or "dismiss-none" enum. Got "${noOwnerAction}"`
+    );
+  }
+  if (!isValidDismissActionInput(forcePushAction)) {
+    throw new Error(
+      `The force-push-action input accepts only "dismiss-all" or "dismiss-none" enum. Got "${forcePushAction}"`
+    );
+  }
   return {
     ghToken,
-    ignoreFiles
+    ignoreFiles,
+    noOwnerAction,
+    forcePushAction
   };
 };
 
 // src/main.ts
 var chalk3 = new Chalk({ level: 2 });
 var run = async () => {
-  const { ghToken, ignoreFiles } = getInputs();
+  const { ghToken, ignoreFiles, noOwnerAction, forcePushAction } = getInputs();
   const pullRequestContext = import_github.context.payload.pull_request;
   if (!pullRequestContext) {
     throw new Error(
@@ -25611,6 +25628,14 @@ var run = async () => {
           reviewsToDismissContext.filesWithoutOwner.join("/n")
         )
       );
+      if (noOwnerAction === "dismiss-none") {
+        console.log(
+          chalk3.yellow(
+            '"no-owner-action" is set to "dismiss-none", so no reviews are dismissed.'
+          )
+        );
+        return;
+      }
       await dismissReviews({
         octokit,
         reviewsToDismiss: latestApprovedReviews,
@@ -25628,6 +25653,21 @@ var run = async () => {
         `.replace(/  +/g, " ")
       });
     } else if (reviewsToDismissContext.reviewsWithoutHistory.length) {
+      console.log(
+        chalk3.yellow(
+          `Files diff can't be resolved for following reviews due to force push:
+${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.login).join("\n")}
+`
+        )
+      );
+      if (forcePushAction === "dismiss-none") {
+        console.log(
+          chalk3.yellow(
+            '"force-push-action" is set to "dismiss-none", so no reviews are dismissed.'
+          )
+        );
+        return;
+      }
       await dismissReviews({
         octokit,
         reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,
