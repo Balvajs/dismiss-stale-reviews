@@ -6,7 +6,7 @@ import { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   schema: schema.idl,
-  documents: '**/*.ts',
+  documents: 'src/**/*.ts',
   emitLegacyCommonJSImports: false,
   generates: {
     '/': {
