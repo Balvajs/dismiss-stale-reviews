@@ -11,7 +11,7 @@ import { getInputs } from './get-inputs.ts'
 const chalk = new Chalk({ level: 2 })
 
 const run = async () => {
-  const { ghToken, ignoreFiles } = getInputs()
+  const { ghToken, ignoreFiles, noOwnerAction, forcePushAction } = getInputs()
 
   const pullRequestContext = context.payload.pull_request
   if (!pullRequestContext) {
@@ -84,6 +84,16 @@ const run = async () => {
         ),
       )
 
+      if (noOwnerAction === 'dismiss-none') {
+        console.log(
+          chalk.yellow(
+            '"no-owner-action" is set to "dismiss-none", so no reviews are dismissed.',
+          ),
+        )
+
+        return
+      }
+
       await dismissReviews({
         octokit,
         reviewsToDismiss: latestApprovedReviews,
@@ -104,6 +114,24 @@ const run = async () => {
       })
       // if there are some files without history let the users know and dismiss reviews calculated for dismiss
     } else if (reviewsToDismissContext.reviewsWithoutHistory.length) {
+      console.log(
+        chalk.yellow(
+          `Files diff can't be resolved for following reviews due to force push:\n${reviewsToDismissContext.reviewsWithoutHistory
+            .map(({ author }) => author?.login)
+            .join('\n')}\n`,
+        ),
+      )
+
+      if (forcePushAction === 'dismiss-none') {
+        console.log(
+          chalk.yellow(
+            '"force-push-action" is set to "dismiss-none", so no reviews are dismissed.',
+          ),
+        )
+
+        return
+      }
+
       await dismissReviews({
         octokit,
         reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,

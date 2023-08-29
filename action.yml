@@ -13,6 +13,14 @@ inputs:
     required: false
     description: GitHub token with permissions to read organization. Default is github.token
     default: ${{ github.token }}
+  no-owner-action:
+    required: false
+    description: What should happen if some file doesn't have owner. Valid options are `"dismiss-all"` and `"dismiss-none"`
+    default: dismiss-all
+  force-push-action:
+    required: false
+    description: What should happen if the git diff couldn't be resolved due to force push. Valid options are `"dismiss-all"` and `"dismiss-none"`
+    default: dismiss-all
 
 runs:
   using: 'node16'
