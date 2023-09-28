@@ -17683,7 +17683,7 @@ var import_core2 = __toESM(require_core(), 1);
 // src/group-reviews-by-commit.ts
 var import_core = __toESM(require_core(), 1);
 
-// node_modules/.pnpm/simple-git@3.19.1/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@3.20.0/node_modules/simple-git/dist/esm/index.js
 var import_file_exists = __toESM(require_dist(), 1);
 var import_debug = __toESM(require_src(), 1);
 var import_child_process = require("child_process");
@@ -17754,6 +17754,11 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
+function pathspec(...paths) {
+  const key = new String(paths);
+  cache.set(key, paths);
+  return key;
+}
 function isPathSpec(path2) {
   return path2 instanceof String && cache.has(path2);
 }
@@ -19535,7 +19540,7 @@ function parseLogOptions(opt = {}, customArgs = []) {
     suffix.push(`${opt.from || ""}${rangeOperator}${opt.to || ""}`);
   }
   if (filterString(opt.file)) {
-    suffix.push("--follow", opt.file);
+    command.push("--follow", pathspec(opt.file));
   }
   appendTaskOptions(userOptions(opt), command);
   return {
@@ -19572,6 +19577,7 @@ var excludeOptions;
 var init_log = __esm2({
   "src/lib/tasks/log.ts"() {
     init_log_format();
+    init_pathspec();
     init_parse_list_log_summary();
     init_utils();
     init_task();
