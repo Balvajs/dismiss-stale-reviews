@@ -92,36 +92,73 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
     await Promise.all(
       reviews.map(async review => {
         const { author } = review
+        let isDismissed = false
 
-        debug(`Check if review of user ${author?.login} should be dismissed`)
+        console.log(
+          `Considering review from  ${author?.login} on commit ${review.commit?.abbreviatedOid}`,
+        )
 
         if (
           !author ||
           // if review author is mentioned directly as an owner of changed files, dismiss their review
           (author.login && changedFilesOwners.includes(`@${author.login}`))
         ) {
-          debug(
-            `User ${author?.login} is owner of changed files and their review should be dismissed`,
+          const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit
+            .filter(
+              ({ owners }) =>
+                !!owners.find(owner => owner === `@${author?.login}`),
+            )
+            .map(({ filename }) => filename)
+
+          console.log(
+            `Changed files owned by ${author?.login}:`,
+            changedFilesOwnedByReviewAuthor.join(', '),
           )
+
           reviewsToDismiss.push(review)
+          isDismissed = true
 
           return
         }
 
         // if the files are not owned by teams we can exit early, the user is already checked
         if (!changedFilesTeamOwners.length) {
+          console.log(
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `The review from ${author?.login} won't be dismissed.\n`,
+          )
+
           return
         }
 
         for (const teamOwnership of changedFilesTeamOwners) {
           if (teamMembers[teamOwnership]?.includes(author.login)) {
-            debug(
-              `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`,
+            const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
+              .filter(
+                ({ owners }) =>
+                  !!owners.find(owner => owner === `@${teamOwnership}`),
+              )
+              .map(({ filename }) => filename)
+
+            console.log(
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:`,
+              changedFilesOwnedByAuthorsTeam.join(', '),
             )
+
             reviewsToDismiss.push(review)
+            isDismissed = true
           } else {
             debug(`User ${author.login} is not member of ${teamOwnership} team`)
           }
+        }
+
+        if (isDismissed) {
+          console.log(`The review from ${author?.login} will be dismissed.\n`)
+        } else {
+          console.log(
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `The review from ${author?.login} won't be dismissed.\n`,
+          )
         }
       }),
     )

@@ -10,6 +10,20 @@ import { getInputs } from './get-inputs.ts'
 
 const chalk = new Chalk({ level: 2 })
 
+const logReviewsToDismiss = (
+  reviewsToDismiss: { author?: { login: string } | null }[],
+) => {
+  debug(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`)
+
+  console.log(
+    chalk.green(
+      `Reviews to dismiss: ${reviewsToDismiss
+        .map(({ author }) => author?.login || 'unknownLogin')
+        .join()}`,
+    ),
+  )
+}
+
 const run = async () => {
   const { ghToken, ignoreFiles, noOwnerAction, forcePushAction } = getInputs()
 
@@ -43,7 +57,7 @@ const run = async () => {
   debug(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`)
 
   if (!latestApprovedReviews.length) {
-    console.log(chalk.green`No reviews to dismiss!`)
+    console.log(chalk.green('No reviews to dismiss!'))
 
     return
   }
@@ -57,26 +71,10 @@ const run = async () => {
       ignoreFiles,
     })
 
-    const reviewsToDismiss = reviewsToDismissContext.filesWithoutOwner
-      ? latestApprovedReviews
-      : reviewsToDismissContext.reviewsToDismiss
-
-    if (!reviewsToDismiss.length) {
-      console.log(chalk.green`No reviews to dismiss!`)
-
-      return
-    }
-
-    debug(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`)
-
-    console.log(
-      chalk.green`Reviews to dismiss: ${reviewsToDismiss
-        .map(({ author }) => author?.login || 'unknownLogin')
-        .join()}`,
-    )
-
     // if there are some files without history let the users know and dismiss reviews calculated for dismiss
     if (reviewsToDismissContext.reviewsWithoutHistory?.length) {
+      logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss)
+
       console.log(
         chalk.yellow(
           `Files diff can't be resolved for following reviews due to force push:\n${reviewsToDismissContext.reviewsWithoutHistory
@@ -114,6 +112,8 @@ const run = async () => {
     }
     // if there are any files without owner, dismiss all reviews
     else if (reviewsToDismissContext.filesWithoutOwner) {
+      logReviewsToDismiss(latestApprovedReviews)
+
       console.log(
         chalk.yellow(
           'Files without owner:\n',
@@ -149,12 +149,16 @@ const run = async () => {
           </details>
         `.replace(/  +/g, ' '),
       })
-    } else {
+    } else if (reviewsToDismissContext.reviewsToDismiss.length) {
+      logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss)
+
       await dismissReviews({
         octokit,
         reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,
         message: 'Stale reviews were dismissed based on ownership',
       })
+    } else {
+      console.log(chalk.green('No reviews to dismiss!'))
     }
   } catch (e) {
     console.error(e)
