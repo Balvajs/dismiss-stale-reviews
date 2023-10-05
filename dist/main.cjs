@@ -23131,7 +23131,7 @@ var calculateReviewToDismiss = async ({
         const { author } = review;
         let isDismissed = false;
         console.log(
-          `Considering review from  ${author?.login} on commit ${review.commit?.abbreviatedOid}`
+          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`
         );
         if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
         author.login && changedFilesOwners.includes(`@${author.login}`)) {
@@ -23139,7 +23139,8 @@ var calculateReviewToDismiss = async ({
             ({ owners }) => !!owners.find((owner) => owner === `@${author?.login}`)
           ).map(({ filename }) => filename);
           console.log(
-            `Changed files owned by ${author?.login}:`,
+            `Changed files owned by ${author?.login}:
+`,
             changedFilesOwnedByReviewAuthor.join(", ")
           );
           reviewsToDismiss.push(review);
@@ -23148,7 +23149,8 @@ var calculateReviewToDismiss = async ({
         }
         if (!changedFilesTeamOwners.length) {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
+`,
             `The review from ${author?.login} won't be dismissed.
 `
           );
@@ -23160,7 +23162,8 @@ var calculateReviewToDismiss = async ({
               ({ owners }) => !!owners.find((owner) => owner === `@${teamOwnership}`)
             ).map(({ filename }) => filename);
             console.log(
-              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:`,
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:
+`,
               changedFilesOwnedByAuthorsTeam.join(", ")
             );
             reviewsToDismiss.push(review);
@@ -23174,7 +23177,8 @@ var calculateReviewToDismiss = async ({
 `);
         } else {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
+`,
             `The review from ${author?.login} won't be dismissed.
 `
           );

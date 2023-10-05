@@ -95,7 +95,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         let isDismissed = false
 
         console.log(
-          `Considering review from  ${author?.login} on commit ${review.commit?.abbreviatedOid}`,
+          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`,
         )
 
         if (
@@ -111,7 +111,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
             .map(({ filename }) => filename)
 
           console.log(
-            `Changed files owned by ${author?.login}:`,
+            `Changed files owned by ${author?.login}:\n`,
             changedFilesOwnedByReviewAuthor.join(', '),
           )
 
@@ -124,7 +124,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         // if the files are not owned by teams we can exit early, the user is already checked
         if (!changedFilesTeamOwners.length) {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\n`,
             `The review from ${author?.login} won't be dismissed.\n`,
           )
 
@@ -141,7 +141,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
               .map(({ filename }) => filename)
 
             console.log(
-              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:`,
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n`,
               changedFilesOwnedByAuthorsTeam.join(', '),
             )
 
@@ -156,7 +156,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
           console.log(`The review from ${author?.login} will be dismissed.\n`)
         } else {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\n`,
             `The review from ${author?.login} won't be dismissed.\n`,
           )
         }
