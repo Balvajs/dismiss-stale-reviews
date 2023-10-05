@@ -111,8 +111,9 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
             .map(({ filename }) => filename)
 
           console.log(
-            `Changed files owned by ${author?.login}:\n`,
-            changedFilesOwnedByReviewAuthor.join(', '),
+            `Changed files owned by ${author?.login}:\n${changedFilesOwnedByReviewAuthor.join(
+              ', ',
+            )}`,
           )
 
           reviewsToDismiss.push(review)
@@ -124,8 +125,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         // if the files are not owned by teams we can exit early, the user is already checked
         if (!changedFilesTeamOwners.length) {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\n`,
-            `The review from ${author?.login} won't be dismissed.\n`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
           )
 
           return
@@ -141,8 +141,9 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
               .map(({ filename }) => filename)
 
             console.log(
-              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n`,
-              changedFilesOwnedByAuthorsTeam.join(', '),
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
+                ', ',
+              )}`,
             )
 
             reviewsToDismiss.push(review)
@@ -156,8 +157,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
           console.log(`The review from ${author?.login} will be dismissed.\n`)
         } else {
           console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\n`,
-            `The review from ${author?.login} won't be dismissed.\n`,
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
           )
         }
       }),

@@ -23140,8 +23140,9 @@ var calculateReviewToDismiss = async ({
           ).map(({ filename }) => filename);
           console.log(
             `Changed files owned by ${author?.login}:
-`,
-            changedFilesOwnedByReviewAuthor.join(", ")
+${changedFilesOwnedByReviewAuthor.join(
+              ", "
+            )}`
           );
           reviewsToDismiss.push(review);
           isDismissed = true;
@@ -23150,8 +23151,7 @@ var calculateReviewToDismiss = async ({
         if (!changedFilesTeamOwners.length) {
           console.log(
             `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
-`,
-            `The review from ${author?.login} won't be dismissed.
+The review from ${author?.login} won't be dismissed.
 `
           );
           return;
@@ -23163,8 +23163,9 @@ var calculateReviewToDismiss = async ({
             ).map(({ filename }) => filename);
             console.log(
               `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:
-`,
-              changedFilesOwnedByAuthorsTeam.join(", ")
+${changedFilesOwnedByAuthorsTeam.join(
+                ", "
+              )}`
             );
             reviewsToDismiss.push(review);
             isDismissed = true;
@@ -23178,8 +23179,7 @@ var calculateReviewToDismiss = async ({
         } else {
           console.log(
             `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
-`,
-            `The review from ${author?.login} won't be dismissed.
+The review from ${author?.login} won't be dismissed.
 `
           );
         }
