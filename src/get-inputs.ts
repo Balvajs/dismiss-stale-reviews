@@ -2,7 +2,7 @@ import { getInput, getMultilineInput } from '@actions/core'
 
 function isValidDismissActionInput(
   dismissAction: string,
-): dismissAction is 'dismissAction' | 'dismiss-none' {
+): dismissAction is 'dismiss-all' | 'dismiss-none' {
   return dismissAction === 'dismiss-all' || dismissAction === 'dismiss-none'
 }
 

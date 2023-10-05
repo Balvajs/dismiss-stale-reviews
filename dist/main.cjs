@@ -25627,7 +25627,37 @@ var run = async () => {
     console.log(
       chalk3.green`Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join()}`
     );
-    if (reviewsToDismissContext.filesWithoutOwner) {
+    if (reviewsToDismissContext.reviewsWithoutHistory?.length) {
+      console.log(
+        chalk3.yellow(
+          `Files diff can't be resolved for following reviews due to force push:
+${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.login).join("\n")}
+`
+        )
+      );
+      if (forcePushAction === "dismiss-none") {
+        console.log(
+          chalk3.yellow(
+            '"force-push-action" is set to "dismiss-none", so no reviews are dismissed.'
+          )
+        );
+        return;
+      }
+      await dismissReviews({
+        octokit,
+        reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,
+        message: `
+        <details>
+          <summary>Following reviews were removed because related commit was overwritten by force push.</summary>
+          <p>
+  
+          - \`${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.login).join("`\n- `")}\`
+  
+          </p>
+        </details>
+      `.replace(/  +/g, " ")
+      });
+    } else if (reviewsToDismissContext.filesWithoutOwner) {
       console.log(
         chalk3.yellow(
           "Files without owner:\n",
@@ -25654,36 +25684,6 @@ var run = async () => {
 
             - \`${reviewsToDismissContext.filesWithoutOwner.join("`\n- `").replace(/_/g, "&#95;")}\`
 
-            </p>
-          </details>
-        `.replace(/  +/g, " ")
-      });
-    } else if (reviewsToDismissContext.reviewsWithoutHistory.length) {
-      console.log(
-        chalk3.yellow(
-          `Files diff can't be resolved for following reviews due to force push:
-${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.login).join("\n")}
-`
-        )
-      );
-      if (forcePushAction === "dismiss-none") {
-        console.log(
-          chalk3.yellow(
-            '"force-push-action" is set to "dismiss-none", so no reviews are dismissed.'
-          )
-        );
-        return;
-      }
-      await dismissReviews({
-        octokit,
-        reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,
-        message: `
-          <details>
-            <summary>Following reviews were removed because related commit was overwritten by force push.</summary>
-            <p>
-    
-            - \`${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.login).join("`\n- `")}\`
-    
             </p>
           </details>
         `.replace(/  +/g, " ")
