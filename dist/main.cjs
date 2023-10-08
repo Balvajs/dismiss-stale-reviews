@@ -23141,7 +23141,7 @@ var calculateReviewToDismiss = async ({
           console.log(
             `Changed files owned by ${author?.login}:
 ${changedFilesOwnedByReviewAuthor.join(
-              ", "
+              "\n"
             )}`
           );
           reviewsToDismiss.push(review);
@@ -23164,7 +23164,7 @@ The review from ${author?.login} won't be dismissed.
             console.log(
               `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:
 ${changedFilesOwnedByAuthorsTeam.join(
-                ", "
+                "\n"
               )}`
             );
             reviewsToDismiss.push(review);

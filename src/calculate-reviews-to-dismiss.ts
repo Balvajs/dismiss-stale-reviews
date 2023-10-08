@@ -112,7 +112,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
           console.log(
             `Changed files owned by ${author?.login}:\n${changedFilesOwnedByReviewAuthor.join(
-              ', ',
+              '\n',
             )}`,
           )
 
@@ -142,7 +142,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
             console.log(
               `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
-                ', ',
+                '\n',
               )}`,
             )
 
