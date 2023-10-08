@@ -98,7 +98,14 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
           `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`,
         )
 
-        if (
+        if (review.commit?.abbreviatedOid === headCommit) {
+          console.log(
+            'The review commit sha is the same as head commit sha and changed files can’t be resolved. This is caused by force-push.',
+          )
+          isDismissed = true
+          reviewsWithoutHistory.push(review)
+          reviewsToDismiss.push(review)
+        } else if (
           !author ||
           // if review author is mentioned directly as an owner of changed files, dismiss their review
           (author.login && changedFilesOwners.includes(`@${author.login}`))
@@ -118,38 +125,35 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
           reviewsToDismiss.push(review)
           isDismissed = true
-
-          return
         }
-
         // if the files are not owned by teams we can exit early, the user is already checked
-        if (!changedFilesTeamOwners.length) {
+        else if (!changedFilesTeamOwners.length) {
           console.log(
             `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
           )
+        } else {
+          for (const teamOwnership of changedFilesTeamOwners) {
+            if (teamMembers[teamOwnership]?.includes(author.login)) {
+              const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
+                .filter(
+                  ({ owners }) =>
+                    !!owners.find(owner => owner === `@${teamOwnership}`),
+                )
+                .map(({ filename }) => filename)
 
-          return
-        }
-
-        for (const teamOwnership of changedFilesTeamOwners) {
-          if (teamMembers[teamOwnership]?.includes(author.login)) {
-            const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
-              .filter(
-                ({ owners }) =>
-                  !!owners.find(owner => owner === `@${teamOwnership}`),
+              console.log(
+                `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
+                  '\n',
+                )}`,
               )
-              .map(({ filename }) => filename)
 
-            console.log(
-              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
-                '\n',
-              )}`,
-            )
-
-            reviewsToDismiss.push(review)
-            isDismissed = true
-          } else {
-            debug(`User ${author.login} is not member of ${teamOwnership} team`)
+              reviewsToDismiss.push(review)
+              isDismissed = true
+            } else {
+              debug(
+                `User ${author.login} is not member of ${teamOwnership} team`,
+              )
+            }
           }
         }
 
