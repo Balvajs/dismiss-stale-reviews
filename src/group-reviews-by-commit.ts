@@ -57,9 +57,11 @@ export const groupReviewsByCommit = async <TReview extends Review>({
         // if commit doesn't exist, make related approve ready for dismiss and continue
         console.log(
           '\n',
-          chalk.yellow`Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
+          chalk.yellow(
+            `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
+          ),
           '\n',
-          chalk.yellow`Approval by ${review.author?.login} will be removed.`,
+          chalk.yellow(`Approval by ${review.author?.login} will be removed.`),
           '\n',
         )
         reviewsWithoutHistory.push(review)

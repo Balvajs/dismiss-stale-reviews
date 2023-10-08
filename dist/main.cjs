@@ -22989,9 +22989,11 @@ var groupReviewsByCommit = async ({
       } catch {
         console.log(
           "\n",
-          chalk2.yellow`Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
+          chalk2.yellow(
+            `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`
+          ),
           "\n",
-          chalk2.yellow`Approval by ${review.author?.login} will be removed.`,
+          chalk2.yellow(`Approval by ${review.author?.login} will be removed.`),
           "\n"
         );
         reviewsWithoutHistory.push(review);
@@ -23127,27 +23129,59 @@ var calculateReviewToDismiss = async ({
     await Promise.all(
       reviews.map(async (review) => {
         const { author } = review;
-        (0, import_core2.debug)(`Check if review of user ${author?.login} should be dismissed`);
+        let isDismissed = false;
+        console.log(
+          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`
+        );
         if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
         author.login && changedFilesOwners.includes(`@${author.login}`)) {
-          (0, import_core2.debug)(
-            `User ${author?.login} is owner of changed files and their review should be dismissed`
+          const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit.filter(
+            ({ owners }) => !!owners.find((owner) => owner === `@${author?.login}`)
+          ).map(({ filename }) => filename);
+          console.log(
+            `Changed files owned by ${author?.login}:
+${changedFilesOwnedByReviewAuthor.join(
+              "\n"
+            )}`
           );
           reviewsToDismiss.push(review);
+          isDismissed = true;
           return;
         }
         if (!changedFilesTeamOwners.length) {
+          console.log(
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
+The review from ${author?.login} won't be dismissed.
+`
+          );
           return;
         }
         for (const teamOwnership of changedFilesTeamOwners) {
           if (teamMembers[teamOwnership]?.includes(author.login)) {
-            (0, import_core2.debug)(
-              `User ${author.login} is member of ${teamOwnership} team and their review will be dismissed`
+            const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit.filter(
+              ({ owners }) => !!owners.find((owner) => owner === `@${teamOwnership}`)
+            ).map(({ filename }) => filename);
+            console.log(
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:
+${changedFilesOwnedByAuthorsTeam.join(
+                "\n"
+              )}`
             );
             reviewsToDismiss.push(review);
+            isDismissed = true;
           } else {
             (0, import_core2.debug)(`User ${author.login} is not member of ${teamOwnership} team`);
           }
+        }
+        if (isDismissed) {
+          console.log(`The review from ${author?.login} will be dismissed.
+`);
+        } else {
+          console.log(
+            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
+The review from ${author?.login} won't be dismissed.
+`
+          );
         }
       })
     );
@@ -25585,6 +25619,14 @@ var getInputs = () => {
 
 // src/main.ts
 var chalk3 = new Chalk({ level: 2 });
+var logReviewsToDismiss = (reviewsToDismiss) => {
+  (0, import_core5.debug)(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`);
+  console.log(
+    chalk3.green(
+      `Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join()}`
+    )
+  );
+};
 var run = async () => {
   const { ghToken, ignoreFiles, noOwnerAction, forcePushAction } = getInputs();
   const pullRequestContext = import_github.context.payload.pull_request;
@@ -25607,7 +25649,7 @@ var run = async () => {
   );
   (0, import_core5.debug)(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`);
   if (!latestApprovedReviews.length) {
-    console.log(chalk3.green`No reviews to dismiss!`);
+    console.log(chalk3.green("No reviews to dismiss!"));
     return;
   }
   try {
@@ -25618,16 +25660,8 @@ var run = async () => {
       baseBranch: import_github.context.payload.pull_request?.base.ref,
       ignoreFiles
     });
-    const reviewsToDismiss = reviewsToDismissContext.filesWithoutOwner ? latestApprovedReviews : reviewsToDismissContext.reviewsToDismiss;
-    if (!reviewsToDismiss.length) {
-      console.log(chalk3.green`No reviews to dismiss!`);
-      return;
-    }
-    (0, import_core5.debug)(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`);
-    console.log(
-      chalk3.green`Reviews to dismiss: ${reviewsToDismiss.map(({ author }) => author?.login || "unknownLogin").join()}`
-    );
     if (reviewsToDismissContext.reviewsWithoutHistory?.length) {
+      logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss);
       console.log(
         chalk3.yellow(
           `Files diff can't be resolved for following reviews due to force push:
@@ -25658,6 +25692,7 @@ ${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.logi
       `.replace(/  +/g, " ")
       });
     } else if (reviewsToDismissContext.filesWithoutOwner) {
+      logReviewsToDismiss(latestApprovedReviews);
       console.log(
         chalk3.yellow(
           "Files without owner:\n",
@@ -25688,12 +25723,15 @@ ${reviewsToDismissContext.reviewsWithoutHistory.map(({ author }) => author?.logi
           </details>
         `.replace(/  +/g, " ")
       });
-    } else {
+    } else if (reviewsToDismissContext.reviewsToDismiss.length) {
+      logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss);
       await dismissReviews({
         octokit,
         reviewsToDismiss: reviewsToDismissContext.reviewsToDismiss,
         message: "Stale reviews were dismissed based on ownership"
       });
+    } else {
+      console.log(chalk3.green("No reviews to dismiss!"));
     }
   } catch (e2) {
     console.error(e2);
