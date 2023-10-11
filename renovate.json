@@ -12,5 +12,10 @@
       "matchPackageNames": ["@types/node"],
       "allowedVersions": "/^20\\..*$/"
     }
-  ]
+  ],
+  "postUpgradeTasks": {
+    "commands": ["pnpm generate", "pnpm package"],
+    "fileFilters": ["**/*"],
+    "executionMode": "branch"
+  }
 }
