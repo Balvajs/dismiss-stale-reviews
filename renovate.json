@@ -11,12 +11,14 @@
     {
       "matchPackageNames": ["@types/node"],
       "allowedVersions": "/^20\\..*$/"
+    },
+    {
+      "matchManagers": ["npm"],
+      "postUpgradeTasks": {
+        "commands": ["pnpm install", "pnpm generate", "pnpm package"],
+        "fileFilters": ["**/*"],
+        "executionMode": "branch"
+      }
     }
-  ],
-  "allowedPostUpgradeCommands": ["pnpm generate", "pnpm package"],
-  "postUpgradeTasks": {
-    "commands": ["pnpm generate", "pnpm package"],
-    "fileFilters": ["**/*"],
-    "executionMode": "branch"
-  }
+  ]
 }
