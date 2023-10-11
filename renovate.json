@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "minor": {
     "automerge": true
   },
@@ -13,6 +13,7 @@
       "allowedVersions": "/^20\\..*$/"
     }
   ],
+  "allowedPostUpgradeCommands": ["pnpm generate", "pnpm package"],
   "postUpgradeTasks": {
     "commands": ["pnpm generate", "pnpm package"],
     "fileFilters": ["**/*"],
