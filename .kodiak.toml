@@ -1,8 +1,0 @@
-version = 1
-
-[approve]
-auto_approve_usernames = ["balvajs-renovate"]
-
-[merge.automerge_dependencies]
-versions = ["minor", "patch"]
-usernames = ["balvajs-renovate"]
