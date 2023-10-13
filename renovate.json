@@ -16,7 +16,7 @@
       "matchManagers": ["npm"],
       "postUpgradeTasks": {
         "commands": ["pnpm install", "pnpm generate", "pnpm package"],
-        "fileFilters": ["**/*"],
+        "fileFilters": ["src/**/*", "dist/**/*"],
         "executionMode": "branch"
       }
     }
