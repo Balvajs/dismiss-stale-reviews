@@ -77,7 +77,7 @@
     "minimatch": "9.0.3",
     "node-fetch": "3.3.2",
     "prettier": "3.0.3",
-    "semantic-release": "22.0.6",
+    "semantic-release": "22.0.7",
     "semantic-release-major-tag": "0.3.2",
     "simple-git": "3.20.0",
     "ts-node": "10.9.1",
