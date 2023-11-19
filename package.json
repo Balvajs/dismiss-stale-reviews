@@ -81,7 +81,7 @@
     "semantic-release-major-tag": "0.3.2",
     "simple-git": "3.20.0",
     "ts-node": "10.9.1",
-    "tsup": "7.3.0",
+    "tsup": "8.0.0",
     "typescript": "5.2.2"
   }
 }
