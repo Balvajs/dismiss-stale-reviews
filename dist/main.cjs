@@ -10114,7 +10114,7 @@ var require_proxy_agent = __commonJS({
     function defaultFactory(origin, opts) {
       return new Pool(origin, opts);
     }
-    var ProxyAgent = class extends DispatcherBase {
+    var ProxyAgent2 = class extends DispatcherBase {
       constructor(opts) {
         super(opts);
         this[kProxy] = buildProxyOptions(opts);
@@ -10225,7 +10225,7 @@ var require_proxy_agent = __commonJS({
         throw new InvalidArgumentError("Proxy-Authorization should be sent in ProxyAgent constructor");
       }
     }
-    module2.exports = ProxyAgent;
+    module2.exports = ProxyAgent2;
   }
 });
 
@@ -15887,7 +15887,7 @@ var require_undici = __commonJS({
     var MockAgent = require_mock_agent();
     var MockPool = require_mock_pool();
     var mockErrors = require_mock_errors();
-    var ProxyAgent = require_proxy_agent();
+    var ProxyAgent2 = require_proxy_agent();
     var { getGlobalDispatcher, setGlobalDispatcher } = require_global2();
     var DecoratorHandler = require_DecoratorHandler();
     var RedirectHandler = require_RedirectHandler();
@@ -15905,7 +15905,7 @@ var require_undici = __commonJS({
     module2.exports.Pool = Pool;
     module2.exports.BalancedPool = BalancedPool;
     module2.exports.Agent = Agent;
-    module2.exports.ProxyAgent = ProxyAgent;
+    module2.exports.ProxyAgent = ProxyAgent2;
     module2.exports.DecoratorHandler = DecoratorHandler;
     module2.exports.RedirectHandler = RedirectHandler;
     module2.exports.createRedirectInterceptor = createRedirectInterceptor;
@@ -16709,11 +16709,11 @@ var require_utils2 = __commonJS({
       return typeof options.auth === "string" ? options.auth : `token ${token}`;
     }
     exports.getAuthString = getAuthString;
-    function getProxyAgent(destinationUrl) {
+    function getProxyAgent2(destinationUrl) {
       const hc = new httpClient.HttpClient();
       return hc.getAgent(destinationUrl);
     }
-    exports.getProxyAgent = getProxyAgent;
+    exports.getProxyAgent = getProxyAgent2;
     function getProxyAgentDispatcher(destinationUrl) {
       const hc = new httpClient.HttpClient();
       return hc.getAgentDispatcher(destinationUrl);
@@ -16727,10 +16727,10 @@ var require_utils2 = __commonJS({
       return proxyFetch;
     }
     exports.getProxyFetch = getProxyFetch;
-    function getApiBaseUrl() {
+    function getApiBaseUrl2() {
       return process.env["GITHUB_API_URL"] || "https://api.github.com";
     }
-    exports.getApiBaseUrl = getApiBaseUrl;
+    exports.getApiBaseUrl = getApiBaseUrl2;
   }
 });
 
@@ -17309,12 +17309,12 @@ var init_endpoint_with_defaults = __esm({
 
 // node_modules/.pnpm/@octokit+endpoint@9.0.0/node_modules/@octokit/endpoint/dist-src/with-defaults.js
 function withDefaults(oldDefaults, newDefaults) {
-  const DEFAULTS2 = merge(oldDefaults, newDefaults);
-  const endpoint2 = endpointWithDefaults.bind(null, DEFAULTS2);
+  const DEFAULTS3 = merge(oldDefaults, newDefaults);
+  const endpoint2 = endpointWithDefaults.bind(null, DEFAULTS3);
   return Object.assign(endpoint2, {
-    DEFAULTS: DEFAULTS2,
-    defaults: withDefaults.bind(null, DEFAULTS2),
-    merge: merge.bind(null, DEFAULTS2),
+    DEFAULTS: DEFAULTS3,
+    defaults: withDefaults.bind(null, DEFAULTS3),
+    merge: merge.bind(null, DEFAULTS3),
     parse
   });
 }
@@ -17855,6 +17855,10 @@ var init_hook = __esm({
 });
 
 // node_modules/.pnpm/@octokit+auth-token@4.0.0/node_modules/@octokit/auth-token/dist-src/index.js
+var dist_src_exports = {};
+__export(dist_src_exports, {
+  createTokenAuth: () => createTokenAuth
+});
 var createTokenAuth;
 var init_dist_src4 = __esm({
   "node_modules/.pnpm/@octokit+auth-token@4.0.0/node_modules/@octokit/auth-token/dist-src/index.js"() {
@@ -19992,8 +19996,8 @@ var init_endpoints_to_methods = __esm({
 });
 
 // node_modules/.pnpm/@octokit+plugin-rest-endpoint-methods@10.0.0_@octokit+core@5.0.1/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
-var dist_src_exports = {};
-__export(dist_src_exports, {
+var dist_src_exports2 = {};
+__export(dist_src_exports2, {
   legacyRestEndpointMethods: () => legacyRestEndpointMethods,
   restEndpointMethods: () => restEndpointMethods
 });
@@ -20418,7 +20422,7 @@ var require_utils3 = __commonJS({
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils2());
     var core_1 = (init_dist_web4(), __toCommonJS(dist_web_exports));
-    var plugin_rest_endpoint_methods_1 = (init_dist_src5(), __toCommonJS(dist_src_exports));
+    var plugin_rest_endpoint_methods_1 = (init_dist_src5(), __toCommonJS(dist_src_exports2));
     var plugin_paginate_rest_1 = (init_dist_web5(), __toCommonJS(dist_web_exports2));
     exports.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
@@ -26405,6 +26409,60 @@ var require_brace_expansion2 = __commonJS({
       }
       return expansions;
     }
+  }
+});
+
+// node_modules/.pnpm/@octokit+auth-action@4.0.1/node_modules/@octokit/auth-action/dist-node/index.js
+var require_dist_node = __commonJS({
+  "node_modules/.pnpm/@octokit+auth-action@4.0.1/node_modules/@octokit/auth-action/dist-node/index.js"(exports, module2) {
+    "use strict";
+    var __defProp3 = Object.defineProperty;
+    var __getOwnPropDesc3 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames3 = Object.getOwnPropertyNames;
+    var __hasOwnProp3 = Object.prototype.hasOwnProperty;
+    var __export3 = (target, all) => {
+      for (var name in all)
+        __defProp3(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames3(from))
+          if (!__hasOwnProp3.call(to, key) && key !== except)
+            __defProp3(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc3(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS3 = (mod) => __copyProps2(__defProp3({}, "__esModule", { value: true }), mod);
+    var dist_src_exports3 = {};
+    __export3(dist_src_exports3, {
+      createActionAuth: () => createActionAuth2
+    });
+    module2.exports = __toCommonJS3(dist_src_exports3);
+    var import_auth_token2 = (init_dist_src4(), __toCommonJS(dist_src_exports));
+    var createActionAuth2 = function createActionAuth22() {
+      if (!process.env.GITHUB_ACTION) {
+        throw new Error(
+          "[@octokit/auth-action] `GITHUB_ACTION` environment variable is not set. @octokit/auth-action is meant to be used in GitHub Actions only."
+        );
+      }
+      const definitions = [
+        process.env.GITHUB_TOKEN,
+        process.env.INPUT_GITHUB_TOKEN,
+        process.env.INPUT_TOKEN
+      ].filter(Boolean);
+      if (definitions.length === 0) {
+        throw new Error(
+          "[@octokit/auth-action] `GITHUB_TOKEN` variable is not set. It must be set on either `env:` or `with:`. See https://github.com/octokit/auth-action.js#createactionauth"
+        );
+      }
+      if (definitions.length > 1) {
+        throw new Error(
+          "[@octokit/auth-action] The token variable is specified more than once. Use either `with.token`, `with.GITHUB_TOKEN`, or `env.GITHUB_TOKEN`. See https://github.com/octokit/auth-action.js#createactionauth"
+        );
+      }
+      const token = definitions.pop();
+      return (0, import_auth_token2.createTokenAuth)(token);
+    };
   }
 });
 
@@ -37167,8 +37225,55 @@ var getPrData = async ({
   };
 };
 
-// src/get-octokit.ts
+// node_modules/.pnpm/@octokit+action@6.0.6/node_modules/@octokit/action/dist-src/index.js
 init_dist_web4();
+var import_auth_action = __toESM(require_dist_node());
+init_dist_web5();
+init_dist_src5();
+
+// node_modules/.pnpm/@octokit+action@6.0.6/node_modules/@octokit/action/dist-src/version.js
+var VERSION7 = "6.0.6";
+
+// node_modules/.pnpm/@octokit+action@6.0.6/node_modules/@octokit/action/dist-src/index.js
+var import_undici = __toESM(require_undici());
+var DEFAULTS2 = {
+  authStrategy: import_auth_action.createActionAuth,
+  baseUrl: getApiBaseUrl(),
+  userAgent: `octokit-action.js/${VERSION7}`
+};
+function getProxyAgent() {
+  const httpProxy = process.env["HTTP_PROXY"] || process.env["http_proxy"];
+  if (httpProxy) {
+    return new import_undici.ProxyAgent(httpProxy);
+  }
+  const httpsProxy = process.env["HTTPS_PROXY"] || process.env["https_proxy"];
+  if (httpsProxy) {
+    return new import_undici.ProxyAgent(httpsProxy);
+  }
+  return void 0;
+}
+var customFetch = async function(url, opts) {
+  return await (0, import_undici.fetch)(url, {
+    dispatcher: getProxyAgent(),
+    ...opts
+  });
+};
+var Octokit2 = Octokit.plugin(
+  paginateRest,
+  legacyRestEndpointMethods
+).defaults(function buildDefaults(options) {
+  return {
+    ...DEFAULTS2,
+    ...options,
+    request: {
+      fetch: customFetch,
+      ...options.request
+    }
+  };
+});
+function getApiBaseUrl() {
+  return process.env["GITHUB_API_URL"] || "https://api.github.com";
+}
 
 // node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.0_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/errors.js
 var generateMessage = (path2, cursorValue) => `The cursor at "${path2.join(
@@ -38630,7 +38735,7 @@ function fixResponseChunkedTransferBadEnding(request2, errorCallback) {
 
 // src/get-octokit.ts
 var getOctokit = ({ ghToken }) => {
-  const OctokitWithPlugins = Octokit.plugin(paginateGraphql);
+  const OctokitWithPlugins = Octokit2.plugin(paginateGraphql);
   return new OctokitWithPlugins({ auth: ghToken, request: { fetch } });
 };
 
