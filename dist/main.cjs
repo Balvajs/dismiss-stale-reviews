@@ -31614,7 +31614,7 @@ var import_core2 = __toESM(require_core(), 1);
 // src/group-reviews-by-commit.ts
 var import_core = __toESM(require_core(), 1);
 
-// node_modules/.pnpm/simple-git@3.20.0/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@3.21.0/node_modules/simple-git/dist/esm/index.js
 var import_file_exists = __toESM(require_dist(), 1);
 var import_debug = __toESM(require_src(), 1);
 var import_child_process = require("child_process");
@@ -33138,6 +33138,19 @@ var init_commit = __esm2({
     init_task();
   }
 });
+function first_commit_default() {
+  return {
+    firstCommit() {
+      return this._runTask(straightThroughStringTask(["rev-list", "--max-parents=0", "HEAD"], true), trailingFunctionArgument(arguments));
+    }
+  };
+}
+var init_first_commit = __esm2({
+  "src/lib/tasks/first-commit.ts"() {
+    init_utils();
+    init_task();
+  }
+});
 function hashObjectTask(filePath, write) {
   const commands = ["hash-object", filePath];
   if (write) {
@@ -34168,6 +34181,7 @@ var init_simple_git_api = __esm2({
     init_checkout();
     init_commit();
     init_config();
+    init_first_commit();
     init_grep();
     init_hash_object();
     init_init();
@@ -34241,7 +34255,7 @@ var init_simple_git_api = __esm2({
         return this._runTask(statusTask(getTrailingOptions(arguments)), trailingFunctionArgument(arguments));
       }
     };
-    Object.assign(SimpleGitApi.prototype, checkout_default(), commit_default(), config_default(), grep_default(), log_default(), show_default(), version_default2());
+    Object.assign(SimpleGitApi.prototype, checkout_default(), commit_default(), config_default(), first_commit_default(), grep_default(), log_default(), show_default(), version_default2());
   }
 });
 var scheduler_exports = {};
