@@ -88,6 +88,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'MarkedAsDuplicateEvent' }
     | { readonly __typename: 'MarketplaceCategory' }
     | { readonly __typename: 'MarketplaceListing' }
+    | { readonly __typename: 'MemberFeatureRequestNotification' }
     | { readonly __typename: 'MembersCanDeleteReposClearAuditEntry' }
     | { readonly __typename: 'MembersCanDeleteReposDisableAuditEntry' }
     | { readonly __typename: 'MembersCanDeleteReposEnableAuditEntry' }
