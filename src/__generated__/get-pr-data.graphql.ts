@@ -286,6 +286,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'User' }
     | { readonly __typename: 'UserBlockedEvent' }
     | { readonly __typename: 'UserContentEdit' }
+    | { readonly __typename: 'UserList' }
     | { readonly __typename: 'UserStatus' }
     | { readonly __typename: 'VerifiableDomain' }
     | { readonly __typename: 'Workflow' }
