@@ -46446,7 +46446,7 @@ var import_core2 = __toESM(require_core(), 1);
 // src/group-reviews-by-commit.ts
 var import_core = __toESM(require_core(), 1);
 
-// node_modules/.pnpm/simple-git@3.21.0/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@3.22.0/node_modules/simple-git/dist/esm/index.js
 var import_file_exists = __toESM(require_dist(), 1);
 var import_debug = __toESM(require_src(), 1);
 var import_child_process = require("child_process");
@@ -46663,6 +46663,12 @@ function pick(source, properties) {
 }
 function delay(duration = 0) {
   return new Promise((done) => setTimeout(done, duration));
+}
+function orVoid(input) {
+  if (input === false) {
+    return void 0;
+  }
+  return input;
 }
 var NULL;
 var NOOP;
@@ -46920,6 +46926,7 @@ __export2(utils_exports, {
   isUserFunction: () => isUserFunction,
   last: () => last,
   objectToString: () => objectToString,
+  orVoid: () => orVoid,
   parseStringResponse: () => parseStringResponse,
   pick: () => pick,
   prefixedArray: () => prefixedArray,
@@ -47352,6 +47359,28 @@ var init_config = __esm2({
       GitConfigScope2["worktree"] = "worktree";
       return GitConfigScope2;
     })(GitConfigScope || {});
+  }
+});
+function isDiffNameStatus(input) {
+  return diffNameStatus.has(input);
+}
+var DiffNameStatus;
+var diffNameStatus;
+var init_diff_name_status = __esm2({
+  "src/lib/tasks/diff-name-status.ts"() {
+    DiffNameStatus = /* @__PURE__ */ ((DiffNameStatus2) => {
+      DiffNameStatus2["ADDED"] = "A";
+      DiffNameStatus2["COPIED"] = "C";
+      DiffNameStatus2["DELETED"] = "D";
+      DiffNameStatus2["MODIFIED"] = "M";
+      DiffNameStatus2["RENAMED"] = "R";
+      DiffNameStatus2["CHANGED"] = "T";
+      DiffNameStatus2["UNMERGED"] = "U";
+      DiffNameStatus2["UNKNOWN"] = "X";
+      DiffNameStatus2["BROKEN"] = "B";
+      return DiffNameStatus2;
+    })(DiffNameStatus || {});
+    diffNameStatus = new Set(Object.values(DiffNameStatus));
   }
 });
 function grepQueryBuilder(...params) {
@@ -48099,6 +48128,7 @@ var init_parse_diff_summary = __esm2({
   "src/lib/parsers/parse-diff-summary.ts"() {
     init_log_format();
     init_DiffSummary();
+    init_diff_name_status();
     init_utils();
     statParser = [
       new LineParser(/(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/, (result, [file, changes, alterations = ""]) => {
@@ -48164,11 +48194,12 @@ var init_parse_diff_summary = __esm2({
       })
     ];
     nameStatusParser = [
-      new LineParser(/([ACDMRTUXB])\s*(.+)$/, (result, [_status, file]) => {
+      new LineParser(/([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/, (result, [status, _similarity, from, _to, to]) => {
         result.changed++;
         result.files.push({
-          file,
+          file: to != null ? to : from,
           changes: 0,
+          status: orVoid(isDiffNameStatus(status) && status),
           insertions: 0,
           deletions: 0,
           binary: false
@@ -50033,6 +50064,7 @@ init_task_configuration_error();
 init_check_is_repo();
 init_clean();
 init_config();
+init_diff_name_status();
 init_grep();
 init_reset();
 function abortPlugin(signal) {
