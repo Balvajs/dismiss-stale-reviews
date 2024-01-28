@@ -15,7 +15,6 @@ const getPullRequestQuery = /* GraphQL */ `
           nodes {
             commit {
               oid
-              abbreviatedOid
               committedDate
             }
           }
@@ -25,7 +24,7 @@ const getPullRequestQuery = /* GraphQL */ `
             id
             state
             commit {
-              abbreviatedOid
+              oid
             }
             author {
               __typename

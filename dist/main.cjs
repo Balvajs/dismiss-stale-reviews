@@ -51787,7 +51787,7 @@ var groupReviewsByCommit = async ({
   const groupedReviewsByCommit = {};
   await Promise.all(
     latestReviews.map(async (review) => {
-      const reviewCommit = review.commit?.abbreviatedOid;
+      const reviewCommit = review.commit?.oid;
       const basehead = `${reviewCommit}..${headCommit}`;
       if (groupedReviewsByCommit[basehead]) {
         groupedReviewsByCommit[basehead].reviews.push(review);
@@ -51940,9 +51940,9 @@ var calculateReviewToDismiss = async ({
         const { author } = review;
         let isDismissed = false;
         console.log(
-          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`
+          `Considering review from ${author?.login} and file changes between ${review.commit?.oid} (reviewed commit) and ${headCommit} (head commit)`
         );
-        if (review.commit?.abbreviatedOid === headCommit) {
+        if (review.commit?.oid === headCommit) {
           console.log(
             "The review commit sha is the same as head commit sha and changed files can\u2019t be resolved. This is caused by force-push."
           );
@@ -52050,7 +52050,6 @@ var getPullRequestQuery2 = (
           nodes {
             commit {
               oid
-              abbreviatedOid
               committedDate
             }
           }
@@ -52060,7 +52059,7 @@ var getPullRequestQuery2 = (
             id
             state
             commit {
-              abbreviatedOid
+              oid
             }
             author {
               __typename
@@ -53683,7 +53682,7 @@ var run = async () => {
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
       octokit,
-      headCommit: head.abbreviatedOid,
+      headCommit: head.oid,
       latestReviews: latestApprovedReviews,
       baseBranch: import_github.context.payload.pull_request?.base.ref,
       ignoreFiles

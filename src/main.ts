@@ -65,7 +65,7 @@ const run = async () => {
   try {
     const reviewsToDismissContext = await calculateReviewToDismiss({
       octokit,
-      headCommit: head.abbreviatedOid,
+      headCommit: head.oid,
       latestReviews: latestApprovedReviews,
       baseBranch: context.payload.pull_request?.base.ref as string,
       ignoreFiles,
