@@ -50,7 +50,7 @@ jobs:
           app_id: ${{ secrets.MANAGE_REVIEWS_BOT_ID }}
           private_key: ${{ secrets.MANAGE_REVIEWS_BOT_PEM }}
 
-      - uses: balvajs/dismiss-stale-reviews@v1
+      - uses: balvajs/dismiss-stale-reviews@v3
         with:
           token: ${{ steps.get-token.outputs.token }}
 ```
