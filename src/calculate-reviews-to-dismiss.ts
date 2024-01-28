@@ -8,7 +8,7 @@ export type Review = {
     login: string
   } | null
   commit: {
-    abbreviatedOid: string
+    oid: string
   } | null
 }
 
@@ -95,16 +95,14 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         let isDismissed = false
 
         console.log(
-          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`,
+          `Considering review from ${author?.login} and file changes between ${review.commit?.oid} (reviewed commit) and ${headCommit} (head commit)`,
         )
 
-        if (review.commit?.abbreviatedOid === headCommit) {
+        // in case there is no diff because head and review commit matches, skip that review
+        if (review.commit?.oid === headCommit) {
           console.log(
-            'The review commit sha is the same as head commit sha and changed files can’t be resolved. This is caused by force-push.',
+            'The review commit sha is the same as head commit sha. That means that there were no changes since the review, or the base branch was merged/rebased cleanly.',
           )
-          isDismissed = true
-          reviewsWithoutHistory.push(review)
-          reviewsToDismiss.push(review)
         } else if (
           !author ||
           // if review author is mentioned directly as an owner of changed files, dismiss their review
