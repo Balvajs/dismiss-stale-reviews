@@ -34,6 +34,7 @@ const config: CodegenConfig = {
             skipTypename: true,
             scalars: {
               DateTime: 'string',
+              GitObjectID: 'string',
             },
           },
         },
