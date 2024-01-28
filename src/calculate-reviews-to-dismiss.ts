@@ -8,7 +8,7 @@ export type Review = {
     login: string
   } | null
   commit: {
-    abbreviatedOid: string
+    oid: string
   } | null
 }
 
@@ -95,10 +95,10 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         let isDismissed = false
 
         console.log(
-          `Considering review from ${author?.login} and file changes between ${review.commit?.abbreviatedOid} (reviewed commit) and ${headCommit} (head commit)`,
+          `Considering review from ${author?.login} and file changes between ${review.commit?.oid} (reviewed commit) and ${headCommit} (head commit)`,
         )
 
-        if (review.commit?.abbreviatedOid === headCommit) {
+        if (review.commit?.oid === headCommit) {
           console.log(
             'The review commit sha is the same as head commit sha and changed files can’t be resolved. This is caused by force-push.',
           )

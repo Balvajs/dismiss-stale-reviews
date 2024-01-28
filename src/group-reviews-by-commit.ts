@@ -13,7 +13,7 @@ type Review = {
     login: string
   } | null
   commit: {
-    abbreviatedOid: string
+    oid: string
   } | null
 }
 
@@ -40,7 +40,7 @@ export const groupReviewsByCommit = async <TReview extends Review>({
   > = {}
   await Promise.all(
     latestReviews.map(async review => {
-      const reviewCommit = review.commit?.abbreviatedOid as string
+      const reviewCommit = review.commit?.oid as string
       const basehead = `${reviewCommit}..${headCommit}`
 
       // if group exists, just push the review to the group

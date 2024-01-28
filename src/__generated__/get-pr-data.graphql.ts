@@ -168,8 +168,7 @@ export type GetPrDataQuery = {
         readonly commits: {
           readonly nodes: ReadonlyArray<{
             readonly commit: {
-              readonly oid: any
-              readonly abbreviatedOid: string
+              readonly oid: string
               readonly committedDate: string
             }
           } | null> | null
@@ -179,7 +178,7 @@ export type GetPrDataQuery = {
             readonly id: string
             readonly state: Types.PullRequestReviewState
             readonly publishedAt: string | null
-            readonly commit: { readonly abbreviatedOid: string } | null
+            readonly commit: { readonly oid: string } | null
             readonly author:
               | { readonly __typename: 'Bot'; readonly login: string }
               | {
