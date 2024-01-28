@@ -51944,11 +51944,8 @@ var calculateReviewToDismiss = async ({
         );
         if (review.commit?.oid === headCommit) {
           console.log(
-            "The review commit sha is the same as head commit sha and changed files can\u2019t be resolved. This is caused by force-push."
+            "The review commit sha is the same as head commit sha. That means that there were no changes since the review, or the base branch was merged/rebased cleanly."
           );
-          isDismissed = true;
-          reviewsWithoutHistory.push(review);
-          reviewsToDismiss.push(review);
         } else if (!author || // if review author is mentioned directly as an owner of changed files, dismiss their review
         author.login && changedFilesOwners.includes(`@${author.login}`)) {
           const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit.filter(
