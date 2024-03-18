@@ -37,7 +37,7 @@ devDependencies:
     version: 14.58.0
   '@octokit/plugin-paginate-graphql':
     specifier: 4.0.1
-    version: 4.0.1(@octokit/core@5.0.1)
+    version: 4.0.1(@octokit/core@6.0.1)
   '@semantic-release/commit-analyzer':
     specifier: 11.1.0
     version: 11.1.0(semantic-release@23.0.3)
@@ -144,8 +144,8 @@ devDependencies:
     specifier: 0.3.2
     version: 0.3.2
   simple-git:
-    specifier: 3.22.0
-    version: 3.22.0
+    specifier: 3.23.0
+    version: 3.23.0
   ts-node:
     specifier: 10.9.2
     version: 10.9.2(@swc/core@1.4.8)(@types/node@20.11.27)(typescript@5.4.2)
@@ -2333,13 +2333,13 @@ packages:
     resolution: {integrity: sha512-EtqRBEjp1dL/15V7WiX5LJMIxxkdiGJnabzYx5Apx4FkQIFgAfKumXeYAqqJCj1s+BMX4cPFIFC4OLCR6stlnA==}
     dev: true
 
-  /@octokit/plugin-paginate-graphql@4.0.1(@octokit/core@5.0.1):
+  /@octokit/plugin-paginate-graphql@4.0.1(@octokit/core@6.0.1):
     resolution: {integrity: sha512-R8ZQNmrIKKpHWC6V2gum4x9LG2qF1RxRjo27gjQcG3j+vf2tLsEfE7I/wRWEPzYMaenr1M+qDAtNcwZve1ce1A==}
     engines: {node: '>= 18'}
     peerDependencies:
       '@octokit/core': '>=5'
     dependencies:
-      '@octokit/core': 5.0.1
+      '@octokit/core': 6.0.1
     dev: true
 
   /@octokit/plugin-paginate-rest@10.0.0(@octokit/core@6.0.1):
@@ -8827,8 +8827,8 @@ packages:
     resolution: {integrity: sha512-6+eerH9fEnNmi/hyM1DXcRK3pWdoMQtlkQ+ns0ntzunjKqp5i3sKCc80ym8Fib3iaYhdJUOPdhlJWj1tvge2Ww==}
     dev: true
 
-  /simple-git@3.22.0:
-    resolution: {integrity: sha512-6JujwSs0ac82jkGjMHiCnTifvf1crOiY/+tfs/Pqih6iow7VrpNKRRNdWm6RtaXpvvv/JGNYhlUtLhGFqHF+Yw==}
+  /simple-git@3.23.0:
+    resolution: {integrity: sha512-P9ggTW8vb/21CAL/AmnACAhqBDfnqSSZVpV7WuFtsFR9HLunf5IqQvk+OXAQTfkcZep8pKnt3DV3o7w3TegEkQ==}
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
