@@ -41256,7 +41256,7 @@ var require_dist_node = __commonJS({
       for (var name in all)
         __defProp3(target, name, { get: all[name], enumerable: true });
     };
-    var __copyProps2 = (to, from, except, desc) => {
+    var __copyProps3 = (to, from, except, desc) => {
       if (from && typeof from === "object" || typeof from === "function") {
         for (let key of __getOwnPropNames3(from))
           if (!__hasOwnProp3.call(to, key) && key !== except)
@@ -41264,7 +41264,7 @@ var require_dist_node = __commonJS({
       }
       return to;
     };
-    var __toCommonJS3 = (mod) => __copyProps2(__defProp3({}, "__esModule", { value: true }), mod);
+    var __toCommonJS3 = (mod) => __copyProps3(__defProp3({}, "__esModule", { value: true }), mod);
     var dist_src_exports3 = {};
     __export3(dist_src_exports3, {
       createActionAuth: () => createActionAuth2
@@ -46446,7 +46446,7 @@ var import_core2 = __toESM(require_core(), 1);
 // src/group-reviews-by-commit.ts
 var import_core = __toESM(require_core(), 1);
 
-// node_modules/.pnpm/simple-git@3.22.0/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@3.23.0/node_modules/simple-git/dist/esm/index.js
 var import_file_exists = __toESM(require_dist(), 1);
 var import_debug = __toESM(require_src(), 1);
 var import_child_process = require("child_process");
@@ -46473,7 +46473,6 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __markAsModule = (target) => __defProp2(target, "__esModule", { value: true });
 var __esm2 = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames2(fn)[0]])(fn = 0)), res;
 };
@@ -46484,19 +46483,15 @@ var __export2 = (target, all) => {
   for (var name in all)
     __defProp2(target, name, { get: all[name], enumerable: true });
 };
-var __reExport = (target, module2, copyDefault, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames2(module2))
-      if (!__hasOwnProp2.call(target, key) && (copyDefault || key !== "default"))
-        __defProp2(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc2(module2, key)) || desc.enumerable });
+var __copyProps2 = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames2(from))
+      if (!__hasOwnProp2.call(to, key) && key !== except)
+        __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
   }
-  return target;
+  return to;
 };
-var __toCommonJS2 = /* @__PURE__ */ ((cache2) => {
-  return (module2, temp) => {
-    return cache2 && cache2.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache2 && cache2.set(module2, temp), temp);
-  };
-})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
+var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -46531,12 +46526,14 @@ function toPaths(pathSpec) {
 var cache;
 var init_pathspec = __esm2({
   "src/lib/args/pathspec.ts"() {
+    "use strict";
     cache = /* @__PURE__ */ new WeakMap();
   }
 });
 var GitError;
 var init_git_error = __esm2({
   "src/lib/errors/git-error.ts"() {
+    "use strict";
     GitError = class extends Error {
       constructor(task, message) {
         super(message);
@@ -46549,6 +46546,7 @@ var init_git_error = __esm2({
 var GitResponseError;
 var init_git_response_error = __esm2({
   "src/lib/errors/git-response-error.ts"() {
+    "use strict";
     init_git_error();
     GitResponseError = class extends GitError {
       constructor(git, message) {
@@ -46561,6 +46559,7 @@ var init_git_response_error = __esm2({
 var TaskConfigurationError;
 var init_task_configuration_error = __esm2({
   "src/lib/errors/task-configuration-error.ts"() {
+    "use strict";
     init_git_error();
     TaskConfigurationError = class extends GitError {
       constructor(message) {
@@ -46659,7 +46658,10 @@ function bufferToString(input) {
   return (Array.isArray(input) ? Buffer.concat(input) : input).toString("utf-8");
 }
 function pick(source, properties) {
-  return Object.assign({}, ...properties.map((property) => property in source ? { [property]: source[property] } : {}));
+  return Object.assign(
+    {},
+    ...properties.map((property) => property in source ? { [property]: source[property] } : {})
+  );
 }
 function delay(duration = 0) {
   return new Promise((done) => setTimeout(done, duration));
@@ -46675,6 +46677,7 @@ var NOOP;
 var objectToString;
 var init_util = __esm2({
   "src/lib/utils/util.ts"() {
+    "use strict";
     NULL = "\0";
     NOOP = () => {
     };
@@ -46704,6 +46707,7 @@ var filterStringOrStringArray;
 var filterHasLength;
 var init_argument_filters = __esm2({
   "src/lib/utils/argument-filters.ts"() {
+    "use strict";
     init_util();
     init_pathspec();
     filterArray = (input) => {
@@ -46729,6 +46733,7 @@ var init_argument_filters = __esm2({
 var ExitCodes;
 var init_exit_codes = __esm2({
   "src/lib/utils/exit-codes.ts"() {
+    "use strict";
     ExitCodes = /* @__PURE__ */ ((ExitCodes2) => {
       ExitCodes2[ExitCodes2["SUCCESS"] = 0] = "SUCCESS";
       ExitCodes2[ExitCodes2["ERROR"] = 1] = "ERROR";
@@ -46741,6 +46746,7 @@ var init_exit_codes = __esm2({
 var GitOutputStreams;
 var init_git_output_streams = __esm2({
   "src/lib/utils/git-output-streams.ts"() {
+    "use strict";
     GitOutputStreams = class {
       constructor(stdOut, stdErr) {
         this.stdOut = stdOut;
@@ -46756,6 +46762,7 @@ var LineParser;
 var RemoteLineParser;
 var init_line_parser = __esm2({
   "src/lib/utils/line-parser.ts"() {
+    "use strict";
     LineParser = class {
       constructor(regExp, useMatches) {
         this.matches = [];
@@ -46805,7 +46812,10 @@ var init_line_parser = __esm2({
 });
 function createInstanceConfig(...options) {
   const baseDir = process.cwd();
-  const config = Object.assign(__spreadValues({ baseDir }, defaultOptions), ...options.filter((o) => typeof o === "object" && o));
+  const config = Object.assign(
+    __spreadValues({ baseDir }, defaultOptions),
+    ...options.filter((o) => typeof o === "object" && o)
+  );
   config.baseDir = config.baseDir || baseDir;
   config.trimmed = config.trimmed === true;
   return config;
@@ -46813,6 +46823,7 @@ function createInstanceConfig(...options) {
 var defaultOptions;
 var init_simple_git_options = __esm2({
   "src/lib/utils/simple-git-options.ts"() {
+    "use strict";
     defaultOptions = {
       binary: "git",
       maxConcurrentProcesses: 5,
@@ -46864,6 +46875,7 @@ function trailingFunctionArgument(args, includeNoop = true) {
 }
 var init_task_options = __esm2({
   "src/lib/utils/task-options.ts"() {
+    "use strict";
     init_argument_filters();
     init_util();
     init_pathspec();
@@ -46888,6 +46900,7 @@ function parseStringResponse(result, parsers12, texts, trim = true) {
 }
 var init_task_parser = __esm2({
   "src/lib/utils/task-parser.ts"() {
+    "use strict";
     init_util();
   }
 });
@@ -46938,6 +46951,7 @@ __export2(utils_exports, {
 });
 var init_utils = __esm2({
   "src/lib/utils/index.ts"() {
+    "use strict";
     init_argument_filters();
     init_exit_codes();
     init_git_output_streams();
@@ -46998,6 +47012,7 @@ var onError;
 var parser;
 var init_check_is_repo = __esm2({
   "src/lib/tasks/check-is-repo.ts"() {
+    "use strict";
     init_utils();
     CheckRepoActions = /* @__PURE__ */ ((CheckRepoActions2) => {
       CheckRepoActions2["BARE"] = "bare";
@@ -47032,6 +47047,7 @@ var dryRunRemovalRegexp;
 var isFolderRegexp;
 var init_CleanSummary = __esm2({
   "src/lib/responses/CleanSummary.ts"() {
+    "use strict";
     init_utils();
     CleanResponse = class {
       constructor(dryRun) {
@@ -47099,6 +47115,7 @@ function isEmptyTask(task) {
 var EMPTY_COMMANDS;
 var init_task = __esm2({
   "src/lib/tasks/task.ts"() {
+    "use strict";
     init_task_configuration_error();
     EMPTY_COMMANDS = [];
   }
@@ -47177,6 +47194,7 @@ var CleanOptions;
 var CleanOptionValues;
 var init_clean = __esm2({
   "src/lib/tasks/clean.ts"() {
+    "use strict";
     init_CleanSummary();
     init_utils();
     init_task();
@@ -47248,6 +47266,7 @@ function* configParser(text, requestedKey = null) {
 var ConfigList;
 var init_ConfigList = __esm2({
   "src/lib/responses/ConfigList.ts"() {
+    "use strict";
     init_utils();
     ConfigList = class {
       constructor() {
@@ -47333,23 +47352,38 @@ function listConfigTask(scope) {
 function config_default() {
   return {
     addConfig(key, value, ...rest) {
-      return this._runTask(addConfigTask(key, value, rest[0] === true, asConfigScope(
-        rest[1],
-        "local"
-        /* local */
-      )), trailingFunctionArgument(arguments));
+      return this._runTask(
+        addConfigTask(
+          key,
+          value,
+          rest[0] === true,
+          asConfigScope(
+            rest[1],
+            "local"
+            /* local */
+          )
+        ),
+        trailingFunctionArgument(arguments)
+      );
     },
     getConfig(key, scope) {
-      return this._runTask(getConfigTask(key, asConfigScope(scope, void 0)), trailingFunctionArgument(arguments));
+      return this._runTask(
+        getConfigTask(key, asConfigScope(scope, void 0)),
+        trailingFunctionArgument(arguments)
+      );
     },
     listConfig(...rest) {
-      return this._runTask(listConfigTask(asConfigScope(rest[0], void 0)), trailingFunctionArgument(arguments));
+      return this._runTask(
+        listConfigTask(asConfigScope(rest[0], void 0)),
+        trailingFunctionArgument(arguments)
+      );
     }
   };
 }
 var GitConfigScope;
 var init_config = __esm2({
   "src/lib/tasks/config.ts"() {
+    "use strict";
     init_ConfigList();
     init_utils();
     GitConfigScope = /* @__PURE__ */ ((GitConfigScope2) => {
@@ -47368,6 +47402,7 @@ var DiffNameStatus;
 var diffNameStatus;
 var init_diff_name_status = __esm2({
   "src/lib/tasks/diff-name-status.ts"() {
+    "use strict";
     DiffNameStatus = /* @__PURE__ */ ((DiffNameStatus2) => {
       DiffNameStatus2["ADDED"] = "A";
       DiffNameStatus2["COPIED"] = "C";
@@ -47410,20 +47445,26 @@ function grep_default() {
       const options = getTrailingOptions(arguments);
       for (const option of disallowedOptions) {
         if (options.includes(option)) {
-          return this._runTask(configurationErrorTask(`git.grep: use of "${option}" is not supported.`), then);
+          return this._runTask(
+            configurationErrorTask(`git.grep: use of "${option}" is not supported.`),
+            then
+          );
         }
       }
       if (typeof searchTerm === "string") {
         searchTerm = grepQueryBuilder().param(searchTerm);
       }
       const commands = ["grep", "--null", "-n", "--full-name", ...options, ...searchTerm];
-      return this._runTask({
-        commands,
-        format: "utf-8",
-        parser(stdOut) {
-          return parseGrep(stdOut);
-        }
-      }, then);
+      return this._runTask(
+        {
+          commands,
+          format: "utf-8",
+          parser(stdOut) {
+            return parseGrep(stdOut);
+          }
+        },
+        then
+      );
     }
   };
 }
@@ -47433,6 +47474,7 @@ var _a;
 var GrepQuery;
 var init_grep = __esm2({
   "src/lib/tasks/grep.ts"() {
+    "use strict";
     init_utils();
     init_task();
     disallowedOptions = ["-h"];
@@ -47489,6 +47531,7 @@ var ResetMode;
 var ResetModes;
 var init_reset = __esm2({
   "src/lib/tasks/reset.ts"() {
+    "use strict";
     init_task();
     ResetMode = /* @__PURE__ */ ((ResetMode2) => {
       ResetMode2["MIXED"] = "mixed";
@@ -47535,7 +47578,10 @@ function createLogger(label, verbose, initialStep, infoDebugger = createLog()) {
   const key = childLoggerName(filterType(verbose, filterString), debugDebugger, infoDebugger);
   return step(initialStep);
   function sibling(name, initial) {
-    return append(spawned, createLogger(label, key.replace(/^[^:]+/, name), initial, infoDebugger));
+    return append(
+      spawned,
+      createLogger(label, key.replace(/^[^:]+/, name), initial, infoDebugger)
+    );
   }
   function step(phase) {
     const stepPrefix = phase && `[${phase}]` || "";
@@ -47551,6 +47597,7 @@ function createLogger(label, verbose, initialStep, infoDebugger = createLog()) {
 }
 var init_git_logger = __esm2({
   "src/lib/git-logger.ts"() {
+    "use strict";
     init_utils();
     import_debug.default.formatters.L = (value) => String(filterHasLength(value) ? value.length : "-");
     import_debug.default.formatters.B = (value) => {
@@ -47565,6 +47612,7 @@ var _TasksPendingQueue;
 var TasksPendingQueue;
 var init_tasks_pending_queue = __esm2({
   "src/lib/runners/tasks-pending-queue.ts"() {
+    "use strict";
     init_git_error();
     init_git_logger();
     _TasksPendingQueue = class {
@@ -47594,9 +47642,14 @@ var init_tasks_pending_queue = __esm2({
         for (const [task, { logger }] of Array.from(this._queue.entries())) {
           if (task === err.task) {
             logger.info(`Failed %o`, err);
-            logger(`Fatal exception, any as-yet un-started tasks run through this executor will not be attempted`);
+            logger(
+              `Fatal exception, any as-yet un-started tasks run through this executor will not be attempted`
+            );
           } else {
-            logger.info(`A fatal exception occurred in a previous task, the queue has been purged: %o`, err.message);
+            logger.info(
+              `A fatal exception occurred in a previous task, the queue has been purged: %o`,
+              err.message
+            );
           }
           this.complete(task);
         }
@@ -47648,6 +47701,7 @@ function onDataReceived(target, name, logger, output) {
 var GitExecutorChain;
 var init_git_executor_chain = __esm2({
   "src/lib/runners/git-executor-chain.ts"() {
+    "use strict";
     init_git_error();
     init_task();
     init_utils();
@@ -47705,8 +47759,18 @@ var init_git_executor_chain = __esm2({
       }
       attemptRemoteTask(task, logger) {
         return __async(this, null, function* () {
-          const args = this._plugins.exec("spawn.args", [...task.commands], pluginContext(task, task.commands));
-          const raw = yield this.gitResponse(task, this.binary, args, this.outputHandler, logger.step("SPAWN"));
+          const args = this._plugins.exec(
+            "spawn.args",
+            [...task.commands],
+            pluginContext(task, task.commands)
+          );
+          const raw = yield this.gitResponse(
+            task,
+            this.binary,
+            args,
+            this.outputHandler,
+            logger.step("SPAWN")
+          );
           const outputStreams = yield this.handleTaskData(task, args, raw, logger.step("HANDLE"));
           logger(`passing response to task's parser as a %s`, task.format);
           if (isBufferTask(task)) {
@@ -47725,17 +47789,36 @@ var init_git_executor_chain = __esm2({
         const { exitCode, rejection, stdOut, stdErr } = result;
         return new Promise((done, fail) => {
           logger(`Preparing to handle process response exitCode=%d stdOut=`, exitCode);
-          const { error } = this._plugins.exec("task.error", { error: rejection }, __spreadValues(__spreadValues({}, pluginContext(task, args)), result));
+          const { error } = this._plugins.exec(
+            "task.error",
+            { error: rejection },
+            __spreadValues(__spreadValues({}, pluginContext(task, args)), result)
+          );
           if (error && task.onError) {
             logger.info(`exitCode=%s handling with custom error handler`);
-            return task.onError(result, error, (newStdOut) => {
-              logger.info(`custom error handler treated as success`);
-              logger(`custom error returned a %s`, objectToString(newStdOut));
-              done(new GitOutputStreams(Array.isArray(newStdOut) ? Buffer.concat(newStdOut) : newStdOut, Buffer.concat(stdErr)));
-            }, fail);
+            return task.onError(
+              result,
+              error,
+              (newStdOut) => {
+                logger.info(`custom error handler treated as success`);
+                logger(`custom error returned a %s`, objectToString(newStdOut));
+                done(
+                  new GitOutputStreams(
+                    Array.isArray(newStdOut) ? Buffer.concat(newStdOut) : newStdOut,
+                    Buffer.concat(stdErr)
+                  )
+                );
+              },
+              fail
+            );
           }
           if (error) {
-            logger.info(`handling as error: exitCode=%s stdErr=%s rejection=%o`, exitCode, stdErr.length, rejection);
+            logger.info(
+              `handling as error: exitCode=%s stdErr=%s rejection=%o`,
+              exitCode,
+              stdErr.length,
+              rejection
+            );
             return fail(error);
           }
           logger.info(`retrieving task output complete`);
@@ -47745,11 +47828,15 @@ var init_git_executor_chain = __esm2({
       gitResponse(task, command, args, outputHandler, logger) {
         return __async(this, null, function* () {
           const outputLogger = logger.sibling("output");
-          const spawnOptions = this._plugins.exec("spawn.options", {
-            cwd: this.cwd,
-            env: this.env,
-            windowsHide: true
-          }, pluginContext(task, task.commands));
+          const spawnOptions = this._plugins.exec(
+            "spawn.options",
+            {
+              cwd: this.cwd,
+              env: this.env,
+              windowsHide: true
+            },
+            pluginContext(task, task.commands)
+          );
           return new Promise((done) => {
             const stdOut = [];
             const stdErr = [];
@@ -47770,8 +47857,14 @@ var init_git_executor_chain = __esm2({
               }
             }));
             const spawned = (0, import_child_process.spawn)(command, args, spawnOptions);
-            spawned.stdout.on("data", onDataReceived(stdOut, "stdOut", logger, outputLogger.step("stdOut")));
-            spawned.stderr.on("data", onDataReceived(stdErr, "stdErr", logger, outputLogger.step("stdErr")));
+            spawned.stdout.on(
+              "data",
+              onDataReceived(stdOut, "stdOut", logger, outputLogger.step("stdOut"))
+            );
+            spawned.stderr.on(
+              "data",
+              onDataReceived(stdErr, "stdErr", logger, outputLogger.step("stdErr"))
+            );
             spawned.on("error", onErrorReceived(stdErr, logger));
             if (outputHandler) {
               logger(`Passing child process stdOut/stdErr to custom outputHandler`);
@@ -47817,6 +47910,7 @@ __export2(git_executor_exports, {
 var GitExecutor;
 var init_git_executor = __esm2({
   "src/lib/runners/git-executor.ts"() {
+    "use strict";
     init_git_executor_chain();
     GitExecutor = class {
       constructor(binary = "git", cwd, _scheduler, _plugins) {
@@ -47841,14 +47935,19 @@ function taskCallback(task, response, callback = NOOP) {
   };
   const onError2 = (err) => {
     if ((err == null ? void 0 : err.task) === task) {
-      callback(err instanceof GitResponseError ? addDeprecationNoticeToError(err) : err, void 0);
+      callback(
+        err instanceof GitResponseError ? addDeprecationNoticeToError(err) : err,
+        void 0
+      );
     }
   };
   response.then(onSuccess, onError2);
 }
 function addDeprecationNoticeToError(err) {
   let log = (name) => {
-    console.warn(`simple-git deprecation notice: accessing GitResponseError.${name} should be GitResponseError.git.${name}, this will no longer be available in version 3`);
+    console.warn(
+      `simple-git deprecation notice: accessing GitResponseError.${name} should be GitResponseError.git.${name}, this will no longer be available in version 3`
+    );
     log = NOOP;
   };
   return Object.create(err, Object.getOwnPropertyNames(err.git).reduce(descriptorReducer, {}));
@@ -47869,6 +47968,7 @@ function addDeprecationNoticeToError(err) {
 }
 var init_task_callback = __esm2({
   "src/lib/task-callback.ts"() {
+    "use strict";
     init_git_response_error();
     init_utils();
   }
@@ -47883,6 +47983,7 @@ function changeWorkingDirectoryTask(directory, root) {
 }
 var init_change_working_directory = __esm2({
   "src/lib/tasks/change-working-directory.ts"() {
+    "use strict";
     init_utils();
     init_task();
   }
@@ -47897,18 +47998,28 @@ function checkoutTask(args) {
 function checkout_default() {
   return {
     checkout() {
-      return this._runTask(checkoutTask(getTrailingOptions(arguments, 1)), trailingFunctionArgument(arguments));
+      return this._runTask(
+        checkoutTask(getTrailingOptions(arguments, 1)),
+        trailingFunctionArgument(arguments)
+      );
     },
     checkoutBranch(branchName, startPoint) {
-      return this._runTask(checkoutTask(["-b", branchName, startPoint, ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments));
+      return this._runTask(
+        checkoutTask(["-b", branchName, startPoint, ...getTrailingOptions(arguments)]),
+        trailingFunctionArgument(arguments)
+      );
     },
     checkoutLocalBranch(branchName) {
-      return this._runTask(checkoutTask(["-b", branchName, ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments));
+      return this._runTask(
+        checkoutTask(["-b", branchName, ...getTrailingOptions(arguments)]),
+        trailingFunctionArgument(arguments)
+      );
     }
   };
 }
 var init_checkout = __esm2({
   "src/lib/tasks/checkout.ts"() {
+    "use strict";
     init_utils();
     init_task();
   }
@@ -47930,6 +48041,7 @@ function parseCommitResult(stdOut) {
 var parsers;
 var init_parse_commit = __esm2({
   "src/lib/parsers/parse-commit.ts"() {
+    "use strict";
     init_utils();
     parsers = [
       new LineParser(/^\[([^\s]+)( \([^)]+\))? ([^\]]+)/, (result, [branch, root, commit]) => {
@@ -47948,20 +48060,26 @@ var init_parse_commit = __esm2({
           name: parts.join("<").trim()
         };
       }),
-      new LineParser(/(\d+)[^,]*(?:,\s*(\d+)[^,]*)(?:,\s*(\d+))/g, (result, [changes, insertions, deletions]) => {
-        result.summary.changes = parseInt(changes, 10) || 0;
-        result.summary.insertions = parseInt(insertions, 10) || 0;
-        result.summary.deletions = parseInt(deletions, 10) || 0;
-      }),
-      new LineParser(/^(\d+)[^,]*(?:,\s*(\d+)[^(]+\(([+-]))?/, (result, [changes, lines, direction]) => {
-        result.summary.changes = parseInt(changes, 10) || 0;
-        const count = parseInt(lines, 10) || 0;
-        if (direction === "-") {
-          result.summary.deletions = count;
-        } else if (direction === "+") {
-          result.summary.insertions = count;
+      new LineParser(
+        /(\d+)[^,]*(?:,\s*(\d+)[^,]*)(?:,\s*(\d+))/g,
+        (result, [changes, insertions, deletions]) => {
+          result.summary.changes = parseInt(changes, 10) || 0;
+          result.summary.insertions = parseInt(insertions, 10) || 0;
+          result.summary.deletions = parseInt(deletions, 10) || 0;
         }
-      })
+      ),
+      new LineParser(
+        /^(\d+)[^,]*(?:,\s*(\d+)[^(]+\(([+-]))?/,
+        (result, [changes, lines, direction]) => {
+          result.summary.changes = parseInt(changes, 10) || 0;
+          const count = parseInt(lines, 10) || 0;
+          if (direction === "-") {
+            result.summary.deletions = count;
+          } else if (direction === "+") {
+            result.summary.insertions = count;
+          }
+        }
+      )
     ];
   }
 });
@@ -47984,16 +48102,23 @@ function commit_default() {
   return {
     commit(message, ...rest) {
       const next = trailingFunctionArgument(arguments);
-      const task = rejectDeprecatedSignatures(message) || commitTask(asArray(message), asArray(filterType(rest[0], filterStringOrStringArray, [])), [...filterType(rest[1], filterArray, []), ...getTrailingOptions(arguments, 0, true)]);
+      const task = rejectDeprecatedSignatures(message) || commitTask(
+        asArray(message),
+        asArray(filterType(rest[0], filterStringOrStringArray, [])),
+        [...filterType(rest[1], filterArray, []), ...getTrailingOptions(arguments, 0, true)]
+      );
       return this._runTask(task, next);
     }
   };
   function rejectDeprecatedSignatures(message) {
-    return !filterStringOrStringArray(message) && configurationErrorTask(`git.commit: requires the commit message to be supplied as a string/string[]`);
+    return !filterStringOrStringArray(message) && configurationErrorTask(
+      `git.commit: requires the commit message to be supplied as a string/string[]`
+    );
   }
 }
 var init_commit = __esm2({
   "src/lib/tasks/commit.ts"() {
+    "use strict";
     init_parse_commit();
     init_utils();
     init_task();
@@ -48002,12 +48127,16 @@ var init_commit = __esm2({
 function first_commit_default() {
   return {
     firstCommit() {
-      return this._runTask(straightThroughStringTask(["rev-list", "--max-parents=0", "HEAD"], true), trailingFunctionArgument(arguments));
+      return this._runTask(
+        straightThroughStringTask(["rev-list", "--max-parents=0", "HEAD"], true),
+        trailingFunctionArgument(arguments)
+      );
     }
   };
 }
 var init_first_commit = __esm2({
   "src/lib/tasks/first-commit.ts"() {
+    "use strict";
     init_utils();
     init_task();
   }
@@ -48021,6 +48150,7 @@ function hashObjectTask(filePath, write) {
 }
 var init_hash_object = __esm2({
   "src/lib/tasks/hash-object.ts"() {
+    "use strict";
     init_task();
   }
 });
@@ -48049,6 +48179,7 @@ var initResponseRegex;
 var reInitResponseRegex;
 var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
+    "use strict";
     InitSummary = class {
       constructor(bare, path2, existing, gitDir) {
         this.bare = bare;
@@ -48080,6 +48211,7 @@ function initTask(bare = false, path2, customArgs) {
 var bareCommand;
 var init_init = __esm2({
   "src/lib/tasks/init.ts"() {
+    "use strict";
     init_InitSummary();
     bareCommand = "--bare";
   }
@@ -48099,12 +48231,14 @@ function isLogFormat(customArg) {
 var logFormatRegex;
 var init_log_format = __esm2({
   "src/lib/args/log-format.ts"() {
+    "use strict";
     logFormatRegex = /^--(stat|numstat|name-only|name-status)(=|$)/;
   }
 });
 var DiffSummary;
 var init_DiffSummary = __esm2({
   "src/lib/responses/DiffSummary.ts"() {
+    "use strict";
     DiffSummary = class {
       constructor() {
         this.changed = 0;
@@ -48126,51 +48260,64 @@ var nameStatusParser;
 var diffSummaryParsers;
 var init_parse_diff_summary = __esm2({
   "src/lib/parsers/parse-diff-summary.ts"() {
+    "use strict";
     init_log_format();
     init_DiffSummary();
     init_diff_name_status();
     init_utils();
     statParser = [
-      new LineParser(/(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/, (result, [file, changes, alterations = ""]) => {
-        result.files.push({
-          file: file.trim(),
-          changes: asNumber(changes),
-          insertions: alterations.replace(/[^+]/g, "").length,
-          deletions: alterations.replace(/[^-]/g, "").length,
-          binary: false
-        });
-      }),
-      new LineParser(/(.+) \|\s+Bin ([0-9.]+) -> ([0-9.]+) ([a-z]+)/, (result, [file, before, after]) => {
-        result.files.push({
-          file: file.trim(),
-          before: asNumber(before),
-          after: asNumber(after),
-          binary: true
-        });
-      }),
-      new LineParser(/(\d+) files? changed\s*((?:, \d+ [^,]+){0,2})/, (result, [changed, summary]) => {
-        const inserted = /(\d+) i/.exec(summary);
-        const deleted = /(\d+) d/.exec(summary);
-        result.changed = asNumber(changed);
-        result.insertions = asNumber(inserted == null ? void 0 : inserted[1]);
-        result.deletions = asNumber(deleted == null ? void 0 : deleted[1]);
-      })
+      new LineParser(
+        /^(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/,
+        (result, [file, changes, alterations = ""]) => {
+          result.files.push({
+            file: file.trim(),
+            changes: asNumber(changes),
+            insertions: alterations.replace(/[^+]/g, "").length,
+            deletions: alterations.replace(/[^-]/g, "").length,
+            binary: false
+          });
+        }
+      ),
+      new LineParser(
+        /^(.+) \|\s+Bin ([0-9.]+) -> ([0-9.]+) ([a-z]+)/,
+        (result, [file, before, after]) => {
+          result.files.push({
+            file: file.trim(),
+            before: asNumber(before),
+            after: asNumber(after),
+            binary: true
+          });
+        }
+      ),
+      new LineParser(
+        /(\d+) files? changed\s*((?:, \d+ [^,]+){0,2})/,
+        (result, [changed, summary]) => {
+          const inserted = /(\d+) i/.exec(summary);
+          const deleted = /(\d+) d/.exec(summary);
+          result.changed = asNumber(changed);
+          result.insertions = asNumber(inserted == null ? void 0 : inserted[1]);
+          result.deletions = asNumber(deleted == null ? void 0 : deleted[1]);
+        }
+      )
     ];
     numStatParser = [
-      new LineParser(/(\d+)\t(\d+)\t(.+)$/, (result, [changesInsert, changesDelete, file]) => {
-        const insertions = asNumber(changesInsert);
-        const deletions = asNumber(changesDelete);
-        result.changed++;
-        result.insertions += insertions;
-        result.deletions += deletions;
-        result.files.push({
-          file,
-          changes: insertions + deletions,
-          insertions,
-          deletions,
-          binary: false
-        });
-      }),
+      new LineParser(
+        /(\d+)\t(\d+)\t(.+)$/,
+        (result, [changesInsert, changesDelete, file]) => {
+          const insertions = asNumber(changesInsert);
+          const deletions = asNumber(changesDelete);
+          result.changed++;
+          result.insertions += insertions;
+          result.deletions += deletions;
+          result.files.push({
+            file,
+            changes: insertions + deletions,
+            insertions,
+            deletions,
+            binary: false
+          });
+        }
+      ),
       new LineParser(/-\t-\t(.+)$/, (result, [file]) => {
         result.changed++;
         result.files.push({
@@ -48194,17 +48341,20 @@ var init_parse_diff_summary = __esm2({
       })
     ];
     nameStatusParser = [
-      new LineParser(/([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/, (result, [status, _similarity, from, _to, to]) => {
-        result.changed++;
-        result.files.push({
-          file: to != null ? to : from,
-          changes: 0,
-          status: orVoid(isDiffNameStatus(status) && status),
-          insertions: 0,
-          deletions: 0,
-          binary: false
-        });
-      })
+      new LineParser(
+        /([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/,
+        (result, [status, _similarity, from, _to, to]) => {
+          result.changed++;
+          result.files.push({
+            file: to != null ? to : from,
+            changes: 0,
+            status: orVoid(isDiffNameStatus(status) && status),
+            insertions: 0,
+            deletions: 0,
+            binary: false
+          });
+        }
+      )
     ];
     diffSummaryParsers = {
       [
@@ -48231,17 +48381,27 @@ var init_parse_diff_summary = __esm2({
   }
 });
 function lineBuilder(tokens, fields) {
-  return fields.reduce((line, field, index) => {
-    line[field] = tokens[index] || "";
-    return line;
-  }, /* @__PURE__ */ Object.create({ diff: null }));
+  return fields.reduce(
+    (line, field, index) => {
+      line[field] = tokens[index] || "";
+      return line;
+    },
+    /* @__PURE__ */ Object.create({ diff: null })
+  );
 }
 function createListLogSummaryParser(splitter = SPLITTER, fields = defaultFieldNames, logFormat = "") {
   const parseDiffResult = getDiffParser(logFormat);
   return function(stdOut) {
-    const all = toLinesWithContent(stdOut, true, START_BOUNDARY).map(function(item) {
+    const all = toLinesWithContent(
+      stdOut,
+      true,
+      START_BOUNDARY
+    ).map(function(item) {
       const lineDetail = item.trim().split(COMMIT_BOUNDARY);
-      const listLogLine = lineBuilder(lineDetail[0].trim().split(splitter), fields);
+      const listLogLine = lineBuilder(
+        lineDetail[0].trim().split(splitter),
+        fields
+      );
       if (lineDetail.length > 1 && !!lineDetail[1].trim()) {
         listLogLine.diff = parseDiffResult(lineDetail[1]);
       }
@@ -48260,6 +48420,7 @@ var SPLITTER;
 var defaultFieldNames;
 var init_parse_list_log_summary = __esm2({
   "src/lib/parsers/parse-list-log-summary.ts"() {
+    "use strict";
     init_utils();
     init_parse_diff_summary();
     init_log_format();
@@ -48291,14 +48452,19 @@ function diffSummaryTask(customArgs) {
 function validateLogFormatConfig(customArgs) {
   const flags = customArgs.filter(isLogFormat);
   if (flags.length > 1) {
-    return configurationErrorTask(`Summary flags are mutually exclusive - pick one of ${flags.join(",")}`);
+    return configurationErrorTask(
+      `Summary flags are mutually exclusive - pick one of ${flags.join(",")}`
+    );
   }
   if (flags.length && customArgs.includes("-z")) {
-    return configurationErrorTask(`Summary flag ${flags} parsing is not compatible with null termination option '-z'`);
+    return configurationErrorTask(
+      `Summary flag ${flags} parsing is not compatible with null termination option '-z'`
+    );
   }
 }
 var init_diff = __esm2({
   "src/lib/tasks/diff.ts"() {
+    "use strict";
     init_log_format();
     init_parse_diff_summary();
     init_task();
@@ -48368,7 +48534,10 @@ function log_default() {
   return {
     log(...rest) {
       const next = trailingFunctionArgument(arguments);
-      const options = parseLogOptions(trailingOptionsArgument(arguments), filterType(arguments[0], filterArray));
+      const options = parseLogOptions(
+        trailingOptionsArgument(arguments),
+        filterType(arguments[0], filterArray)
+      );
       const task = rejectDeprecatedSignatures(...rest) || validateLogFormatConfig(options.commands) || createLogTask(options);
       return this._runTask(task, next);
     }
@@ -48377,12 +48546,15 @@ function log_default() {
     return logTask(options.splitter, options.fields, options.commands);
   }
   function rejectDeprecatedSignatures(from, to) {
-    return filterString(from) && filterString(to) && configurationErrorTask(`git.log(string, string) should be replaced with git.log({ from: string, to: string })`);
+    return filterString(from) && filterString(to) && configurationErrorTask(
+      `git.log(string, string) should be replaced with git.log({ from: string, to: string })`
+    );
   }
 }
 var excludeOptions;
 var init_log = __esm2({
   "src/lib/tasks/log.ts"() {
+    "use strict";
     init_log_format();
     init_pathspec();
     init_parse_list_log_summary();
@@ -48411,6 +48583,7 @@ var MergeSummaryConflict;
 var MergeSummaryDetail;
 var init_MergeSummary = __esm2({
   "src/lib/responses/MergeSummary.ts"() {
+    "use strict";
     MergeSummaryConflict = class {
       constructor(reason, file = null, meta) {
         this.reason = reason;
@@ -48446,6 +48619,7 @@ var PullSummary;
 var PullFailedSummary;
 var init_PullSummary = __esm2({
   "src/lib/responses/PullSummary.ts"() {
+    "use strict";
     PullSummary = class {
       constructor() {
         this.remoteMessages = {
@@ -48503,24 +48677,34 @@ function asObjectCount(source) {
 var remoteMessagesObjectParsers;
 var init_parse_remote_objects = __esm2({
   "src/lib/parsers/parse-remote-objects.ts"() {
+    "use strict";
     init_utils();
     remoteMessagesObjectParsers = [
-      new RemoteLineParser(/^remote:\s*(enumerating|counting|compressing) objects: (\d+),/i, (result, [action, count]) => {
-        const key = action.toLowerCase();
-        const enumeration = objectEnumerationResult(result.remoteMessages);
-        Object.assign(enumeration, { [key]: asNumber(count) });
-      }),
-      new RemoteLineParser(/^remote:\s*(enumerating|counting|compressing) objects: \d+% \(\d+\/(\d+)\),/i, (result, [action, count]) => {
-        const key = action.toLowerCase();
-        const enumeration = objectEnumerationResult(result.remoteMessages);
-        Object.assign(enumeration, { [key]: asNumber(count) });
-      }),
-      new RemoteLineParser(/total ([^,]+), reused ([^,]+), pack-reused (\d+)/i, (result, [total, reused, packReused]) => {
-        const objects = objectEnumerationResult(result.remoteMessages);
-        objects.total = asObjectCount(total);
-        objects.reused = asObjectCount(reused);
-        objects.packReused = asNumber(packReused);
-      })
+      new RemoteLineParser(
+        /^remote:\s*(enumerating|counting|compressing) objects: (\d+),/i,
+        (result, [action, count]) => {
+          const key = action.toLowerCase();
+          const enumeration = objectEnumerationResult(result.remoteMessages);
+          Object.assign(enumeration, { [key]: asNumber(count) });
+        }
+      ),
+      new RemoteLineParser(
+        /^remote:\s*(enumerating|counting|compressing) objects: \d+% \(\d+\/(\d+)\),/i,
+        (result, [action, count]) => {
+          const key = action.toLowerCase();
+          const enumeration = objectEnumerationResult(result.remoteMessages);
+          Object.assign(enumeration, { [key]: asNumber(count) });
+        }
+      ),
+      new RemoteLineParser(
+        /total ([^,]+), reused ([^,]+), pack-reused (\d+)/i,
+        (result, [total, reused, packReused]) => {
+          const objects = objectEnumerationResult(result.remoteMessages);
+          objects.total = asObjectCount(total);
+          objects.reused = asObjectCount(reused);
+          objects.packReused = asNumber(packReused);
+        }
+      )
     ];
   }
 });
@@ -48531,6 +48715,7 @@ var parsers2;
 var RemoteMessageSummary;
 var init_parse_remote_messages = __esm2({
   "src/lib/parsers/parse-remote-messages.ts"() {
+    "use strict";
     init_utils();
     init_parse_remote_objects();
     parsers2 = [
@@ -48539,16 +48724,22 @@ var init_parse_remote_messages = __esm2({
         return false;
       }),
       ...remoteMessagesObjectParsers,
-      new RemoteLineParser([/create a (?:pull|merge) request/i, /\s(https?:\/\/\S+)$/], (result, [pullRequestUrl]) => {
-        result.remoteMessages.pullRequestUrl = pullRequestUrl;
-      }),
-      new RemoteLineParser([/found (\d+) vulnerabilities.+\(([^)]+)\)/i, /\s(https?:\/\/\S+)$/], (result, [count, summary, url]) => {
-        result.remoteMessages.vulnerabilities = {
-          count: asNumber(count),
-          summary,
-          url
-        };
-      })
+      new RemoteLineParser(
+        [/create a (?:pull|merge) request/i, /\s(https?:\/\/\S+)$/],
+        (result, [pullRequestUrl]) => {
+          result.remoteMessages.pullRequestUrl = pullRequestUrl;
+        }
+      ),
+      new RemoteLineParser(
+        [/found (\d+) vulnerabilities.+\(([^)]+)\)/i, /\s(https?:\/\/\S+)$/],
+        (result, [count, summary, url]) => {
+          result.remoteMessages.vulnerabilities = {
+            count: asNumber(count),
+            summary,
+            url
+          };
+        }
+      )
     ];
     RemoteMessageSummary = class {
       constructor() {
@@ -48570,6 +48761,7 @@ var parsePullDetail;
 var parsePullResult;
 var init_parse_pull = __esm2({
   "src/lib/parsers/parse-pull.ts"() {
+    "use strict";
     init_PullSummary();
     init_utils();
     init_parse_remote_messages();
@@ -48603,18 +48795,25 @@ var init_parse_pull = __esm2({
     errorParsers = [
       new LineParser(/^from\s(.+)$/i, (result, [remote]) => void (result.remote = remote)),
       new LineParser(/^fatal:\s(.+)$/, (result, [message]) => void (result.message = message)),
-      new LineParser(/([a-z0-9]+)\.\.([a-z0-9]+)\s+(\S+)\s+->\s+(\S+)$/, (result, [hashLocal, hashRemote, branchLocal, branchRemote]) => {
-        result.branch.local = branchLocal;
-        result.hash.local = hashLocal;
-        result.branch.remote = branchRemote;
-        result.hash.remote = hashRemote;
-      })
+      new LineParser(
+        /([a-z0-9]+)\.\.([a-z0-9]+)\s+(\S+)\s+->\s+(\S+)$/,
+        (result, [hashLocal, hashRemote, branchLocal, branchRemote]) => {
+          result.branch.local = branchLocal;
+          result.hash.local = hashLocal;
+          result.branch.remote = branchRemote;
+          result.hash.remote = hashRemote;
+        }
+      )
     ];
     parsePullDetail = (stdOut, stdErr) => {
       return parseStringResponse(new PullSummary(), parsers3, [stdOut, stdErr]);
     };
     parsePullResult = (stdOut, stdErr) => {
-      return Object.assign(new PullSummary(), parsePullDetail(stdOut, stdErr), parseRemoteMessages(stdOut, stdErr));
+      return Object.assign(
+        new PullSummary(),
+        parsePullDetail(stdOut, stdErr),
+        parseRemoteMessages(stdOut, stdErr)
+      );
     };
   }
 });
@@ -48623,6 +48822,7 @@ var parseMergeResult;
 var parseMergeDetail;
 var init_parse_merge = __esm2({
   "src/lib/parsers/parse-merge.ts"() {
+    "use strict";
     init_MergeSummary();
     init_utils();
     init_parse_pull();
@@ -48633,9 +48833,12 @@ var init_parse_merge = __esm2({
       new LineParser(/^CONFLICT\s+\((.+)\): Merge conflict in (.+)$/, (summary, [reason, file]) => {
         summary.conflicts.push(new MergeSummaryConflict(reason, file));
       }),
-      new LineParser(/^CONFLICT\s+\((.+\/delete)\): (.+) deleted in (.+) and/, (summary, [reason, file, deleteRef]) => {
-        summary.conflicts.push(new MergeSummaryConflict(reason, file, { deleteRef }));
-      }),
+      new LineParser(
+        /^CONFLICT\s+\((.+\/delete)\): (.+) deleted in (.+) and/,
+        (summary, [reason, file, deleteRef]) => {
+          summary.conflicts.push(new MergeSummaryConflict(reason, file, { deleteRef }));
+        }
+      ),
       new LineParser(/^CONFLICT\s+\((.+)\):/, (summary, [reason]) => {
         summary.conflicts.push(new MergeSummaryConflict(reason, null));
       }),
@@ -48669,6 +48872,7 @@ function mergeTask(customArgs) {
 }
 var init_merge2 = __esm2({
   "src/lib/tasks/merge.ts"() {
+    "use strict";
     init_git_response_error();
     init_parse_merge();
     init_task();
@@ -48693,6 +48897,7 @@ var parsePushResult;
 var parsePushDetail;
 var init_parse_push = __esm2({
   "src/lib/parsers/parse-push.ts"() {
+    "use strict";
     init_utils();
     init_parse_remote_messages();
     parsers5 = [
@@ -48707,25 +48912,31 @@ var init_parse_push = __esm2({
       new LineParser(/^[=*-]\s+([^:]+):(\S+)\s+\[(.+)]$/, (result, [local, remote, type]) => {
         result.pushed.push(pushResultPushedItem(local, remote, type));
       }),
-      new LineParser(/^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/, (result, [local, remote, remoteName]) => {
-        result.branch = __spreadProps(__spreadValues({}, result.branch || {}), {
-          local,
-          remote,
-          remoteName
-        });
-      }),
-      new LineParser(/^([^:]+):(\S+)\s+([a-z0-9]+)\.\.([a-z0-9]+)$/, (result, [local, remote, from, to]) => {
-        result.update = {
-          head: {
+      new LineParser(
+        /^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/,
+        (result, [local, remote, remoteName]) => {
+          result.branch = __spreadProps(__spreadValues({}, result.branch || {}), {
             local,
-            remote
-          },
-          hash: {
-            from,
-            to
-          }
-        };
-      })
+            remote,
+            remoteName
+          });
+        }
+      ),
+      new LineParser(
+        /^([^:]+):(\S+)\s+([a-z0-9]+)\.\.([a-z0-9]+)$/,
+        (result, [local, remote, from, to]) => {
+          result.update = {
+            head: {
+              local,
+              remote
+            },
+            hash: {
+              from,
+              to
+            }
+          };
+        }
+      )
     ];
     parsePushResult = (stdOut, stdErr) => {
       const pushDetail = parsePushDetail(stdOut, stdErr);
@@ -48765,6 +48976,7 @@ function pushTask(ref = {}, customArgs) {
 }
 var init_push = __esm2({
   "src/lib/tasks/push.ts"() {
+    "use strict";
     init_parse_push();
     init_utils();
   }
@@ -48776,16 +48988,23 @@ function show_default() {
       if (!commands.includes("--binary")) {
         commands.splice(1, 0, "--binary");
       }
-      return this._runTask(straightThroughBufferTask(commands), trailingFunctionArgument(arguments));
+      return this._runTask(
+        straightThroughBufferTask(commands),
+        trailingFunctionArgument(arguments)
+      );
     },
     show() {
       const commands = ["show", ...getTrailingOptions(arguments, 1)];
-      return this._runTask(straightThroughStringTask(commands), trailingFunctionArgument(arguments));
+      return this._runTask(
+        straightThroughStringTask(commands),
+        trailingFunctionArgument(arguments)
+      );
     }
   };
 }
 var init_show = __esm2({
   "src/lib/tasks/show.ts"() {
+    "use strict";
     init_utils();
     init_task();
   }
@@ -48794,13 +49013,14 @@ var fromPathRegex;
 var FileStatusSummary;
 var init_FileStatusSummary = __esm2({
   "src/lib/responses/FileStatusSummary.ts"() {
+    "use strict";
     fromPathRegex = /^(.+) -> (.+)$/;
     FileStatusSummary = class {
       constructor(path2, index, working_dir) {
         this.path = path2;
         this.index = index;
         this.working_dir = working_dir;
-        if (index + working_dir === "R") {
+        if ("R" === index + working_dir) {
           const detail = fromPathRegex.exec(path2) || [null, path2, path2];
           this.from = detail[1] || "";
           this.path = detail[2] || "";
@@ -48848,6 +49068,7 @@ var parsers6;
 var parseStatusSummary;
 var init_StatusSummary = __esm2({
   "src/lib/responses/StatusSummary.ts"() {
+    "use strict";
     init_utils();
     init_FileStatusSummary();
     StatusSummary = class {
@@ -48872,14 +49093,46 @@ var init_StatusSummary = __esm2({
       }
     };
     parsers6 = new Map([
-      parser2(" ", "A", (result, file) => append(result.created, file)),
-      parser2(" ", "D", (result, file) => append(result.deleted, file)),
-      parser2(" ", "M", (result, file) => append(result.modified, file)),
-      parser2("A", " ", (result, file) => append(result.created, file) && append(result.staged, file)),
-      parser2("A", "M", (result, file) => append(result.created, file) && append(result.staged, file) && append(result.modified, file)),
-      parser2("D", " ", (result, file) => append(result.deleted, file) && append(result.staged, file)),
-      parser2("M", " ", (result, file) => append(result.modified, file) && append(result.staged, file)),
-      parser2("M", "M", (result, file) => append(result.modified, file) && append(result.staged, file)),
+      parser2(
+        " ",
+        "A",
+        (result, file) => append(result.created, file)
+      ),
+      parser2(
+        " ",
+        "D",
+        (result, file) => append(result.deleted, file)
+      ),
+      parser2(
+        " ",
+        "M",
+        (result, file) => append(result.modified, file)
+      ),
+      parser2(
+        "A",
+        " ",
+        (result, file) => append(result.created, file) && append(result.staged, file)
+      ),
+      parser2(
+        "A",
+        "M",
+        (result, file) => append(result.created, file) && append(result.staged, file) && append(result.modified, file)
+      ),
+      parser2(
+        "D",
+        " ",
+        (result, file) => append(result.deleted, file) && append(result.staged, file)
+      ),
+      parser2(
+        "M",
+        " ",
+        (result, file) => append(result.modified, file) && append(result.staged, file)
+      ),
+      parser2(
+        "M",
+        "M",
+        (result, file) => append(result.modified, file) && append(result.staged, file)
+      ),
       parser2("R", " ", (result, file) => {
         append(result.renamed, renamedFile(file));
       }),
@@ -48891,7 +49144,11 @@ var init_StatusSummary = __esm2({
       parser2("!", "!", (_result, _file) => {
         append(_result.ignored = _result.ignored || [], _file);
       }),
-      parser2("?", "?", (result, file) => append(result.not_added, file)),
+      parser2(
+        "?",
+        "?",
+        (result, file) => append(result.not_added, file)
+      ),
       ...conflicts(
         "A",
         "A",
@@ -48971,24 +49228,29 @@ function statusTask(customArgs) {
 var ignoredOptions;
 var init_status = __esm2({
   "src/lib/tasks/status.ts"() {
+    "use strict";
     init_StatusSummary();
     ignoredOptions = ["--null", "-z"];
   }
 });
 function versionResponse(major = 0, minor = 0, patch = 0, agent = "", installed = true) {
-  return Object.defineProperty({
-    major,
-    minor,
-    patch,
-    agent,
-    installed
-  }, "toString", {
-    value() {
-      return `${this.major}.${this.minor}.${this.patch}`;
+  return Object.defineProperty(
+    {
+      major,
+      minor,
+      patch,
+      agent,
+      installed
     },
-    configurable: false,
-    enumerable: false
-  });
+    "toString",
+    {
+      value() {
+        return `${this.major}.${this.minor}.${this.patch}`;
+      },
+      configurable: false,
+      enumerable: false
+    }
+  );
 }
 function notInstalledResponse() {
   return versionResponse(0, 0, 0, "", false);
@@ -49020,15 +49282,25 @@ var NOT_INSTALLED;
 var parsers7;
 var init_version5 = __esm2({
   "src/lib/tasks/version.ts"() {
+    "use strict";
     init_utils();
     NOT_INSTALLED = "installed=false";
     parsers7 = [
-      new LineParser(/version (\d+)\.(\d+)\.(\d+)(?:\s*\((.+)\))?/, (result, [major, minor, patch, agent = ""]) => {
-        Object.assign(result, versionResponse(asNumber(major), asNumber(minor), asNumber(patch), agent));
-      }),
-      new LineParser(/version (\d+)\.(\d+)\.(\D+)(.+)?$/, (result, [major, minor, patch, agent = ""]) => {
-        Object.assign(result, versionResponse(asNumber(major), asNumber(minor), patch, agent));
-      })
+      new LineParser(
+        /version (\d+)\.(\d+)\.(\d+)(?:\s*\((.+)\))?/,
+        (result, [major, minor, patch, agent = ""]) => {
+          Object.assign(
+            result,
+            versionResponse(asNumber(major), asNumber(minor), asNumber(patch), agent)
+          );
+        }
+      ),
+      new LineParser(
+        /version (\d+)\.(\d+)\.(\D+)(.+)?$/,
+        (result, [major, minor, patch, agent = ""]) => {
+          Object.assign(result, versionResponse(asNumber(major), asNumber(minor), patch, agent));
+        }
+      )
     ];
   }
 });
@@ -49039,6 +49311,7 @@ __export2(simple_git_api_exports, {
 var SimpleGitApi;
 var init_simple_git_api = __esm2({
   "src/lib/simple-git-api.ts"() {
+    "use strict";
     init_task_callback();
     init_change_working_directory();
     init_checkout();
@@ -49073,7 +49346,10 @@ var init_simple_git_api = __esm2({
         });
       }
       add(files) {
-        return this._runTask(straightThroughStringTask(["add", ...asArray(files)]), trailingFunctionArgument(arguments));
+        return this._runTask(
+          straightThroughStringTask(["add", ...asArray(files)]),
+          trailingFunctionArgument(arguments)
+        );
       }
       cwd(directory) {
         const next = trailingFunctionArgument(arguments);
@@ -49081,44 +49357,88 @@ var init_simple_git_api = __esm2({
           return this._runTask(changeWorkingDirectoryTask(directory, this._executor), next);
         }
         if (typeof (directory == null ? void 0 : directory.path) === "string") {
-          return this._runTask(changeWorkingDirectoryTask(directory.path, directory.root && this._executor || void 0), next);
+          return this._runTask(
+            changeWorkingDirectoryTask(
+              directory.path,
+              directory.root && this._executor || void 0
+            ),
+            next
+          );
         }
-        return this._runTask(configurationErrorTask("Git.cwd: workingDirectory must be supplied as a string"), next);
+        return this._runTask(
+          configurationErrorTask("Git.cwd: workingDirectory must be supplied as a string"),
+          next
+        );
       }
       hashObject(path2, write) {
-        return this._runTask(hashObjectTask(path2, write === true), trailingFunctionArgument(arguments));
+        return this._runTask(
+          hashObjectTask(path2, write === true),
+          trailingFunctionArgument(arguments)
+        );
       }
       init(bare) {
-        return this._runTask(initTask(bare === true, this._executor.cwd, getTrailingOptions(arguments)), trailingFunctionArgument(arguments));
+        return this._runTask(
+          initTask(bare === true, this._executor.cwd, getTrailingOptions(arguments)),
+          trailingFunctionArgument(arguments)
+        );
       }
       merge() {
-        return this._runTask(mergeTask(getTrailingOptions(arguments)), trailingFunctionArgument(arguments));
+        return this._runTask(
+          mergeTask(getTrailingOptions(arguments)),
+          trailingFunctionArgument(arguments)
+        );
       }
       mergeFromTo(remote, branch) {
         if (!(filterString(remote) && filterString(branch))) {
-          return this._runTask(configurationErrorTask(`Git.mergeFromTo requires that the 'remote' and 'branch' arguments are supplied as strings`));
+          return this._runTask(
+            configurationErrorTask(
+              `Git.mergeFromTo requires that the 'remote' and 'branch' arguments are supplied as strings`
+            )
+          );
         }
-        return this._runTask(mergeTask([remote, branch, ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments, false));
+        return this._runTask(
+          mergeTask([remote, branch, ...getTrailingOptions(arguments)]),
+          trailingFunctionArgument(arguments, false)
+        );
       }
       outputHandler(handler2) {
         this._executor.outputHandler = handler2;
         return this;
       }
       push() {
-        const task = pushTask({
-          remote: filterType(arguments[0], filterString),
-          branch: filterType(arguments[1], filterString)
-        }, getTrailingOptions(arguments));
+        const task = pushTask(
+          {
+            remote: filterType(arguments[0], filterString),
+            branch: filterType(arguments[1], filterString)
+          },
+          getTrailingOptions(arguments)
+        );
         return this._runTask(task, trailingFunctionArgument(arguments));
       }
       stash() {
-        return this._runTask(straightThroughStringTask(["stash", ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments));
+        return this._runTask(
+          straightThroughStringTask(["stash", ...getTrailingOptions(arguments)]),
+          trailingFunctionArgument(arguments)
+        );
       }
       status() {
-        return this._runTask(statusTask(getTrailingOptions(arguments)), trailingFunctionArgument(arguments));
+        return this._runTask(
+          statusTask(getTrailingOptions(arguments)),
+          trailingFunctionArgument(arguments)
+        );
       }
     };
-    Object.assign(SimpleGitApi.prototype, checkout_default(), commit_default(), config_default(), first_commit_default(), grep_default(), log_default(), show_default(), version_default2());
+    Object.assign(
+      SimpleGitApi.prototype,
+      checkout_default(),
+      commit_default(),
+      config_default(),
+      first_commit_default(),
+      grep_default(),
+      log_default(),
+      show_default(),
+      version_default2()
+    );
   }
 });
 var scheduler_exports = {};
@@ -49129,6 +49449,7 @@ var createScheduledTask;
 var Scheduler;
 var init_scheduler = __esm2({
   "src/lib/runners/scheduler.ts"() {
+    "use strict";
     init_utils();
     init_git_logger();
     createScheduledTask = (() => {
@@ -49153,7 +49474,12 @@ var init_scheduler = __esm2({
       }
       schedule() {
         if (!this.pending.length || this.running.length >= this.concurrency) {
-          this.logger(`Schedule attempt ignored, pending=%s running=%s concurrency=%s`, this.pending.length, this.running.length, this.concurrency);
+          this.logger(
+            `Schedule attempt ignored, pending=%s running=%s concurrency=%s`,
+            this.pending.length,
+            this.running.length,
+            this.concurrency
+          );
           return;
         }
         const task = append(this.running, this.pending.shift());
@@ -49182,6 +49508,7 @@ function applyPatchTask(patches, customArgs) {
 }
 var init_apply_patch = __esm2({
   "src/lib/tasks/apply-patch.ts"() {
+    "use strict";
     init_task();
   }
 });
@@ -49202,6 +49529,7 @@ function branchDeletionFailure(branch) {
 var BranchDeletionBatch;
 var init_BranchDeleteSummary = __esm2({
   "src/lib/responses/BranchDeleteSummary.ts"() {
+    "use strict";
     BranchDeletionBatch = class {
       constructor() {
         this.all = [];
@@ -49223,6 +49551,7 @@ var parsers8;
 var parseBranchDeletions;
 var init_parse_branch_delete = __esm2({
   "src/lib/parsers/parse-branch-delete.ts"() {
+    "use strict";
     init_BranchDeleteSummary();
     init_utils();
     deleteSuccessRegex = /(\S+)\s+\(\S+\s([^)]+)\)/;
@@ -49248,6 +49577,7 @@ var init_parse_branch_delete = __esm2({
 var BranchSummaryResult;
 var init_BranchSummary = __esm2({
   "src/lib/responses/BranchSummary.ts"() {
+    "use strict";
     BranchSummaryResult = class {
       constructor() {
         this.all = [];
@@ -49281,15 +49611,22 @@ function parseBranchSummary(stdOut) {
 var parsers9;
 var init_parse_branch = __esm2({
   "src/lib/parsers/parse-branch.ts"() {
+    "use strict";
     init_BranchSummary();
     init_utils();
     parsers9 = [
-      new LineParser(/^([*+]\s)?\((?:HEAD )?detached (?:from|at) (\S+)\)\s+([a-z0-9]+)\s(.*)$/, (result, [current, name, commit, label]) => {
-        result.push(branchStatus(current), true, name, commit, label);
-      }),
-      new LineParser(/^([*+]\s)?(\S+)\s+([a-z0-9]+)\s?(.*)$/s, (result, [current, name, commit, label]) => {
-        result.push(branchStatus(current), false, name, commit, label);
-      })
+      new LineParser(
+        /^([*+]\s)?\((?:HEAD )?detached (?:from|at) (\S+)\)\s+([a-z0-9]+)\s(.*)$/,
+        (result, [current, name, commit, label]) => {
+          result.push(branchStatus(current), true, name, commit, label);
+        }
+      ),
+      new LineParser(
+        new RegExp("^([*+]\\s)?(\\S+)\\s+([a-z0-9]+)\\s?(.*)$", "s"),
+        (result, [current, name, commit, label]) => {
+          result.push(branchStatus(current), false, name, commit, label);
+        }
+      )
     ];
   }
 });
@@ -49359,13 +49696,17 @@ function deleteBranchTask(branch, forceDelete = false) {
       if (!hasBranchDeletionError(String(error), exitCode)) {
         return fail(error);
       }
-      throw new GitResponseError(task.parser(bufferToString(stdOut), bufferToString(stdErr)), String(error));
+      throw new GitResponseError(
+        task.parser(bufferToString(stdOut), bufferToString(stdErr)),
+        String(error)
+      );
     }
   };
   return task;
 }
 var init_branch = __esm2({
   "src/lib/tasks/branch.ts"() {
+    "use strict";
     init_git_response_error();
     init_parse_branch_delete();
     init_parse_branch();
@@ -49375,6 +49716,7 @@ var init_branch = __esm2({
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
   "src/lib/responses/CheckIgnore.ts"() {
+    "use strict";
     parseCheckIgnore = (text) => {
       return text.split(/\n/g).map((line) => line.trim()).filter((file) => !!file);
     };
@@ -49393,6 +49735,7 @@ function checkIgnoreTask(paths) {
 }
 var init_check_ignore = __esm2({
   "src/lib/tasks/check-ignore.ts"() {
+    "use strict";
     init_CheckIgnore();
   }
 });
@@ -49420,6 +49763,7 @@ function cloneMirrorTask(repo, directory, customArgs) {
 }
 var init_clone = __esm2({
   "src/lib/tasks/clone.ts"() {
+    "use strict";
     init_task();
     init_utils();
   }
@@ -49438,6 +49782,7 @@ function parseFetchResult(stdOut, stdErr) {
 var parsers10;
 var init_parse_fetch = __esm2({
   "src/lib/parsers/parse-fetch.ts"() {
+    "use strict";
     init_utils();
     parsers10 = [
       new LineParser(/From (.+)$/, (result, [remote]) => {
@@ -49460,14 +49805,17 @@ var init_parse_fetch = __esm2({
           tracking
         });
       }),
-      new LineParser(/\s*([^.]+)\.\.(\S+)\s+(\S+)\s*-> (.+)$/, (result, [from, to, name, tracking]) => {
-        result.updated.push({
-          name,
-          tracking,
-          to,
-          from
-        });
-      })
+      new LineParser(
+        /\s*([^.]+)\.\.(\S+)\s+(\S+)\s*-> (.+)$/,
+        (result, [from, to, name, tracking]) => {
+          result.updated.push({
+            name,
+            tracking,
+            to,
+            from
+          });
+        }
+      )
     ];
   }
 });
@@ -49495,6 +49843,7 @@ function fetchTask(remote, branch, customArgs) {
 }
 var init_fetch = __esm2({
   "src/lib/tasks/fetch.ts"() {
+    "use strict";
     init_parse_fetch();
     init_task();
   }
@@ -49505,6 +49854,7 @@ function parseMoveResult(stdOut) {
 var parsers11;
 var init_parse_move = __esm2({
   "src/lib/parsers/parse-move.ts"() {
+    "use strict";
     init_utils();
     parsers11 = [
       new LineParser(/^Renaming (.+) to (.+)$/, (result, [from, to]) => {
@@ -49526,6 +49876,7 @@ function moveTask(from, to) {
 }
 var init_move = __esm2({
   "src/lib/tasks/move.ts"() {
+    "use strict";
     init_parse_move();
     init_utils();
   }
@@ -49546,7 +49897,10 @@ function pullTask(remote, branch, customArgs) {
       return parsePullResult(stdOut, stdErr);
     },
     onError(result, _error, _done, fail) {
-      const pullError = parsePullErrorResult(bufferToString(result.stdOut), bufferToString(result.stdErr));
+      const pullError = parsePullErrorResult(
+        bufferToString(result.stdOut),
+        bufferToString(result.stdErr)
+      );
       if (pullError) {
         return fail(new GitResponseError(pullError));
       }
@@ -49556,6 +49910,7 @@ function pullTask(remote, branch, customArgs) {
 }
 var init_pull = __esm2({
   "src/lib/tasks/pull.ts"() {
+    "use strict";
     init_git_response_error();
     init_parse_pull();
     init_utils();
@@ -49586,6 +49941,7 @@ function forEach(text, handler2) {
 }
 var init_GetRemoteSummary = __esm2({
   "src/lib/responses/GetRemoteSummary.ts"() {
+    "use strict";
     init_utils();
   }
 });
@@ -49597,7 +49953,7 @@ __export2(remote_exports, {
   remoteTask: () => remoteTask,
   removeRemoteTask: () => removeRemoteTask
 });
-function addRemoteTask(remoteName, remoteRepo, customArgs = []) {
+function addRemoteTask(remoteName, remoteRepo, customArgs) {
   return straightThroughStringTask(["remote", "add", ...customArgs, remoteName, remoteRepo]);
 }
 function getRemotesTask(verbose) {
@@ -49611,14 +49967,14 @@ function getRemotesTask(verbose) {
     parser: verbose ? parseGetRemotesVerbose : parseGetRemotes
   };
 }
-function listRemotesTask(customArgs = []) {
+function listRemotesTask(customArgs) {
   const commands = [...customArgs];
   if (commands[0] !== "ls-remote") {
     commands.unshift("ls-remote");
   }
   return straightThroughStringTask(commands);
 }
-function remoteTask(customArgs = []) {
+function remoteTask(customArgs) {
   const commands = [...customArgs];
   if (commands[0] !== "remote") {
     commands.unshift("remote");
@@ -49630,6 +49986,7 @@ function removeRemoteTask(remoteName) {
 }
 var init_remote = __esm2({
   "src/lib/tasks/remote.ts"() {
+    "use strict";
     init_GetRemoteSummary();
     init_task();
   }
@@ -49641,7 +49998,11 @@ __export2(stash_list_exports, {
 function stashListTask(opt = {}, customArgs) {
   const options = parseLogOptions(opt);
   const commands = ["stash", "list", ...options.commands, ...customArgs];
-  const parser3 = createListLogSummaryParser(options.splitter, options.fields, logFormatFromCommand(commands));
+  const parser3 = createListLogSummaryParser(
+    options.splitter,
+    options.fields,
+    logFormatFromCommand(commands)
+  );
   return validateLogFormatConfig(commands) || {
     commands,
     format: "utf-8",
@@ -49650,6 +50011,7 @@ function stashListTask(opt = {}, customArgs) {
 }
 var init_stash_list = __esm2({
   "src/lib/tasks/stash-list.ts"() {
+    "use strict";
     init_log_format();
     init_parse_list_log_summary();
     init_diff();
@@ -49681,6 +50043,7 @@ function updateSubModuleTask(customArgs) {
 }
 var init_sub_module = __esm2({
   "src/lib/tasks/sub-module.ts"() {
+    "use strict";
     init_task();
   }
 });
@@ -49708,6 +50071,7 @@ var TagList;
 var parseTagList;
 var init_TagList = __esm2({
   "src/lib/responses/TagList.ts"() {
+    "use strict";
     TagList = class {
       constructor(all, latest) {
         this.all = all;
@@ -49773,11 +50137,13 @@ function addAnnotatedTagTask(name, tagMessage) {
 }
 var init_tag = __esm2({
   "src/lib/tasks/tag.ts"() {
+    "use strict";
     init_TagList();
   }
 });
 var require_git = __commonJS2({
   "src/git.js"(exports, module2) {
+    "use strict";
     var { GitExecutor: GitExecutor2 } = (init_git_executor(), __toCommonJS2(git_executor_exports));
     var { SimpleGitApi: SimpleGitApi2 } = (init_simple_git_api(), __toCommonJS2(simple_git_api_exports));
     var { Scheduler: Scheduler2 } = (init_scheduler(), __toCommonJS2(scheduler_exports));
@@ -49827,7 +50193,12 @@ var require_git = __commonJS2({
     var { addAnnotatedTagTask: addAnnotatedTagTask2, addTagTask: addTagTask2, tagListTask: tagListTask2 } = (init_tag(), __toCommonJS2(tag_exports));
     var { straightThroughBufferTask: straightThroughBufferTask2, straightThroughStringTask: straightThroughStringTask2 } = (init_task(), __toCommonJS2(task_exports));
     function Git2(options, plugins) {
-      this._executor = new GitExecutor2(options.binary, options.baseDir, new Scheduler2(options.maxConcurrentProcesses), plugins);
+      this._executor = new GitExecutor2(
+        options.binary,
+        options.baseDir,
+        new Scheduler2(options.maxConcurrentProcesses),
+        plugins
+      );
       this._trimmed = options.trimmed;
     }
     (Git2.prototype = Object.create(SimpleGitApi2.prototype)).constructor = Git2;
@@ -49844,7 +50215,13 @@ var require_git = __commonJS2({
       return this;
     };
     Git2.prototype.stashList = function(options) {
-      return this._runTask(stashListTask2(trailingOptionsArgument2(arguments) || {}, filterArray2(options) && options || []), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        stashListTask2(
+          trailingOptionsArgument2(arguments) || {},
+          filterArray2(options) && options || []
+        ),
+        trailingFunctionArgument2(arguments)
+      );
     };
     function createCloneTask(api, task, repoPath, localPath) {
       if (typeof repoPath !== "string") {
@@ -49853,10 +50230,16 @@ var require_git = __commonJS2({
       return task(repoPath, filterType2(localPath, filterString2), getTrailingOptions2(arguments));
     }
     Git2.prototype.clone = function() {
-      return this._runTask(createCloneTask("clone", cloneTask2, ...arguments), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        createCloneTask("clone", cloneTask2, ...arguments),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.mirror = function() {
-      return this._runTask(createCloneTask("mirror", cloneMirrorTask2, ...arguments), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        createCloneTask("mirror", cloneMirrorTask2, ...arguments),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.mv = function(from, to) {
       return this._runTask(moveTask2(from, to), trailingFunctionArgument2(arguments));
@@ -49870,46 +50253,86 @@ var require_git = __commonJS2({
       });
     };
     Git2.prototype.pull = function(remote, branch, options, then) {
-      return this._runTask(pullTask2(filterType2(remote, filterString2), filterType2(branch, filterString2), getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        pullTask2(
+          filterType2(remote, filterString2),
+          filterType2(branch, filterString2),
+          getTrailingOptions2(arguments)
+        ),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.fetch = function(remote, branch) {
-      return this._runTask(fetchTask2(filterType2(remote, filterString2), filterType2(branch, filterString2), getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        fetchTask2(
+          filterType2(remote, filterString2),
+          filterType2(branch, filterString2),
+          getTrailingOptions2(arguments)
+        ),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.silent = function(silence) {
-      console.warn("simple-git deprecation notice: git.silent: logging should be configured using the `debug` library / `DEBUG` environment variable, this will be an error in version 3");
+      console.warn(
+        "simple-git deprecation notice: git.silent: logging should be configured using the `debug` library / `DEBUG` environment variable, this will be an error in version 3"
+      );
       return this;
     };
     Git2.prototype.tags = function(options, then) {
-      return this._runTask(tagListTask2(getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        tagListTask2(getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.rebase = function() {
-      return this._runTask(straightThroughStringTask2(["rebase", ...getTrailingOptions2(arguments)]), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        straightThroughStringTask2(["rebase", ...getTrailingOptions2(arguments)]),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.reset = function(mode) {
-      return this._runTask(resetTask2(getResetMode2(mode), getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        resetTask2(getResetMode2(mode), getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.revert = function(commit) {
       const next = trailingFunctionArgument2(arguments);
       if (typeof commit !== "string") {
         return this._runTask(configurationErrorTask2("Commit must be a string"), next);
       }
-      return this._runTask(straightThroughStringTask2(["revert", ...getTrailingOptions2(arguments, 0, true), commit]), next);
+      return this._runTask(
+        straightThroughStringTask2(["revert", ...getTrailingOptions2(arguments, 0, true), commit]),
+        next
+      );
     };
     Git2.prototype.addTag = function(name) {
       const task = typeof name === "string" ? addTagTask2(name) : configurationErrorTask2("Git.addTag requires a tag name");
       return this._runTask(task, trailingFunctionArgument2(arguments));
     };
     Git2.prototype.addAnnotatedTag = function(tagName, tagMessage) {
-      return this._runTask(addAnnotatedTagTask2(tagName, tagMessage), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        addAnnotatedTagTask2(tagName, tagMessage),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.deleteLocalBranch = function(branchName, forceDelete, then) {
-      return this._runTask(deleteBranchTask2(branchName, typeof forceDelete === "boolean" ? forceDelete : false), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        deleteBranchTask2(branchName, typeof forceDelete === "boolean" ? forceDelete : false),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.deleteLocalBranches = function(branchNames, forceDelete, then) {
-      return this._runTask(deleteBranchesTask2(branchNames, typeof forceDelete === "boolean" ? forceDelete : false), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        deleteBranchesTask2(branchNames, typeof forceDelete === "boolean" ? forceDelete : false),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.branch = function(options, then) {
-      return this._runTask(branchTask2(getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        branchTask2(getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.branchLocal = function(then) {
       return this._runTask(branchLocalTask2(), trailingFunctionArgument2(arguments));
@@ -49926,7 +50349,10 @@ var require_git = __commonJS2({
       command.push(...getTrailingOptions2(arguments, 0, true));
       var next = trailingFunctionArgument2(arguments);
       if (!command.length) {
-        return this._runTask(configurationErrorTask2("Raw: must supply one or more command to execute"), next);
+        return this._runTask(
+          configurationErrorTask2("Raw: must supply one or more command to execute"),
+          next
+        );
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
@@ -49934,19 +50360,34 @@ var require_git = __commonJS2({
       return this._runTask(addSubModuleTask2(repo, path2), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
-      return this._runTask(updateSubModuleTask2(getTrailingOptions2(arguments, true)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        updateSubModuleTask2(getTrailingOptions2(arguments, true)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.submoduleInit = function(args, then) {
-      return this._runTask(initSubModuleTask2(getTrailingOptions2(arguments, true)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        initSubModuleTask2(getTrailingOptions2(arguments, true)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.subModule = function(options, then) {
-      return this._runTask(subModuleTask2(getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        subModuleTask2(getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.listRemote = function() {
-      return this._runTask(listRemotesTask2(getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        listRemotesTask2(getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.addRemote = function(remoteName, remoteRepo, then) {
-      return this._runTask(addRemoteTask2(remoteName, remoteRepo, getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        addRemoteTask2(remoteName, remoteRepo, getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.removeRemote = function(remoteName, then) {
       return this._runTask(removeRemoteTask2(remoteName), trailingFunctionArgument2(arguments));
@@ -49955,7 +50396,10 @@ var require_git = __commonJS2({
       return this._runTask(getRemotesTask2(verbose === true), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.remote = function(options, then) {
-      return this._runTask(remoteTask2(getTrailingOptions2(arguments)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        remoteTask2(getTrailingOptions2(arguments)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.tag = function(options, then) {
       const command = getTrailingOptions2(arguments);
@@ -49965,17 +50409,29 @@ var require_git = __commonJS2({
       return this._runTask(straightThroughStringTask2(command), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.updateServerInfo = function(then) {
-      return this._runTask(straightThroughStringTask2(["update-server-info"]), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        straightThroughStringTask2(["update-server-info"]),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.pushTags = function(remote, then) {
-      const task = pushTagsTask2({ remote: filterType2(remote, filterString2) }, getTrailingOptions2(arguments));
+      const task = pushTagsTask2(
+        { remote: filterType2(remote, filterString2) },
+        getTrailingOptions2(arguments)
+      );
       return this._runTask(task, trailingFunctionArgument2(arguments));
     };
     Git2.prototype.rm = function(files) {
-      return this._runTask(straightThroughStringTask2(["rm", "-f", ...asArray2(files)]), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        straightThroughStringTask2(["rm", "-f", ...asArray2(files)]),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.rmKeepLocal = function(files) {
-      return this._runTask(straightThroughStringTask2(["rm", "--cached", ...asArray2(files)]), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        straightThroughStringTask2(["rm", "--cached", ...asArray2(files)]),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.catFile = function(options, then) {
       return this._catFile("utf-8", arguments);
@@ -49988,7 +50444,10 @@ var require_git = __commonJS2({
       var command = ["cat-file"];
       var options = args[0];
       if (typeof options === "string") {
-        return this._runTask(configurationErrorTask2("Git.catFile: options must be supplied as an array of strings"), handler2);
+        return this._runTask(
+          configurationErrorTask2("Git.catFile: options must be supplied as an array of strings"),
+          handler2
+        );
       }
       if (Array.isArray(options)) {
         command.push.apply(command, options);
@@ -49997,25 +50456,38 @@ var require_git = __commonJS2({
       return this._runTask(task, handler2);
     };
     Git2.prototype.diff = function(options, then) {
-      const task = filterString2(options) ? configurationErrorTask2("git.diff: supplying options as a single string is no longer supported, switch to an array of strings") : straightThroughStringTask2(["diff", ...getTrailingOptions2(arguments)]);
+      const task = filterString2(options) ? configurationErrorTask2(
+        "git.diff: supplying options as a single string is no longer supported, switch to an array of strings"
+      ) : straightThroughStringTask2(["diff", ...getTrailingOptions2(arguments)]);
       return this._runTask(task, trailingFunctionArgument2(arguments));
     };
     Git2.prototype.diffSummary = function() {
-      return this._runTask(diffSummaryTask2(getTrailingOptions2(arguments, 1)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        diffSummaryTask2(getTrailingOptions2(arguments, 1)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.applyPatch = function(patches) {
-      const task = !filterStringOrStringArray2(patches) ? configurationErrorTask2(`git.applyPatch requires one or more string patches as the first argument`) : applyPatchTask2(asArray2(patches), getTrailingOptions2([].slice.call(arguments, 1)));
+      const task = !filterStringOrStringArray2(patches) ? configurationErrorTask2(
+        `git.applyPatch requires one or more string patches as the first argument`
+      ) : applyPatchTask2(asArray2(patches), getTrailingOptions2([].slice.call(arguments, 1)));
       return this._runTask(task, trailingFunctionArgument2(arguments));
     };
     Git2.prototype.revparse = function() {
       const commands = ["rev-parse", ...getTrailingOptions2(arguments, true)];
-      return this._runTask(straightThroughStringTask2(commands, true), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        straightThroughStringTask2(commands, true),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.clean = function(mode, options, then) {
       const usingCleanOptionsArray = isCleanOptionsArray2(mode);
       const cleanMode = usingCleanOptionsArray && mode.join("") || filterType2(mode, filterString2) || "";
       const customArgs = getTrailingOptions2([].slice.call(arguments, usingCleanOptionsArray ? 1 : 0));
-      return this._runTask(cleanWithOptionsTask2(cleanMode, customArgs), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        cleanWithOptionsTask2(cleanMode, customArgs),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.exec = function(then) {
       const task = {
@@ -50033,10 +50505,16 @@ var require_git = __commonJS2({
       return this;
     };
     Git2.prototype.checkIgnore = function(pathnames, then) {
-      return this._runTask(checkIgnoreTask2(asArray2(filterType2(pathnames, filterStringOrStringArray2, []))), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        checkIgnoreTask2(asArray2(filterType2(pathnames, filterStringOrStringArray2, []))),
+        trailingFunctionArgument2(arguments)
+      );
     };
     Git2.prototype.checkIsRepo = function(checkType, then) {
-      return this._runTask(checkIsRepoTask2(filterType2(checkType, filterString2)), trailingFunctionArgument2(arguments));
+      return this._runTask(
+        checkIsRepoTask2(filterType2(checkType, filterString2)),
+        trailingFunctionArgument2(arguments)
+      );
     };
     module2.exports = Git2;
   }
@@ -50101,17 +50579,33 @@ function preventProtocolOverride(arg, next) {
   if (!/^\s*protocol(.[a-z]+)?.allow/.test(next)) {
     return;
   }
-  throw new GitPluginError(void 0, "unsafe", "Configuring protocol.allow is not permitted without enabling allowUnsafeExtProtocol");
+  throw new GitPluginError(
+    void 0,
+    "unsafe",
+    "Configuring protocol.allow is not permitted without enabling allowUnsafeExtProtocol"
+  );
 }
 function preventUploadPack(arg, method) {
   if (/^\s*--(upload|receive)-pack/.test(arg)) {
-    throw new GitPluginError(void 0, "unsafe", `Use of --upload-pack or --receive-pack is not permitted without enabling allowUnsafePack`);
+    throw new GitPluginError(
+      void 0,
+      "unsafe",
+      `Use of --upload-pack or --receive-pack is not permitted without enabling allowUnsafePack`
+    );
   }
   if (method === "clone" && /^\s*-u\b/.test(arg)) {
-    throw new GitPluginError(void 0, "unsafe", `Use of clone with option -u is not permitted without enabling allowUnsafePack`);
+    throw new GitPluginError(
+      void 0,
+      "unsafe",
+      `Use of clone with option -u is not permitted without enabling allowUnsafePack`
+    );
   }
   if (method === "push" && /^\s*--exec\b/.test(arg)) {
-    throw new GitPluginError(void 0, "unsafe", `Use of push with option --exec is not permitted without enabling allowUnsafePack`);
+    throw new GitPluginError(
+      void 0,
+      "unsafe",
+      `Use of push with option --exec is not permitted without enabling allowUnsafePack`
+    );
   }
 }
 function blockUnsafeOperationsPlugin({
@@ -50185,11 +50679,11 @@ function completionDetectionPlugin({
     type: "spawn.after",
     action(_0, _1) {
       return __async(this, arguments, function* (_data, { spawned, close }) {
-        var _a2, _b;
+        var _a3, _b;
         const events = createEvents();
         let deferClose = true;
         let quickClose = () => void (deferClose = false);
-        (_a2 = spawned.stdout) == null ? void 0 : _a2.on("data", quickClose);
+        (_a3 = spawned.stdout) == null ? void 0 : _a3.on("data", quickClose);
         (_b = spawned.stderr) == null ? void 0 : _b.on("data", quickClose);
         spawned.on("error", quickClose);
         spawned.on("close", (code) => events.close(code));
@@ -50366,7 +50860,9 @@ function suffixPathsPlugin() {
           continue;
         }
         if (param === "--") {
-          append2(data.slice(i2 + 1).flatMap((item) => isPathSpec(item) && toPaths(item) || item));
+          append2(
+            data.slice(i2 + 1).flatMap((item) => isPathSpec(item) && toPaths(item) || item)
+          );
           break;
         }
         prefix.push(param);
@@ -50379,9 +50875,15 @@ init_utils();
 var Git = require_git();
 function gitInstanceFactory(baseDir, options) {
   const plugins = new PluginStore();
-  const config = createInstanceConfig(baseDir && (typeof baseDir === "string" ? { baseDir } : baseDir) || {}, options);
+  const config = createInstanceConfig(
+    baseDir && (typeof baseDir === "string" ? { baseDir } : baseDir) || {},
+    options
+  );
   if (!folderExists(config.baseDir)) {
-    throw new GitConstructError(config, `Cannot use simple-git on a directory that does not exist`);
+    throw new GitConstructError(
+      config,
+      `Cannot use simple-git on a directory that does not exist`
+    );
   }
   if (Array.isArray(config.config)) {
     plugins.add(commandConfigPrefixingPlugin(config.config));
@@ -52149,7 +52651,7 @@ function getApiBaseUrl() {
   return process.env["GITHUB_API_URL"] || "https://api.github.com";
 }
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/errors.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/errors.js
 var generateMessage = (path2, cursorValue) => `The cursor at "${path2.join(
   ","
 )}" did not change its value "${cursorValue}" after a page transition. Please make sure your that your query is set up correctly.`;
@@ -52181,7 +52683,7 @@ var MissingPageInfo = class extends Error {
   }
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/object-helpers.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/object-helpers.js
 var isObject2 = (value) => Object.prototype.toString.call(value) === "[object Object]";
 function findPaginatedResourcePath(responseData) {
   const paginatedResourcePath = deepFindPathToProperty(
@@ -52227,7 +52729,7 @@ var set = (object, path2, mutator) => {
   }
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/extract-page-info.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/extract-page-info.js
 var extractPageInfos = (responseData) => {
   const pageInfoPath = findPaginatedResourcePath(responseData);
   return {
@@ -52236,14 +52738,14 @@ var extractPageInfos = (responseData) => {
   };
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/page-info.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/page-info.js
 var isForwardSearch = (givenPageInfo) => {
   return givenPageInfo.hasOwnProperty("hasNextPage");
 };
 var getCursorFrom = (pageInfo) => isForwardSearch(pageInfo) ? pageInfo.endCursor : pageInfo.startCursor;
 var hasAnotherPage = (pageInfo) => isForwardSearch(pageInfo) ? pageInfo.hasNextPage : pageInfo.hasPreviousPage;
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/iterator.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/iterator.js
 var createIterator = (octokit) => {
   return (query, initialParameters = {}) => {
     let nextPageExists = true;
@@ -52274,7 +52776,7 @@ var createIterator = (octokit) => {
   };
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/merge-responses.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/merge-responses.js
 var mergeResponses = (response1, response2) => {
   if (Object.keys(response1).length === 0) {
     return Object.assign(response1, response2);
@@ -52299,7 +52801,7 @@ var mergeResponses = (response1, response2) => {
   return response1;
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/paginate.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/paginate.js
 var createPaginate = (octokit) => {
   const iterator2 = createIterator(octokit);
   return async (query, initialParameters = {}) => {
@@ -52314,7 +52816,7 @@ var createPaginate = (octokit) => {
   };
 };
 
-// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@5.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/index.js
+// node_modules/.pnpm/@octokit+plugin-paginate-graphql@4.0.1_@octokit+core@6.0.1/node_modules/@octokit/plugin-paginate-graphql/dist-src/index.js
 function paginateGraphql(octokit) {
   octokit.graphql;
   return {
