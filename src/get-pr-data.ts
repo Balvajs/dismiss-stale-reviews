@@ -70,6 +70,6 @@ export const getPrData = async ({
   return {
     commits: pullRequest.commits.nodes.filter(isPresent),
     latestReviews:
-      pullRequest.latestOpinionatedReviews?.nodes?.filter(isPresent) || [],
+      pullRequest.latestOpinionatedReviews?.nodes?.filter(isPresent) ?? [],
   }
 }
