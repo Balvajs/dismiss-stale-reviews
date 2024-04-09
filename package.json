@@ -7,10 +7,10 @@
     "format": "prettier . --write -u",
     "format-check": "prettier . --check -u",
     "lint": "eslint",
-    "package": "tsup src/main.ts --clean --sourcemap",
+    "package": "tsup src/main.ts --clean",
     "test": "jest --passWithNoTests",
     "generate": "graphql-codegen-esm --config codegen.ts",
-    "all": "bun type-check && bun format-check && bun lint && bun package && bun test",
+    "all": "bun run type-check && bun run format-check && bun run lint && bun run package && bun run test",
     "semantic-release": "semantic-release",
     "prepare": "husky"
   },
