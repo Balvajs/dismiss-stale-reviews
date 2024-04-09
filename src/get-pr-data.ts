@@ -33,7 +33,6 @@ const getPullRequestQuery = /* GraphQL */ `
                 id
               }
             }
-            publishedAt
           }
           pageInfo {
             hasNextPage

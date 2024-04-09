@@ -55725,7 +55725,6 @@ var getPullRequestQuery2 = (
                 id
               }
             }
-            publishedAt
           }
           pageInfo {
             hasNextPage
@@ -57329,7 +57328,7 @@ var run = async () => {
     pullRequestId
   });
   const latestApprovedReviews = latestReviews.filter(
-    ({ state, publishedAt, commit }) => commit && state === "APPROVED" && publishedAt && publishedAt < head.committedDate
+    ({ state, commit }) => commit && state === "APPROVED"
   );
   (0, import_core5.debug)(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`);
   if (!latestApprovedReviews.length) {

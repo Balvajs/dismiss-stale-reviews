@@ -47,11 +47,7 @@ const run = async () => {
   })
 
   const latestApprovedReviews = latestReviews.filter(
-    ({ state, publishedAt, commit }) =>
-      commit &&
-      state === 'APPROVED' &&
-      publishedAt &&
-      publishedAt < head.committedDate,
+    ({ state, commit }) => commit && state === 'APPROVED',
   )
 
   debug(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`)
