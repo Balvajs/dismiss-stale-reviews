@@ -10,10 +10,9 @@
     "package": "tsup src/main.ts --clean --sourcemap",
     "test": "jest --passWithNoTests",
     "generate": "graphql-codegen-esm --config codegen.ts",
-    "all": "pnpm type-check && pnpm format-check && pnpm lint && pnpm package && pnpm test",
+    "all": "bun type-check && bun format-check && bun lint && bun package && bun test",
     "semantic-release": "semantic-release",
-    "postinstall": "husky install",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -25,7 +24,7 @@
   "engines": {
     "node": "=20"
   },
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "bun@1.1.1",
   "type": "module",
   "author": "Balvajs",
   "license": "MIT",
