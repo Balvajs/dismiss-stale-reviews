@@ -8,7 +8,7 @@ import { getHeadDiffSinceReview } from './get-head-diff-since-review.ts'
 
 const chalk = new Chalk({ level: 2 })
 
-type Review = {
+interface Review {
   author: {
     login: string
   } | null
@@ -40,7 +40,8 @@ export const groupReviewsByCommit = async <TReview extends Review>({
   > = {}
   await Promise.all(
     latestReviews.map(async review => {
-      const reviewCommit = review.commit?.oid as string
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      const reviewCommit = review.commit?.oid!
       const basehead = `${reviewCommit}..${headCommit}`
 
       // if group exists, just push the review to the group

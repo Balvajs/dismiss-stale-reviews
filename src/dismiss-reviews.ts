@@ -27,7 +27,7 @@ export const dismissReviews = async ({
   Promise.all(
     reviewsToDismiss.map(async ({ id: pullRequestReviewId, author }) => {
       try {
-        octokit.graphql<DismissReviewMutation>(requestReviewsMutation, {
+        await octokit.graphql<DismissReviewMutation>(requestReviewsMutation, {
           message,
           pullRequestReviewId,
         } as DismissReviewMutationVariables)

@@ -3,7 +3,7 @@ import { groupReviewsByCommit } from './group-reviews-by-commit.ts'
 import { getOctokit } from './get-octokit.ts'
 import { getTeamData } from './get-team-data.ts'
 
-export type Review = {
+export interface Review {
   author: {
     login: string
   } | null
@@ -70,7 +70,6 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
       .map(teamOwnership => teamOwnership.replace('@', ''))
 
     // for loop is used to synchronously go through all commits and team data can be fetched first without overfetching
-    // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       changedFilesTeamOwners
         // fetch team members only if they were not fetched yet
@@ -88,9 +87,8 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
     )
 
     // for loop is used to synchronously go through all commits and team data can be fetched first without overfetching
-    // eslint-disable-next-line no-await-in-loop
     await Promise.all(
-      reviews.map(async review => {
+      reviews.map(review => {
         const { author } = review
         let isDismissed = false
 

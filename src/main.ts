@@ -18,7 +18,7 @@ const logReviewsToDismiss = (
   console.log(
     chalk.green(
       `Reviews to dismiss: ${reviewsToDismiss
-        .map(({ author }) => author?.login || 'unknownLogin')
+        .map(({ author }) => author?.login ?? 'unknownLogin')
         .join()}`,
     ),
   )
@@ -67,6 +67,7 @@ const run = async () => {
       octokit,
       headCommit: head.oid,
       latestReviews: latestApprovedReviews,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       baseBranch: context.payload.pull_request?.base.ref as string,
       ignoreFiles,
     })
@@ -171,4 +172,4 @@ const run = async () => {
   }
 }
 
-run()
+void run()

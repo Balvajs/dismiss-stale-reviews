@@ -38,7 +38,6 @@ export const getTeamData = async ({
       orgLogin: organizationLogin,
       teamSlug,
     } as GetTeamDataQueryVariables)
-    // eslint-disable-next-line github/no-then
     .catch(e => {
       console.error(
         'Something went wrong during fetching team members data. Make sure that the github token has read access to organization members.',
@@ -52,13 +51,13 @@ export const getTeamData = async ({
 
   if (!organization.team) {
     throw new Error(
-      `Team ${organization.team} could not be found in ${organization} organization!`,
+      `Team ${teamSlug} could not be found in ${organizationLogin} organization!`,
     )
   }
 
   if (!organization.team.members.nodes) {
     throw new Error(
-      `Cannot read members of ${organization.team} team in ${organization} organization!`,
+      `Cannot read members of ${teamSlug} team in ${organizationLogin} organization!`,
     )
   }
 
