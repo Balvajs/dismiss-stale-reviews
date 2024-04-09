@@ -10,10 +10,9 @@
     "package": "tsup src/main.ts --clean --sourcemap",
     "test": "jest --passWithNoTests",
     "generate": "graphql-codegen-esm --config codegen.ts",
-    "all": "pnpm type-check && pnpm format-check && pnpm lint && pnpm package && pnpm test",
+    "all": "bun type-check && bun format-check && bun lint && bun package && bun test",
     "semantic-release": "semantic-release",
-    "postinstall": "husky install",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -25,7 +24,7 @@
   "engines": {
     "node": "=20"
   },
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "bun@1.1.1",
   "type": "module",
   "author": "Balvajs",
   "license": "MIT",
@@ -41,9 +40,9 @@
     "@octokit/graphql": "7.0.2",
     "@octokit/graphql-schema": "14.58.0",
     "@octokit/plugin-paginate-graphql": "4.0.1",
-    "@semantic-release/commit-analyzer": "11.1.0",
+    "@semantic-release/commit-analyzer": "12.0.0",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/release-notes-generator": "12.1.0",
+    "@semantic-release/release-notes-generator": "13.0.0",
     "@swc/core": "1.4.8",
     "@swc/jest": "0.2.36",
     "@types/jest": "29.5.12",

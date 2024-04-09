@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:best-practices", "mergeConfidence:all-badges"],
   "minor": {
     "automerge": true
   },
@@ -15,7 +15,7 @@
     {
       "matchManagers": ["npm"],
       "postUpgradeTasks": {
-        "commands": ["pnpm install", "pnpm generate", "pnpm package"],
+        "commands": ["bun install", "bun generate", "bun package"],
         "fileFilters": ["src/**/*", "dist/**/*"],
         "executionMode": "branch"
       }
