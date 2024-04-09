@@ -33,7 +33,7 @@ jobs:
   dismiss-stale-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # the git history must be fetched until merge-base commit of pull-request
           fetch-depth: 0
@@ -43,12 +43,12 @@ jobs:
       # repository pull requests: write
       # organization members: read
       #
-      # for more info on how to create GitHub App check tibdex/github-app-token action
-      - uses: tibdex/github-app-token@v1
+      # for more info on how to use GitHub App token check https://github.com/actions/create-github-app-token
+      - uses: actions/create-github-app-token@v1
         id: get-token
         with:
-          app_id: ${{ secrets.MANAGE_REVIEWS_BOT_ID }}
-          private_key: ${{ secrets.MANAGE_REVIEWS_BOT_PEM }}
+          private-key: ${{ secrets.MANAGE_REVIEWS_BOT_PEM }}
+          app-id: ${{ vars.MANAGE_REVIEWS_BOT_ID }}
 
       - uses: balvajs/dismiss-stale-reviews@v3
         with:

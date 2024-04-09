@@ -177,7 +177,6 @@ export type GetPrDataQuery = {
           readonly nodes: ReadonlyArray<{
             readonly id: string
             readonly state: Types.PullRequestReviewState
-            readonly publishedAt: string | null
             readonly commit: { readonly oid: string } | null
             readonly author:
               | { readonly __typename: 'Bot'; readonly login: string }
