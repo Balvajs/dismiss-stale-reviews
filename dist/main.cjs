@@ -810,7 +810,7 @@ var require_util = __commonJS({
     var { InvalidArgumentError } = require_errors();
     var { Blob: Blob4 } = require("buffer");
     var nodeUtil = require("util");
-    var { stringify: stringify2 } = require("querystring");
+    var { stringify } = require("querystring");
     var { headerNameLowerCasedRecord } = require_constants();
     var [nodeMajor, nodeMinor] = process.versions.node.split(".").map((v) => Number(v));
     function nop() {
@@ -825,7 +825,7 @@ var require_util = __commonJS({
       if (url.includes("?") || url.includes("#")) {
         throw new Error('Query params cannot be passed when url already contains "?" or "#".');
       }
-      const stringified = stringify2(queryParams);
+      const stringified = stringify(queryParams);
       if (stringified) {
         url += "?" + stringified;
       }
@@ -888,8 +888,7 @@ var require_util = __commonJS({
         return host.substring(1, idx2);
       }
       const idx = host.indexOf(":");
-      if (idx === -1)
-        return host;
+      if (idx === -1) return host;
       return host.substring(0, idx);
     }
     function getServerName(host) {
@@ -959,8 +958,7 @@ var require_util = __commonJS({
       return headerNameLowerCasedRecord[value] || value.toLowerCase();
     }
     function parseHeaders(headers, obj = {}) {
-      if (!Array.isArray(headers))
-        return headers;
+      if (!Array.isArray(headers)) return headers;
       for (let i2 = 0; i2 < headers.length; i2 += 2) {
         const key = headers[i2].toString().toLowerCase();
         let val = obj[key];
@@ -1007,31 +1005,31 @@ var require_util = __commonJS({
     function isBuffer(buffer) {
       return buffer instanceof Uint8Array || Buffer.isBuffer(buffer);
     }
-    function validateHandler(handler2, method, upgrade) {
-      if (!handler2 || typeof handler2 !== "object") {
+    function validateHandler(handler3, method, upgrade) {
+      if (!handler3 || typeof handler3 !== "object") {
         throw new InvalidArgumentError("handler must be an object");
       }
-      if (typeof handler2.onConnect !== "function") {
+      if (typeof handler3.onConnect !== "function") {
         throw new InvalidArgumentError("invalid onConnect method");
       }
-      if (typeof handler2.onError !== "function") {
+      if (typeof handler3.onError !== "function") {
         throw new InvalidArgumentError("invalid onError method");
       }
-      if (typeof handler2.onBodySent !== "function" && handler2.onBodySent !== void 0) {
+      if (typeof handler3.onBodySent !== "function" && handler3.onBodySent !== void 0) {
         throw new InvalidArgumentError("invalid onBodySent method");
       }
       if (upgrade || method === "CONNECT") {
-        if (typeof handler2.onUpgrade !== "function") {
+        if (typeof handler3.onUpgrade !== "function") {
           throw new InvalidArgumentError("invalid onUpgrade method");
         }
       } else {
-        if (typeof handler2.onHeaders !== "function") {
+        if (typeof handler3.onHeaders !== "function") {
           throw new InvalidArgumentError("invalid onHeaders method");
         }
-        if (typeof handler2.onData !== "function") {
+        if (typeof handler3.onData !== "function") {
           throw new InvalidArgumentError("invalid onData method");
         }
-        if (typeof handler2.onComplete !== "function") {
+        if (typeof handler3.onComplete !== "function") {
           throw new InvalidArgumentError("invalid onComplete method");
         }
       }
@@ -1074,14 +1072,14 @@ var require_util = __commonJS({
       if (ReadableStream2.from) {
         return ReadableStream2.from(convertIterableToBuffer(iterable));
       }
-      let iterator2;
+      let iterator3;
       return new ReadableStream2(
         {
           async start() {
-            iterator2 = iterable[Symbol.asyncIterator]();
+            iterator3 = iterable[Symbol.asyncIterator]();
           },
           async pull(controller) {
-            const { done, value } = await iterator2.next();
+            const { done, value } = await iterator3.next();
             if (done) {
               queueMicrotask(() => {
                 controller.close();
@@ -1093,7 +1091,7 @@ var require_util = __commonJS({
             return controller.desiredSize > 0;
           },
           async cancel(reason) {
-            await iterator2.return();
+            await iterator3.return();
           }
         },
         0
@@ -1134,8 +1132,7 @@ var require_util = __commonJS({
       return `${val}`;
     }
     function parseRangeHeader(range) {
-      if (range == null || range === "")
-        return { start: 0, end: null, size: null };
+      if (range == null || range === "") return { start: 0, end: null, size: null };
       const m2 = range ? range.match(/^bytes (\d+)-(\d+)\/(\d+)?$/) : null;
       return m2 ? {
         start: parseInt(m2[1]),
@@ -1794,6 +1791,7 @@ var require_decodeText = __commonJS({
             return decoders.utf8;
           case "latin1":
           case "ascii":
+          // TODO: Make these a separate, strict decoder?
           case "us-ascii":
           case "iso-8859-1":
           case "iso8859-1":
@@ -2493,6 +2491,7 @@ var require_basename = __commonJS({
       for (var i2 = path2.length - 1; i2 >= 0; --i2) {
         switch (path2.charCodeAt(i2)) {
           case 47:
+          // '/'
           case 92:
             path2 = path2.slice(i2 + 1);
             return path2 === ".." || path2 === "." ? "" : path2;
@@ -3502,11 +3501,11 @@ var require_util2 = __commonJS({
     var assert = require("assert");
     var { isUint8Array } = require("util/types");
     var supportedHashes = [];
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
       const possibleRelevantHashes = ["sha256", "sha384", "sha512"];
-      supportedHashes = crypto4.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
+      supportedHashes = crypto.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
     } catch {
     }
     function responseURL(response) {
@@ -3527,11 +3526,11 @@ var require_util2 = __commonJS({
       }
       return location;
     }
-    function requestCurrentURL(request2) {
-      return request2.urlList[request2.urlList.length - 1];
+    function requestCurrentURL(request3) {
+      return request3.urlList[request3.urlList.length - 1];
     }
-    function requestBadPort(request2) {
-      const url = requestCurrentURL(request2);
+    function requestBadPort(request3) {
+      const url = requestCurrentURL(request3);
       if (urlIsHttpHttpsScheme(url) && badPortsSet.has(url.port)) {
         return "blocked";
       }
@@ -3598,7 +3597,7 @@ var require_util2 = __commonJS({
       }
       return true;
     }
-    function setRequestReferrerPolicyOnRedirect(request2, actualResponse) {
+    function setRequestReferrerPolicyOnRedirect(request3, actualResponse) {
       const { headersList } = actualResponse;
       const policyHeader = (headersList.get("referrer-policy") ?? "").split(",");
       let policy = "";
@@ -3612,7 +3611,7 @@ var require_util2 = __commonJS({
         }
       }
       if (policy !== "") {
-        request2.referrerPolicy = policy;
+        request3.referrerPolicy = policy;
       }
     }
     function crossOriginResourcePolicyCheck() {
@@ -3629,33 +3628,33 @@ var require_util2 = __commonJS({
       header = httpRequest.mode;
       httpRequest.headersList.set("sec-fetch-mode", header);
     }
-    function appendRequestOriginHeader(request2) {
-      let serializedOrigin = request2.origin;
-      if (request2.responseTainting === "cors" || request2.mode === "websocket") {
+    function appendRequestOriginHeader(request3) {
+      let serializedOrigin = request3.origin;
+      if (request3.responseTainting === "cors" || request3.mode === "websocket") {
         if (serializedOrigin) {
-          request2.headersList.append("origin", serializedOrigin);
+          request3.headersList.append("origin", serializedOrigin);
         }
-      } else if (request2.method !== "GET" && request2.method !== "HEAD") {
-        switch (request2.referrerPolicy) {
+      } else if (request3.method !== "GET" && request3.method !== "HEAD") {
+        switch (request3.referrerPolicy) {
           case "no-referrer":
             serializedOrigin = null;
             break;
           case "no-referrer-when-downgrade":
           case "strict-origin":
           case "strict-origin-when-cross-origin":
-            if (request2.origin && urlHasHttpsScheme(request2.origin) && !urlHasHttpsScheme(requestCurrentURL(request2))) {
+            if (request3.origin && urlHasHttpsScheme(request3.origin) && !urlHasHttpsScheme(requestCurrentURL(request3))) {
               serializedOrigin = null;
             }
             break;
           case "same-origin":
-            if (!sameOrigin(request2, requestCurrentURL(request2))) {
+            if (!sameOrigin(request3, requestCurrentURL(request3))) {
               serializedOrigin = null;
             }
             break;
           default:
         }
         if (serializedOrigin) {
-          request2.headersList.append("origin", serializedOrigin);
+          request3.headersList.append("origin", serializedOrigin);
         }
       }
     }
@@ -3687,26 +3686,26 @@ var require_util2 = __commonJS({
         referrerPolicy: policyContainer.referrerPolicy
       };
     }
-    function determineRequestsReferrer2(request2) {
-      const policy = request2.referrerPolicy;
+    function determineRequestsReferrer2(request3) {
+      const policy = request3.referrerPolicy;
       assert(policy);
       let referrerSource = null;
-      if (request2.referrer === "client") {
+      if (request3.referrer === "client") {
         const globalOrigin = getGlobalOrigin();
         if (!globalOrigin || globalOrigin.origin === "null") {
           return "no-referrer";
         }
         referrerSource = new URL(globalOrigin);
-      } else if (request2.referrer instanceof URL) {
-        referrerSource = request2.referrer;
+      } else if (request3.referrer instanceof URL) {
+        referrerSource = request3.referrer;
       }
       let referrerURL = stripURLForReferrer(referrerSource);
       const referrerOrigin = stripURLForReferrer(referrerSource, true);
       if (referrerURL.toString().length > 4096) {
         referrerURL = referrerOrigin;
       }
-      const areSameOrigin = sameOrigin(request2, referrerURL);
-      const isNonPotentiallyTrustWorthy = isURLPotentiallyTrustworthy(referrerURL) && !isURLPotentiallyTrustworthy(request2.url);
+      const areSameOrigin = sameOrigin(request3, referrerURL);
+      const isNonPotentiallyTrustWorthy = isURLPotentiallyTrustworthy(referrerURL) && !isURLPotentiallyTrustworthy(request3.url);
       switch (policy) {
         case "origin":
           return referrerOrigin != null ? referrerOrigin : stripURLForReferrer(referrerSource, true);
@@ -3717,7 +3716,7 @@ var require_util2 = __commonJS({
         case "origin-when-cross-origin":
           return areSameOrigin ? referrerURL : referrerOrigin;
         case "strict-origin-when-cross-origin": {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           if (sameOrigin(referrerURL, currentURL)) {
             return referrerURL;
           }
@@ -3727,7 +3726,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -3753,14 +3766,11 @@ var require_util2 = __commonJS({
       if (url.href === "about:blank" || url.href === "about:srcdoc") {
         return true;
       }
-      if (url.protocol === "data:")
-        return true;
-      if (url.protocol === "file:")
-        return true;
+      if (url.protocol === "data:") return true;
+      if (url.protocol === "file:") return true;
       return isOriginPotentiallyTrustworthy2(url.origin);
       function isOriginPotentiallyTrustworthy2(origin) {
-        if (origin == null || origin === "null")
-          return false;
+        if (origin == null || origin === "null") return false;
         const originAsURL = new URL(origin);
         if (originAsURL.protocol === "https:" || originAsURL.protocol === "wss:") {
           return true;
@@ -3772,7 +3782,7 @@ var require_util2 = __commonJS({
       }
     }
     function bytesMatch(bytes, metadataList) {
-      if (crypto4 === void 0) {
+      if (crypto === void 0) {
         return true;
       }
       const parsedMetadata = parseMetadata(metadataList);
@@ -3787,7 +3797,7 @@ var require_util2 = __commonJS({
       for (const item of metadata) {
         const algorithm = item.algo;
         const expectedValue = item.hash;
-        let actualValue = crypto4.createHash(algorithm).update(bytes).digest("base64");
+        let actualValue = crypto.createHash(algorithm).update(bytes).digest("base64");
         if (actualValue[actualValue.length - 1] === "=") {
           if (actualValue[actualValue.length - 2] === "=") {
             actualValue = actualValue.slice(0, -2);
@@ -3866,7 +3876,7 @@ var require_util2 = __commonJS({
       }
       return true;
     }
-    function tryUpgradeRequestToAPotentiallyTrustworthyURL(request2) {
+    function tryUpgradeRequestToAPotentiallyTrustworthyURL(request3) {
     }
     function sameOrigin(A2, B) {
       if (A2.origin === B.origin && A2.origin === "null") {
@@ -3919,11 +3929,11 @@ var require_util2 = __commonJS({
       return result;
     }
     var esIteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
-    function makeIterator(iterator2, name, kind) {
+    function makeIterator(iterator3, name, kind) {
       const object = {
         index: 0,
         kind,
-        target: iterator2
+        target: iterator3
       };
       const i2 = {
         next() {
@@ -4731,12 +4741,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--)
-          ;
+        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--) ;
       }
       return str.slice(lead, trail + 1);
     }
@@ -4747,12 +4755,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--)
-          ;
+        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--) ;
       }
       return str.slice(lead, trail + 1);
     }
@@ -5246,13 +5252,13 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         length = Buffer.byteLength(source);
       }
       if (action != null) {
-        let iterator2;
+        let iterator3;
         stream = new ReadableStream2({
           async start() {
-            iterator2 = action(object)[Symbol.asyncIterator]();
+            iterator3 = action(object)[Symbol.asyncIterator]();
           },
           async pull(controller) {
-            const { value, done } = await iterator2.next();
+            const { value, done } = await iterator3.next();
             if (done) {
               queueMicrotask(() => {
                 controller.close();
@@ -5265,7 +5271,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             return controller.desiredSize > 0;
           },
           async cancel(reason) {
-            await iterator2.return();
+            await iterator3.return();
           },
           type: void 0
         });
@@ -5346,8 +5352,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           const contentType = this.headers.get("Content-Type");
           if (/multipart\/form-data/.test(contentType)) {
             const headers = {};
-            for (const [key, value] of this.headers)
-              headers[key.toLowerCase()] = value;
+            for (const [key, value] of this.headers) headers[key.toLowerCase()] = value;
             const responseFormData = new FormData3();
             let busboy;
             try {
@@ -5388,9 +5393,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
               busboy.on("finish", resolve);
               busboy.on("error", (err) => reject(new TypeError(err)));
             });
-            if (this.body !== null)
-              for await (const chunk of consumeBody2(this[kState].body))
-                busboy.write(chunk);
+            if (this.body !== null) for await (const chunk of consumeBody2(this[kState].body)) busboy.write(chunk);
             busboy.end();
             await busboyResolve;
             return responseFormData;
@@ -5531,7 +5534,7 @@ var require_request = __commonJS({
         reset,
         throwOnError,
         expectContinue
-      }, handler2) {
+      }, handler3) {
         if (typeof path2 !== "string") {
           throw new InvalidArgumentError("path must be a string");
         } else if (path2[0] !== "/" && !(path2.startsWith("http://") || path2.startsWith("https://")) && method !== "CONNECT") {
@@ -5645,9 +5648,9 @@ var require_request = __commonJS({
           this.headers += `content-type: ${body.type}\r
 `;
         }
-        util.validateHandler(handler2, method, upgrade);
+        util.validateHandler(handler3, method, upgrade);
         this.servername = util.getServerName(this.host);
-        this[kHandler] = handler2;
+        this[kHandler] = handler3;
         if (channels.create.hasSubscribers) {
           channels.create.publish({ request: this });
         }
@@ -5749,43 +5752,40 @@ var require_request = __commonJS({
         processHeader(this, key, value);
         return this;
       }
-      static [kHTTP1BuildRequest](origin, opts, handler2) {
-        return new _Request(origin, opts, handler2);
+      static [kHTTP1BuildRequest](origin, opts, handler3) {
+        return new _Request(origin, opts, handler3);
       }
-      static [kHTTP2BuildRequest](origin, opts, handler2) {
+      static [kHTTP2BuildRequest](origin, opts, handler3) {
         const headers = opts.headers;
         opts = { ...opts, headers: null };
-        const request2 = new _Request(origin, opts, handler2);
-        request2.headers = {};
+        const request3 = new _Request(origin, opts, handler3);
+        request3.headers = {};
         if (Array.isArray(headers)) {
           if (headers.length % 2 !== 0) {
             throw new InvalidArgumentError("headers array must be even");
           }
           for (let i2 = 0; i2 < headers.length; i2 += 2) {
-            processHeader(request2, headers[i2], headers[i2 + 1], true);
+            processHeader(request3, headers[i2], headers[i2 + 1], true);
           }
         } else if (headers && typeof headers === "object") {
           const keys = Object.keys(headers);
           for (let i2 = 0; i2 < keys.length; i2++) {
             const key = keys[i2];
-            processHeader(request2, key, headers[key], true);
+            processHeader(request3, key, headers[key], true);
           }
         } else if (headers != null) {
           throw new InvalidArgumentError("headers must be an object or an array");
         }
-        return request2;
+        return request3;
       }
       static [kHTTP2CopyHeaders](raw) {
         const rawHeaders = raw.split("\r\n");
         const headers = {};
         for (const header of rawHeaders) {
           const [key, value] = header.split(": ");
-          if (value == null || value.length === 0)
-            continue;
-          if (headers[key])
-            headers[key] += `,${value}`;
-          else
-            headers[key] = value;
+          if (value == null || value.length === 0) continue;
+          if (headers[key]) headers[key] += `,${value}`;
+          else headers[key] = value;
         }
         return headers;
       }
@@ -5801,28 +5801,26 @@ var require_request = __commonJS({
       return skipAppend ? val : `${key}: ${val}\r
 `;
     }
-    function processHeader(request2, key, val, skipAppend = false) {
+    function processHeader(request3, key, val, skipAppend = false) {
       if (val && (typeof val === "object" && !Array.isArray(val))) {
         throw new InvalidArgumentError(`invalid ${key} header`);
       } else if (val === void 0) {
         return;
       }
-      if (request2.host === null && key.length === 4 && key.toLowerCase() === "host") {
+      if (request3.host === null && key.length === 4 && key.toLowerCase() === "host") {
         if (headerCharRegex.exec(val) !== null) {
           throw new InvalidArgumentError(`invalid ${key} header`);
         }
-        request2.host = val;
-      } else if (request2.contentLength === null && key.length === 14 && key.toLowerCase() === "content-length") {
-        request2.contentLength = parseInt(val, 10);
-        if (!Number.isFinite(request2.contentLength)) {
+        request3.host = val;
+      } else if (request3.contentLength === null && key.length === 14 && key.toLowerCase() === "content-length") {
+        request3.contentLength = parseInt(val, 10);
+        if (!Number.isFinite(request3.contentLength)) {
           throw new InvalidArgumentError("invalid content-length header");
         }
-      } else if (request2.contentType === null && key.length === 12 && key.toLowerCase() === "content-type") {
-        request2.contentType = val;
-        if (skipAppend)
-          request2.headers[key] = processHeaderValue(key, val, skipAppend);
-        else
-          request2.headers += processHeaderValue(key, val);
+      } else if (request3.contentType === null && key.length === 12 && key.toLowerCase() === "content-type") {
+        request3.contentType = val;
+        if (skipAppend) request3.headers[key] = processHeaderValue(key, val, skipAppend);
+        else request3.headers += processHeaderValue(key, val);
       } else if (key.length === 17 && key.toLowerCase() === "transfer-encoding") {
         throw new InvalidArgumentError("invalid transfer-encoding header");
       } else if (key.length === 10 && key.toLowerCase() === "connection") {
@@ -5830,7 +5828,7 @@ var require_request = __commonJS({
         if (value !== "close" && value !== "keep-alive") {
           throw new InvalidArgumentError("invalid connection header");
         } else if (value === "close") {
-          request2.reset = true;
+          request3.reset = true;
         }
       } else if (key.length === 10 && key.toLowerCase() === "keep-alive") {
         throw new InvalidArgumentError("invalid keep-alive header");
@@ -5844,19 +5842,15 @@ var require_request = __commonJS({
         if (Array.isArray(val)) {
           for (let i2 = 0; i2 < val.length; i2++) {
             if (skipAppend) {
-              if (request2.headers[key])
-                request2.headers[key] += `,${processHeaderValue(key, val[i2], skipAppend)}`;
-              else
-                request2.headers[key] = processHeaderValue(key, val[i2], skipAppend);
+              if (request3.headers[key]) request3.headers[key] += `,${processHeaderValue(key, val[i2], skipAppend)}`;
+              else request3.headers[key] = processHeaderValue(key, val[i2], skipAppend);
             } else {
-              request2.headers += processHeaderValue(key, val[i2]);
+              request3.headers += processHeaderValue(key, val[i2]);
             }
           }
         } else {
-          if (skipAppend)
-            request2.headers[key] = processHeaderValue(key, val, skipAppend);
-          else
-            request2.headers += processHeaderValue(key, val);
+          if (skipAppend) request3.headers[key] = processHeaderValue(key, val, skipAppend);
+          else request3.headers += processHeaderValue(key, val);
         }
       }
     }
@@ -6007,20 +6001,20 @@ var require_dispatcher_base = __commonJS({
           queueMicrotask(onDestroyed);
         });
       }
-      [kInterceptedDispatch](opts, handler2) {
+      [kInterceptedDispatch](opts, handler3) {
         if (!this[kInterceptors] || this[kInterceptors].length === 0) {
           this[kInterceptedDispatch] = this[kDispatch];
-          return this[kDispatch](opts, handler2);
+          return this[kDispatch](opts, handler3);
         }
         let dispatch = this[kDispatch].bind(this);
         for (let i2 = this[kInterceptors].length - 1; i2 >= 0; i2--) {
           dispatch = this[kInterceptors][i2](dispatch);
         }
         this[kInterceptedDispatch] = dispatch;
-        return dispatch(opts, handler2);
+        return dispatch(opts, handler3);
       }
-      dispatch(opts, handler2) {
-        if (!handler2 || typeof handler2 !== "object") {
+      dispatch(opts, handler3) {
+        if (!handler3 || typeof handler3 !== "object") {
           throw new InvalidArgumentError("handler must be an object");
         }
         try {
@@ -6033,12 +6027,12 @@ var require_dispatcher_base = __commonJS({
           if (this[kClosed]) {
             throw new ClientClosedError();
           }
-          return this[kInterceptedDispatch](opts, handler2);
+          return this[kInterceptedDispatch](opts, handler3);
         } catch (err) {
-          if (typeof handler2.onError !== "function") {
+          if (typeof handler3.onError !== "function") {
             throw new InvalidArgumentError("invalid onError method");
           }
-          handler2.onError(err);
+          handler3.onError(err);
           return false;
         }
       }
@@ -6567,17 +6561,17 @@ var require_RedirectHandler = __commonJS({
       }
     };
     var RedirectHandler = class {
-      constructor(dispatch, maxRedirections, opts, handler2) {
+      constructor(dispatch, maxRedirections, opts, handler3) {
         if (maxRedirections != null && (!Number.isInteger(maxRedirections) || maxRedirections < 0)) {
           throw new InvalidArgumentError("maxRedirections must be a positive number");
         }
-        util.validateHandler(handler2, opts.method, opts.upgrade);
+        util.validateHandler(handler3, opts.method, opts.upgrade);
         this.dispatch = dispatch;
         this.location = null;
         this.abort = null;
         this.opts = { ...opts, maxRedirections: 0 };
         this.maxRedirections = maxRedirections;
-        this.handler = handler2;
+        this.handler = handler3;
         this.history = [];
         if (util.isStream(this.opts.body)) {
           if (util.bodyLength(this.opts.body) === 0) {
@@ -6701,12 +6695,12 @@ var require_redirectInterceptor = __commonJS({
     var RedirectHandler = require_RedirectHandler();
     function createRedirectInterceptor({ maxRedirections: defaultMaxRedirections }) {
       return (dispatch) => {
-        return function Intercept(opts, handler2) {
+        return function Intercept(opts, handler3) {
           const { maxRedirections = defaultMaxRedirections } = opts;
           if (!maxRedirections) {
-            return dispatch(opts, handler2);
+            return dispatch(opts, handler3);
           }
-          const redirectHandler = new RedirectHandler(dispatch, maxRedirections, opts, handler2);
+          const redirectHandler = new RedirectHandler(dispatch, maxRedirections, opts, handler3);
           opts = { ...opts, maxRedirections: 0 };
           return dispatch(opts, redirectHandler);
         };
@@ -7020,12 +7014,12 @@ var require_client = __commonJS({
         connect(this);
         this.once("connect", cb);
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         const origin = opts.origin || this[kUrl].origin;
-        const request2 = this[kHTTPConnVersion] === "h2" ? Request2[kHTTP2BuildRequest](origin, opts, handler2) : Request2[kHTTP1BuildRequest](origin, opts, handler2);
-        this[kQueue].push(request2);
+        const request3 = this[kHTTPConnVersion] === "h2" ? Request2[kHTTP2BuildRequest](origin, opts, handler3) : Request2[kHTTP1BuildRequest](origin, opts, handler3);
+        this[kQueue].push(request3);
         if (this[kResuming]) {
-        } else if (util.bodyLength(request2.body) == null && util.isIterable(request2.body)) {
+        } else if (util.bodyLength(request3.body) == null && util.isIterable(request3.body)) {
           this[kResuming] = 1;
           process.nextTick(resume, this);
         } else {
@@ -7049,8 +7043,8 @@ var require_client = __commonJS({
         return new Promise((resolve) => {
           const requests = this[kQueue].splice(this[kPendingIdx]);
           for (let i2 = 0; i2 < requests.length; i2++) {
-            const request2 = requests[i2];
-            errorRequest(this, request2, err);
+            const request3 = requests[i2];
+            errorRequest(this, request3, err);
           }
           const callback = () => {
             if (this[kClosedResolve]) {
@@ -7098,13 +7092,13 @@ var require_client = __commonJS({
         assert(this[kPending] === 0);
         const requests = client[kQueue].splice(client[kRunningIdx]);
         for (let i2 = 0; i2 < requests.length; i2++) {
-          const request2 = requests[i2];
-          errorRequest(this, request2, err);
+          const request3 = requests[i2];
+          errorRequest(this, request3, err);
         }
       } else if (client[kRunning] > 0) {
-        const request2 = client[kQueue][client[kRunningIdx]];
+        const request3 = client[kQueue][client[kRunningIdx]];
         client[kQueue][client[kRunningIdx]++] = null;
-        errorRequest(client, request2, err);
+        errorRequest(client, request3, err);
       }
       client[kPendingIdx] = client[kRunningIdx];
       assert(client[kRunning] === 0);
@@ -7312,8 +7306,8 @@ var require_client = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        if (!request2) {
+        const request3 = client[kQueue][client[kRunningIdx]];
+        if (!request3) {
           return -1;
         }
       }
@@ -7353,12 +7347,12 @@ var require_client = __commonJS({
       onUpgrade(head) {
         const { upgrade, client, socket, headers, statusCode } = this;
         assert(upgrade);
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert(!socket.destroyed);
         assert(socket === client[kSocket]);
         assert(!this.paused);
-        assert(request2.upgrade || request2.method === "CONNECT");
+        assert(request3.upgrade || request3.method === "CONNECT");
         this.statusCode = null;
         this.statusText = "";
         this.shouldKeepAlive = null;
@@ -7375,7 +7369,7 @@ var require_client = __commonJS({
         client[kQueue][client[kRunningIdx]++] = null;
         client.emit("disconnect", client[kUrl], [client], new InformationalError("upgrade"));
         try {
-          request2.onUpgrade(statusCode, headers, socket);
+          request3.onUpgrade(statusCode, headers, socket);
         } catch (err) {
           util.destroy(socket, err);
         }
@@ -7386,8 +7380,8 @@ var require_client = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        if (!request2) {
+        const request3 = client[kQueue][client[kRunningIdx]];
+        if (!request3) {
           return -1;
         }
         assert(!this.upgrade);
@@ -7396,23 +7390,23 @@ var require_client = __commonJS({
           util.destroy(socket, new SocketError("bad response", util.getSocketInfo(socket)));
           return -1;
         }
-        if (upgrade && !request2.upgrade) {
+        if (upgrade && !request3.upgrade) {
           util.destroy(socket, new SocketError("bad upgrade", util.getSocketInfo(socket)));
           return -1;
         }
         assert.strictEqual(this.timeoutType, TIMEOUT_HEADERS);
         this.statusCode = statusCode;
         this.shouldKeepAlive = shouldKeepAlive || // Override llhttp value which does not allow keepAlive for HEAD.
-        request2.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
+        request3.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
         if (this.statusCode >= 200) {
-          const bodyTimeout = request2.bodyTimeout != null ? request2.bodyTimeout : client[kBodyTimeout];
+          const bodyTimeout = request3.bodyTimeout != null ? request3.bodyTimeout : client[kBodyTimeout];
           this.setTimeout(bodyTimeout, TIMEOUT_BODY);
         } else if (this.timeout) {
           if (this.timeout.refresh) {
             this.timeout.refresh();
           }
         }
-        if (request2.method === "CONNECT") {
+        if (request3.method === "CONNECT") {
           assert(client[kRunning] === 1);
           this.upgrade = true;
           return 2;
@@ -7443,11 +7437,11 @@ var require_client = __commonJS({
         } else {
           socket[kReset] = true;
         }
-        const pause = request2.onHeaders(statusCode, headers, this.resume, statusText) === false;
-        if (request2.aborted) {
+        const pause = request3.onHeaders(statusCode, headers, this.resume, statusText) === false;
+        if (request3.aborted) {
           return -1;
         }
-        if (request2.method === "HEAD") {
+        if (request3.method === "HEAD") {
           return 1;
         }
         if (statusCode < 200) {
@@ -7464,8 +7458,8 @@ var require_client = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert.strictEqual(this.timeoutType, TIMEOUT_BODY);
         if (this.timeout) {
           if (this.timeout.refresh) {
@@ -7478,7 +7472,7 @@ var require_client = __commonJS({
           return -1;
         }
         this.bytesRead += buf.length;
-        if (request2.onData(buf) === false) {
+        if (request3.onData(buf) === false) {
           return constants.ERROR.PAUSED;
         }
       }
@@ -7490,8 +7484,8 @@ var require_client = __commonJS({
         if (upgrade) {
           return;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert(statusCode >= 100);
         this.statusCode = null;
         this.statusText = "";
@@ -7505,11 +7499,11 @@ var require_client = __commonJS({
         if (statusCode < 200) {
           return;
         }
-        if (request2.method !== "HEAD" && contentLength && bytesRead !== parseInt(contentLength, 10)) {
+        if (request3.method !== "HEAD" && contentLength && bytesRead !== parseInt(contentLength, 10)) {
           util.destroy(socket, new ResponseContentLengthMismatchError());
           return -1;
         }
-        request2.onComplete(headers);
+        request3.onComplete(headers);
         client[kQueue][client[kRunningIdx]++] = null;
         if (socket[kWriting]) {
           assert.strictEqual(client[kRunning], 0);
@@ -7528,15 +7522,15 @@ var require_client = __commonJS({
         }
       }
     };
-    function onParserTimeout(parser3) {
-      const { socket, timeoutType, client } = parser3;
+    function onParserTimeout(parser4) {
+      const { socket, timeoutType, client } = parser4;
       if (timeoutType === TIMEOUT_HEADERS) {
         if (!socket[kWriting] || socket.writableNeedDrain || client[kRunning] > 1) {
-          assert(!parser3.paused, "cannot be paused while waiting for headers");
+          assert(!parser4.paused, "cannot be paused while waiting for headers");
           util.destroy(socket, new HeadersTimeoutError());
         }
       } else if (timeoutType === TIMEOUT_BODY) {
-        if (!parser3.paused) {
+        if (!parser4.paused) {
           util.destroy(socket, new BodyTimeoutError());
         }
       } else if (timeoutType === TIMEOUT_IDLE) {
@@ -7545,17 +7539,17 @@ var require_client = __commonJS({
       }
     }
     function onSocketReadable() {
-      const { [kParser]: parser3 } = this;
-      if (parser3) {
-        parser3.readMore();
+      const { [kParser]: parser4 } = this;
+      if (parser4) {
+        parser4.readMore();
       }
     }
     function onSocketError(err) {
-      const { [kClient]: client, [kParser]: parser3 } = this;
+      const { [kClient]: client, [kParser]: parser4 } = this;
       assert(err.code !== "ERR_TLS_CERT_ALTNAME_INVALID");
       if (client[kHTTPConnVersion] !== "h2") {
-        if (err.code === "ECONNRESET" && parser3.statusCode && !parser3.shouldKeepAlive) {
-          parser3.onMessageComplete();
+        if (err.code === "ECONNRESET" && parser4.statusCode && !parser4.shouldKeepAlive) {
+          parser4.onMessageComplete();
           return;
         }
       }
@@ -7567,27 +7561,27 @@ var require_client = __commonJS({
         assert(client[kPendingIdx] === client[kRunningIdx]);
         const requests = client[kQueue].splice(client[kRunningIdx]);
         for (let i2 = 0; i2 < requests.length; i2++) {
-          const request2 = requests[i2];
-          errorRequest(client, request2, err);
+          const request3 = requests[i2];
+          errorRequest(client, request3, err);
         }
         assert(client[kSize] === 0);
       }
     }
     function onSocketEnd() {
-      const { [kParser]: parser3, [kClient]: client } = this;
+      const { [kParser]: parser4, [kClient]: client } = this;
       if (client[kHTTPConnVersion] !== "h2") {
-        if (parser3.statusCode && !parser3.shouldKeepAlive) {
-          parser3.onMessageComplete();
+        if (parser4.statusCode && !parser4.shouldKeepAlive) {
+          parser4.onMessageComplete();
           return;
         }
       }
       util.destroy(this, new SocketError("other side closed", util.getSocketInfo(this)));
     }
     function onSocketClose() {
-      const { [kClient]: client, [kParser]: parser3 } = this;
-      if (client[kHTTPConnVersion] === "h1" && parser3) {
-        if (!this[kError] && parser3.statusCode && !parser3.shouldKeepAlive) {
-          parser3.onMessageComplete();
+      const { [kClient]: client, [kParser]: parser4 } = this;
+      if (client[kHTTPConnVersion] === "h1" && parser4) {
+        if (!this[kError] && parser4.statusCode && !parser4.shouldKeepAlive) {
+          parser4.onMessageComplete();
         }
         this[kParser].destroy();
         this[kParser] = null;
@@ -7598,13 +7592,13 @@ var require_client = __commonJS({
         assert(client[kPending] === 0);
         const requests = client[kQueue].splice(client[kRunningIdx]);
         for (let i2 = 0; i2 < requests.length; i2++) {
-          const request2 = requests[i2];
-          errorRequest(client, request2, err);
+          const request3 = requests[i2];
+          errorRequest(client, request3, err);
         }
       } else if (client[kRunning] > 0 && err.code !== "UND_ERR_INFO") {
-        const request2 = client[kQueue][client[kRunningIdx]];
+        const request3 = client[kQueue][client[kRunningIdx]];
         client[kQueue][client[kRunningIdx]++] = null;
-        errorRequest(client, request2, err);
+        errorRequest(client, request3, err);
       }
       client[kPendingIdx] = client[kRunningIdx];
       assert(client[kRunning] === 0);
@@ -7737,8 +7731,8 @@ var require_client = __commonJS({
         if (err.code === "ERR_TLS_CERT_ALTNAME_INVALID") {
           assert(client[kRunning] === 0);
           while (client[kPending] > 0 && client[kQueue][client[kPendingIdx]].servername === client[kServerName]) {
-            const request2 = client[kQueue][client[kPendingIdx]++];
-            errorRequest(client, request2, err);
+            const request3 = client[kQueue][client[kPendingIdx]++];
+            errorRequest(client, request3, err);
           }
         } else {
           onError2(client, err);
@@ -7792,8 +7786,8 @@ var require_client = __commonJS({
             }
           } else if (client[kRunning] > 0 && socket[kParser].statusCode < 200) {
             if (socket[kParser].timeoutType !== TIMEOUT_HEADERS) {
-              const request3 = client[kQueue][client[kRunningIdx]];
-              const headersTimeout = request3.headersTimeout != null ? request3.headersTimeout : client[kHeadersTimeout];
+              const request4 = client[kQueue][client[kRunningIdx]];
+              const headersTimeout = request4.headersTimeout != null ? request4.headersTimeout : client[kHeadersTimeout];
               socket[kParser].setTimeout(headersTimeout, TIMEOUT_HEADERS);
             }
           }
@@ -7815,13 +7809,13 @@ var require_client = __commonJS({
         if (client[kRunning] >= (client[kPipelining] || 1)) {
           return;
         }
-        const request2 = client[kQueue][client[kPendingIdx]];
-        if (client[kUrl].protocol === "https:" && client[kServerName] !== request2.servername) {
+        const request3 = client[kQueue][client[kPendingIdx]];
+        if (client[kUrl].protocol === "https:" && client[kServerName] !== request3.servername) {
           if (client[kRunning] > 0) {
             return;
           }
-          client[kServerName] = request2.servername;
-          if (socket && socket.servername !== request2.servername) {
+          client[kServerName] = request3.servername;
+          if (socket && socket.servername !== request3.servername) {
             util.destroy(socket, new InformationalError("servername changed"));
             return;
           }
@@ -7836,16 +7830,16 @@ var require_client = __commonJS({
         if (socket.destroyed || socket[kWriting] || socket[kReset] || socket[kBlocking]) {
           return;
         }
-        if (client[kRunning] > 0 && !request2.idempotent) {
+        if (client[kRunning] > 0 && !request3.idempotent) {
           return;
         }
-        if (client[kRunning] > 0 && (request2.upgrade || request2.method === "CONNECT")) {
+        if (client[kRunning] > 0 && (request3.upgrade || request3.method === "CONNECT")) {
           return;
         }
-        if (client[kRunning] > 0 && util.bodyLength(request2.body) !== 0 && (util.isStream(request2.body) || util.isAsyncIterable(request2.body))) {
+        if (client[kRunning] > 0 && util.bodyLength(request3.body) !== 0 && (util.isStream(request3.body) || util.isAsyncIterable(request3.body))) {
           return;
         }
-        if (!request2.aborted && write(client, request2)) {
+        if (!request3.aborted && write(client, request3)) {
           client[kPendingIdx]++;
         } else {
           client[kQueue].splice(client[kPendingIdx], 1);
@@ -7855,12 +7849,12 @@ var require_client = __commonJS({
     function shouldSendContentLength(method) {
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
-    function write(client, request2) {
+    function write(client, request3) {
       if (client[kHTTPConnVersion] === "h2") {
-        writeH2(client, client[kHTTP2Session], request2);
+        writeH2(client, client[kHTTP2Session], request3);
         return;
       }
-      const { body, method, path: path2, host, upgrade, headers, blocking, reset } = request2;
+      const { body, method, path: path2, host, upgrade, headers, blocking, reset } = request3;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
         body.read(0);
@@ -7868,31 +7862,31 @@ var require_client = __commonJS({
       const bodyLength = util.bodyLength(body);
       let contentLength = bodyLength;
       if (contentLength === null) {
-        contentLength = request2.contentLength;
+        contentLength = request3.contentLength;
       }
       if (contentLength === 0 && !expectsPayload) {
         contentLength = null;
       }
-      if (shouldSendContentLength(method) && contentLength > 0 && request2.contentLength !== null && request2.contentLength !== contentLength) {
+      if (shouldSendContentLength(method) && contentLength > 0 && request3.contentLength !== null && request3.contentLength !== contentLength) {
         if (client[kStrictContentLength]) {
-          errorRequest(client, request2, new RequestContentLengthMismatchError());
+          errorRequest(client, request3, new RequestContentLengthMismatchError());
           return false;
         }
         process.emitWarning(new RequestContentLengthMismatchError());
       }
       const socket = client[kSocket];
       try {
-        request2.onConnect((err) => {
-          if (request2.aborted || request2.completed) {
+        request3.onConnect((err) => {
+          if (request3.aborted || request3.completed) {
             return;
           }
-          errorRequest(client, request2, err || new RequestAbortedError());
+          errorRequest(client, request3, err || new RequestAbortedError());
           util.destroy(socket, new InformationalError("aborted"));
         });
       } catch (err) {
-        errorRequest(client, request2, err);
+        errorRequest(client, request3, err);
       }
-      if (request2.aborted) {
+      if (request3.aborted) {
         return false;
       }
       if (method === "HEAD") {
@@ -7931,7 +7925,7 @@ upgrade: ${upgrade}\r
         header += headers;
       }
       if (channels.sendHeaders.hasSubscribers) {
-        channels.sendHeaders.publish({ request: request2, headers: header, socket });
+        channels.sendHeaders.publish({ request: request3, headers: header, socket });
       }
       if (!body || bodyLength === 0) {
         if (contentLength === 0) {
@@ -7943,7 +7937,7 @@ upgrade: ${upgrade}\r
           socket.write(`${header}\r
 `, "latin1");
         }
-        request2.onRequestSent();
+        request3.onRequestSent();
       } else if (util.isBuffer(body)) {
         assert(contentLength === body.byteLength, "buffer body must have content length");
         socket.cork();
@@ -7952,48 +7946,46 @@ upgrade: ${upgrade}\r
 `, "latin1");
         socket.write(body);
         socket.uncork();
-        request2.onBodySent(body);
-        request2.onRequestSent();
+        request3.onBodySent(body);
+        request3.onRequestSent();
         if (!expectsPayload) {
           socket[kReset] = true;
         }
       } else if (util.isBlobLike(body)) {
         if (typeof body.stream === "function") {
-          writeIterable({ body: body.stream(), client, request: request2, socket, contentLength, header, expectsPayload });
+          writeIterable({ body: body.stream(), client, request: request3, socket, contentLength, header, expectsPayload });
         } else {
-          writeBlob({ body, client, request: request2, socket, contentLength, header, expectsPayload });
+          writeBlob({ body, client, request: request3, socket, contentLength, header, expectsPayload });
         }
       } else if (util.isStream(body)) {
-        writeStream({ body, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeStream({ body, client, request: request3, socket, contentLength, header, expectsPayload });
       } else if (util.isIterable(body)) {
-        writeIterable({ body, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeIterable({ body, client, request: request3, socket, contentLength, header, expectsPayload });
       } else {
         assert(false);
       }
       return true;
     }
-    function writeH2(client, session, request2) {
-      const { body, method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request2;
+    function writeH2(client, session, request3) {
+      const { body, method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request3;
       let headers;
-      if (typeof reqHeaders === "string")
-        headers = Request2[kHTTP2CopyHeaders](reqHeaders.trim());
-      else
-        headers = reqHeaders;
+      if (typeof reqHeaders === "string") headers = Request2[kHTTP2CopyHeaders](reqHeaders.trim());
+      else headers = reqHeaders;
       if (upgrade) {
-        errorRequest(client, request2, new Error("Upgrade not supported for H2"));
+        errorRequest(client, request3, new Error("Upgrade not supported for H2"));
         return false;
       }
       try {
-        request2.onConnect((err) => {
-          if (request2.aborted || request2.completed) {
+        request3.onConnect((err) => {
+          if (request3.aborted || request3.completed) {
             return;
           }
-          errorRequest(client, request2, err || new RequestAbortedError());
+          errorRequest(client, request3, err || new RequestAbortedError());
         });
       } catch (err) {
-        errorRequest(client, request2, err);
+        errorRequest(client, request3, err);
       }
-      if (request2.aborted) {
+      if (request3.aborted) {
         return false;
       }
       let stream;
@@ -8004,18 +7996,17 @@ upgrade: ${upgrade}\r
         session.ref();
         stream = session.request(headers, { endStream: false, signal });
         if (stream.id && !stream.pending) {
-          request2.onUpgrade(null, null, stream);
+          request3.onUpgrade(null, null, stream);
           ++h2State.openStreams;
         } else {
           stream.once("ready", () => {
-            request2.onUpgrade(null, null, stream);
+            request3.onUpgrade(null, null, stream);
             ++h2State.openStreams;
           });
         }
         stream.once("close", () => {
           h2State.openStreams -= 1;
-          if (h2State.openStreams === 0)
-            session.unref();
+          if (h2State.openStreams === 0) session.unref();
         });
         return true;
       }
@@ -8027,14 +8018,14 @@ upgrade: ${upgrade}\r
       }
       let contentLength = util.bodyLength(body);
       if (contentLength == null) {
-        contentLength = request2.contentLength;
+        contentLength = request3.contentLength;
       }
       if (contentLength === 0 || !expectsPayload) {
         contentLength = null;
       }
-      if (shouldSendContentLength(method) && contentLength > 0 && request2.contentLength != null && request2.contentLength !== contentLength) {
+      if (shouldSendContentLength(method) && contentLength > 0 && request3.contentLength != null && request3.contentLength !== contentLength) {
         if (client[kStrictContentLength]) {
-          errorRequest(client, request2, new RequestContentLengthMismatchError());
+          errorRequest(client, request3, new RequestContentLengthMismatchError());
           return false;
         }
         process.emitWarning(new RequestContentLengthMismatchError());
@@ -8059,15 +8050,15 @@ upgrade: ${upgrade}\r
       ++h2State.openStreams;
       stream.once("response", (headers2) => {
         const { [HTTP2_HEADER_STATUS]: statusCode, ...realHeaders } = headers2;
-        if (request2.onHeaders(Number(statusCode), realHeaders, stream.resume.bind(stream), "") === false) {
+        if (request3.onHeaders(Number(statusCode), realHeaders, stream.resume.bind(stream), "") === false) {
           stream.pause();
         }
       });
       stream.once("end", () => {
-        request2.onComplete([]);
+        request3.onComplete([]);
       });
       stream.on("data", (chunk) => {
-        if (request2.onData(chunk) === false) {
+        if (request3.onData(chunk) === false) {
           stream.pause();
         }
       });
@@ -8085,7 +8076,7 @@ upgrade: ${upgrade}\r
       });
       stream.once("frameError", (type, code) => {
         const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
-        errorRequest(client, request2, err);
+        errorRequest(client, request3, err);
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           h2State.streams -= 1;
           util.destroy(stream, err);
@@ -8094,20 +8085,20 @@ upgrade: ${upgrade}\r
       return true;
       function writeBodyH2() {
         if (!body) {
-          request2.onRequestSent();
+          request3.onRequestSent();
         } else if (util.isBuffer(body)) {
           assert(contentLength === body.byteLength, "buffer body must have content length");
           stream.cork();
           stream.write(body);
           stream.uncork();
           stream.end();
-          request2.onBodySent(body);
-          request2.onRequestSent();
+          request3.onBodySent(body);
+          request3.onRequestSent();
         } else if (util.isBlobLike(body)) {
           if (typeof body.stream === "function") {
             writeIterable({
               client,
-              request: request2,
+              request: request3,
               contentLength,
               h2stream: stream,
               expectsPayload,
@@ -8119,7 +8110,7 @@ upgrade: ${upgrade}\r
             writeBlob({
               body,
               client,
-              request: request2,
+              request: request3,
               contentLength,
               expectsPayload,
               h2stream: stream,
@@ -8131,7 +8122,7 @@ upgrade: ${upgrade}\r
           writeStream({
             body,
             client,
-            request: request2,
+            request: request3,
             contentLength,
             expectsPayload,
             socket: client[kSocket],
@@ -8142,7 +8133,7 @@ upgrade: ${upgrade}\r
           writeIterable({
             body,
             client,
-            request: request2,
+            request: request3,
             contentLength,
             expectsPayload,
             header: "",
@@ -8154,11 +8145,11 @@ upgrade: ${upgrade}\r
         }
       }
     }
-    function writeStream({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    function writeStream({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "stream body cannot be pipelined");
       if (client[kHTTPConnVersion] === "h2") {
         let onPipeData = function(chunk) {
-          request2.onBodySent(chunk);
+          request3.onBodySent(chunk);
         };
         const pipe = pipeline2(
           body,
@@ -8168,7 +8159,7 @@ upgrade: ${upgrade}\r
               util.destroy(body, err);
               util.destroy(h2stream, err);
             } else {
-              request2.onRequestSent();
+              request3.onRequestSent();
             }
           }
         );
@@ -8180,7 +8171,7 @@ upgrade: ${upgrade}\r
         return;
       }
       let finished = false;
-      const writer = new AsyncWriter({ socket, request: request2, contentLength, client, expectsPayload, header });
+      const writer = new AsyncWriter({ socket, request: request3, contentLength, client, expectsPayload, header });
       const onData = function(chunk) {
         if (finished) {
           return;
@@ -8236,7 +8227,7 @@ upgrade: ${upgrade}\r
       }
       socket.on("drain", onDrain).on("error", onFinished);
     }
-    async function writeBlob({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeBlob({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength === body.size, "blob body must have content length");
       const isH2 = client[kHTTPConnVersion] === "h2";
       try {
@@ -8256,8 +8247,8 @@ upgrade: ${upgrade}\r
           socket.write(buffer);
           socket.uncork();
         }
-        request2.onBodySent(buffer);
-        request2.onRequestSent();
+        request3.onBodySent(buffer);
+        request3.onRequestSent();
         if (!expectsPayload) {
           socket[kReset] = true;
         }
@@ -8266,7 +8257,7 @@ upgrade: ${upgrade}\r
         util.destroy(isH2 ? h2stream : socket, err);
       }
     }
-    async function writeIterable({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeIterable({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "iterator body cannot be pipelined");
       let callback = null;
       function onDrain() {
@@ -8292,7 +8283,7 @@ upgrade: ${upgrade}\r
               throw socket[kError];
             }
             const res = h2stream.write(chunk);
-            request2.onBodySent(chunk);
+            request3.onBodySent(chunk);
             if (!res) {
               await waitForDrain();
             }
@@ -8300,14 +8291,14 @@ upgrade: ${upgrade}\r
         } catch (err) {
           h2stream.destroy(err);
         } finally {
-          request2.onRequestSent();
+          request3.onRequestSent();
           h2stream.end();
           h2stream.off("close", onDrain).off("drain", onDrain);
         }
         return;
       }
       socket.on("close", onDrain).on("drain", onDrain);
-      const writer = new AsyncWriter({ socket, request: request2, contentLength, client, expectsPayload, header });
+      const writer = new AsyncWriter({ socket, request: request3, contentLength, client, expectsPayload, header });
       try {
         for await (const chunk of body) {
           if (socket[kError]) {
@@ -8325,9 +8316,9 @@ upgrade: ${upgrade}\r
       }
     }
     var AsyncWriter = class {
-      constructor({ socket, request: request2, contentLength, client, expectsPayload, header }) {
+      constructor({ socket, request: request3, contentLength, client, expectsPayload, header }) {
         this.socket = socket;
-        this.request = request2;
+        this.request = request3;
         this.contentLength = contentLength;
         this.client = client;
         this.bytesWritten = 0;
@@ -8336,7 +8327,7 @@ upgrade: ${upgrade}\r
         socket[kWriting] = true;
       }
       write(chunk) {
-        const { socket, request: request2, contentLength, client, bytesWritten, expectsPayload, header } = this;
+        const { socket, request: request3, contentLength, client, bytesWritten, expectsPayload, header } = this;
         if (socket[kError]) {
           throw socket[kError];
         }
@@ -8375,7 +8366,7 @@ ${len.toString(16)}\r
         this.bytesWritten += len;
         const ret = socket.write(chunk);
         socket.uncork();
-        request2.onBodySent(chunk);
+        request3.onBodySent(chunk);
         if (!ret) {
           if (socket[kParser].timeout && socket[kParser].timeoutType === TIMEOUT_HEADERS) {
             if (socket[kParser].timeout.refresh) {
@@ -8386,8 +8377,8 @@ ${len.toString(16)}\r
         return ret;
       }
       end() {
-        const { socket, contentLength, client, bytesWritten, expectsPayload, header, request: request2 } = this;
-        request2.onRequestSent();
+        const { socket, contentLength, client, bytesWritten, expectsPayload, header, request: request3 } = this;
+        request3.onRequestSent();
         socket[kWriting] = false;
         if (socket[kError]) {
           throw socket[kError];
@@ -8430,10 +8421,10 @@ ${len.toString(16)}\r
         }
       }
     };
-    function errorRequest(client, request2, err) {
+    function errorRequest(client, request3, err) {
       try {
-        request2.onError(err);
-        assert(request2.aborted);
+        request3.onError(err);
+        assert(request3.aborted);
       } catch (err2) {
         client.emit("error", err2);
       }
@@ -8642,13 +8633,13 @@ var require_pool_base = __commonJS({
         }
         return Promise.all(this[kClients].map((c) => c.destroy(err)));
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         const dispatcher = this[kGetDispatcher]();
         if (!dispatcher) {
           this[kNeedDrain] = true;
-          this[kQueue].push({ opts, handler: handler2 });
+          this[kQueue].push({ opts, handler: handler3 });
           this[kQueued]++;
-        } else if (!dispatcher.dispatch(opts, handler2)) {
+        } else if (!dispatcher.dispatch(opts, handler3)) {
           dispatcher[kNeedDrain] = true;
           this[kNeedDrain] = !this[kGetDispatcher]();
         }
@@ -8797,8 +8788,7 @@ var require_balanced_pool = __commonJS({
     var kMaxWeightPerServer = Symbol("kMaxWeightPerServer");
     var kErrorPenalty = Symbol("kErrorPenalty");
     function getGreatestCommonDivisor(a, b) {
-      if (b === 0)
-        return a;
+      if (b === 0) return a;
       return getGreatestCommonDivisor(b, a % b);
     }
     function defaultFactory(origin, opts) {
@@ -9024,7 +9014,7 @@ var require_agent = __commonJS({
         }
         return ret;
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         let key;
         if (opts.origin && (typeof opts.origin === "string" || opts.origin instanceof URL)) {
           key = String(opts.origin);
@@ -9038,7 +9028,7 @@ var require_agent = __commonJS({
           this[kClients].set(key, new WeakRef2(dispatcher));
           this[kFinalizer].register(dispatcher, key);
         }
-        return dispatcher.dispatch(opts, handler2);
+        return dispatcher.dispatch(opts, handler3);
       }
       async [kClose]() {
         const closePromises = [];
@@ -9080,7 +9070,7 @@ var require_readable = __commonJS({
     var kBody = Symbol("kBody");
     var kAbort = Symbol("abort");
     var kContentType = Symbol("kContentType");
-    var noop3 = () => {
+    var noop4 = () => {
     };
     module2.exports = class BodyReadable extends Readable {
       constructor({
@@ -9202,7 +9192,7 @@ var require_readable = __commonJS({
         return new Promise((resolve, reject) => {
           const signalListenerCleanup = signal ? util.addAbortListener(signal, () => {
             this.destroy();
-          }) : noop3;
+          }) : noop4;
           this.on("close", function() {
             signalListenerCleanup();
             if (signal && signal.aborted) {
@@ -9210,7 +9200,7 @@ var require_readable = __commonJS({
             } else {
               resolve(null);
             }
-          }).on("error", noop3).on("data", function(chunk) {
+          }).on("error", noop4).on("data", function(chunk) {
             limit -= chunk.length;
             if (limit <= 0) {
               this.destroy();
@@ -9542,10 +9532,10 @@ var require_api_request = __commonJS({
         }
       }
     };
-    function request2(opts, callback) {
+    function request3(opts, callback) {
       if (callback === void 0) {
         return new Promise((resolve, reject) => {
-          request2.call(this, opts, (err, data) => {
+          request3.call(this, opts, (err, data) => {
             return err ? reject(err) : resolve(data);
           });
         });
@@ -9560,7 +9550,7 @@ var require_api_request = __commonJS({
         queueMicrotask(() => callback(err, { opaque }));
       }
     }
-    module2.exports = request2;
+    module2.exports = request3;
     module2.exports.RequestHandler = RequestHandler;
   }
 });
@@ -9791,11 +9781,11 @@ var require_api_pipeline = __commonJS({
       }
     };
     var PipelineHandler = class extends AsyncResource {
-      constructor(opts, handler2) {
+      constructor(opts, handler3) {
         if (!opts || typeof opts !== "object") {
           throw new InvalidArgumentError("invalid opts");
         }
-        if (typeof handler2 !== "function") {
+        if (typeof handler3 !== "function") {
           throw new InvalidArgumentError("invalid handler");
         }
         const { signal, method, opaque, onInfo, responseHeaders } = opts;
@@ -9811,7 +9801,7 @@ var require_api_pipeline = __commonJS({
         super("UNDICI_PIPELINE");
         this.opaque = opaque || null;
         this.responseHeaders = responseHeaders || null;
-        this.handler = handler2;
+        this.handler = handler3;
         this.abort = null;
         this.context = null;
         this.onInfo = onInfo || null;
@@ -9864,7 +9854,7 @@ var require_api_pipeline = __commonJS({
         this.context = context2;
       }
       onHeaders(statusCode, rawHeaders, resume) {
-        const { opaque, handler: handler2, context: context2 } = this;
+        const { opaque, handler: handler3, context: context2 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -9877,7 +9867,7 @@ var require_api_pipeline = __commonJS({
         try {
           this.handler = null;
           const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
-          body = this.runInAsyncScope(handler2, null, {
+          body = this.runInAsyncScope(handler3, null, {
             statusCode,
             headers,
             opaque,
@@ -9924,9 +9914,9 @@ var require_api_pipeline = __commonJS({
         util.destroy(ret, err);
       }
     };
-    function pipeline2(opts, handler2) {
+    function pipeline2(opts, handler3) {
       try {
-        const pipelineHandler = new PipelineHandler(opts, handler2);
+        const pipelineHandler = new PipelineHandler(opts, handler3);
         this.dispatch({ ...opts, body: pipelineHandler.req }, pipelineHandler);
         return pipelineHandler.ret;
       } catch (err) {
@@ -10274,7 +10264,7 @@ var require_mock_utils = __commonJS({
       const headersMatch = matchHeaders(mockDispatch2, headers);
       return pathMatch && methodMatch && bodyMatch && headersMatch;
     }
-    function getResponseData2(data) {
+    function getResponseData3(data) {
       if (Buffer.isBuffer(data)) {
         return data;
       } else if (typeof data === "object") {
@@ -10349,7 +10339,7 @@ var require_mock_utils = __commonJS({
       }
       return Buffer.concat(buffers).toString("utf8");
     }
-    function mockDispatch(opts, handler2) {
+    function mockDispatch(opts, handler3) {
       const key = buildKey(opts);
       const mockDispatch2 = getMockDispatch(this[kDispatches], key);
       mockDispatch2.timesInvoked++;
@@ -10362,7 +10352,7 @@ var require_mock_utils = __commonJS({
       mockDispatch2.pending = timesInvoked < times;
       if (error !== null) {
         deleteMockDispatch(this[kDispatches], key);
-        handler2.onError(error);
+        handler3.onError(error);
         return true;
       }
       if (typeof delay2 === "number" && delay2 > 0) {
@@ -10379,13 +10369,13 @@ var require_mock_utils = __commonJS({
           body.then((newData) => handleReply(mockDispatches, newData));
           return;
         }
-        const responseData = getResponseData2(body);
+        const responseData = getResponseData3(body);
         const responseHeaders = generateKeyValues(headers);
         const responseTrailers = generateKeyValues(trailers);
-        handler2.abort = nop;
-        handler2.onHeaders(statusCode, responseHeaders, resume, getStatusText(statusCode));
-        handler2.onData(Buffer.from(responseData));
-        handler2.onComplete(responseTrailers);
+        handler3.abort = nop;
+        handler3.onHeaders(statusCode, responseHeaders, resume, getStatusText(statusCode));
+        handler3.onData(Buffer.from(responseData));
+        handler3.onComplete(responseTrailers);
         deleteMockDispatch(mockDispatches, key);
       }
       function resume() {
@@ -10396,10 +10386,10 @@ var require_mock_utils = __commonJS({
       const agent = this[kMockAgent];
       const origin = this[kOrigin];
       const originalDispatch = this[kOriginalDispatch];
-      return function dispatch(opts, handler2) {
+      return function dispatch(opts, handler3) {
         if (agent.isMockActive) {
           try {
-            mockDispatch.call(this, opts, handler2);
+            mockDispatch.call(this, opts, handler3);
           } catch (error) {
             if (error instanceof MockNotMatchedError) {
               const netConnect = agent[kGetNetConnect]();
@@ -10407,7 +10397,7 @@ var require_mock_utils = __commonJS({
                 throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
               }
               if (checkNetConnect(netConnect, origin)) {
-                originalDispatch.call(this, opts, handler2);
+                originalDispatch.call(this, opts, handler3);
               } else {
                 throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
               }
@@ -10416,7 +10406,7 @@ var require_mock_utils = __commonJS({
             }
           }
         } else {
-          originalDispatch.call(this, opts, handler2);
+          originalDispatch.call(this, opts, handler3);
         }
       };
     }
@@ -10436,7 +10426,7 @@ var require_mock_utils = __commonJS({
       }
     }
     module2.exports = {
-      getResponseData: getResponseData2,
+      getResponseData: getResponseData3,
       getMockDispatch,
       addMockDispatch,
       deleteMockDispatch,
@@ -10458,7 +10448,7 @@ var require_mock_utils = __commonJS({
 var require_mock_interceptor = __commonJS({
   "node_modules/@actions/http-client/node_modules/undici/lib/mock/mock-interceptor.js"(exports2, module2) {
     "use strict";
-    var { getResponseData: getResponseData2, buildKey, addMockDispatch } = require_mock_utils();
+    var { getResponseData: getResponseData3, buildKey, addMockDispatch } = require_mock_utils();
     var {
       kDispatches,
       kDispatchKey,
@@ -10530,7 +10520,7 @@ var require_mock_interceptor = __commonJS({
         this[kContentLength] = false;
       }
       createMockScopeDispatchData(statusCode, data, responseOptions = {}) {
-        const responseData = getResponseData2(data);
+        const responseData = getResponseData3(data);
         const contentLength = this[kContentLength] ? { "content-length": responseData.length } : {};
         const headers = { ...this[kDefaultHeaders], ...contentLength, ...responseOptions.headers };
         const trailers = { ...this[kDefaultTrailers], ...responseOptions.trailers };
@@ -10844,9 +10834,9 @@ var require_mock_agent = __commonJS({
         }
         return dispatcher;
       }
-      dispatch(opts, handler2) {
+      dispatch(opts, handler3) {
         this.get(opts.origin);
-        return this[kAgent].dispatch(opts, handler2);
+        return this[kAgent].dispatch(opts, handler3);
       }
       async close() {
         await this[kAgent].close();
@@ -10935,7 +10925,7 @@ var require_proxy_agent = __commonJS({
   "node_modules/@actions/http-client/node_modules/undici/lib/proxy-agent.js"(exports2, module2) {
     "use strict";
     var { kProxy, kClose, kDestroy, kInterceptors } = require_symbols();
-    var { URL: URL3 } = require("url");
+    var { URL: URL2 } = require("url");
     var Agent = require_agent();
     var Pool = require_pool();
     var DispatcherBase = require_dispatcher_base();
@@ -10984,7 +10974,7 @@ var require_proxy_agent = __commonJS({
         this[kRequestTls] = opts.requestTls;
         this[kProxyTls] = opts.proxyTls;
         this[kProxyHeaders] = opts.headers || {};
-        const resolvedUrl = new URL3(opts.uri);
+        const resolvedUrl = new URL2(opts.uri);
         const { origin, port, host, username, password } = resolvedUrl;
         if (opts.auth && opts.token) {
           throw new InvalidArgumentError("opts.auth cannot be used in combination with opts.token");
@@ -11038,8 +11028,8 @@ var require_proxy_agent = __commonJS({
           }
         });
       }
-      dispatch(opts, handler2) {
-        const { host } = new URL3(opts.origin);
+      dispatch(opts, handler3) {
+        const { host } = new URL2(opts.origin);
         const headers = buildHeaders(opts.headers);
         throwIfProxyAuthIsSent(headers);
         return this[kAgent].dispatch(
@@ -11050,7 +11040,7 @@ var require_proxy_agent = __commonJS({
               host
             }
           },
-          handler2
+          handler3
         );
       }
       async [kClose]() {
@@ -11173,8 +11163,7 @@ var require_RetryHandler = __commonJS({
         }
       }
       onBodySent(chunk) {
-        if (this.handler.onBodySent)
-          return this.handler.onBodySent(chunk);
+        if (this.handler.onBodySent) return this.handler.onBodySent(chunk);
       }
       static [kRetryHandlerDefaultRetry](err, { state, opts }, cb) {
         const { statusCode, code, headers } = err;
@@ -11387,8 +11376,8 @@ var require_DecoratorHandler = __commonJS({
   "node_modules/@actions/http-client/node_modules/undici/lib/handler/DecoratorHandler.js"(exports2, module2) {
     "use strict";
     module2.exports = class DecoratorHandler {
-      constructor(handler2) {
-        this.handler = handler2;
+      constructor(handler3) {
+        this.handler = handler3;
       }
       onConnect(...args) {
         return this.handler.onConnect(...args);
@@ -11437,10 +11426,8 @@ var require_headers = __commonJS({
     function headerValueNormalize(potentialValue) {
       let i2 = 0;
       let j = potentialValue.length;
-      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1)))
-        --j;
-      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i2)))
-        ++i2;
+      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1))) --j;
+      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i2))) ++i2;
       return i2 === 0 && j === potentialValue.length ? potentialValue : potentialValue.substring(i2, j);
     }
     function fill(headers, object) {
@@ -12238,7 +12225,7 @@ var require_request2 = __commonJS({
             policyContainer: makePolicyContainer()
           }
         };
-        let request2 = null;
+        let request3 = null;
         let fallbackMode = null;
         const baseUrl = this[kRealm].settingsObject.baseUrl;
         let signal = null;
@@ -12254,17 +12241,17 @@ var require_request2 = __commonJS({
               "Request cannot be constructed from a URL that includes credentials: " + input
             );
           }
-          request2 = makeRequest({ urlList: [parsedURL] });
+          request3 = makeRequest({ urlList: [parsedURL] });
           fallbackMode = "cors";
         } else {
           assert(input instanceof _Request);
-          request2 = input[kState];
+          request3 = input[kState];
           signal = input[kSignal];
         }
         const origin = this[kRealm].settingsObject.origin;
         let window2 = "client";
-        if (request2.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request2.window, origin)) {
-          window2 = request2.window;
+        if (request3.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request3.window, origin)) {
+          window2 = request3.window;
         }
         if (init.window != null) {
           throw new TypeError(`'window' option '${window2}' must be null`);
@@ -12272,66 +12259,66 @@ var require_request2 = __commonJS({
         if ("window" in init) {
           window2 = "no-window";
         }
-        request2 = makeRequest({
+        request3 = makeRequest({
           // URL request’s URL.
           // undici implementation note: this is set as the first item in request's urlList in makeRequest
           // method request’s method.
-          method: request2.method,
+          method: request3.method,
           // header list A copy of request’s header list.
           // undici implementation note: headersList is cloned in makeRequest
-          headersList: request2.headersList,
+          headersList: request3.headersList,
           // unsafe-request flag Set.
-          unsafeRequest: request2.unsafeRequest,
+          unsafeRequest: request3.unsafeRequest,
           // client This’s relevant settings object.
           client: this[kRealm].settingsObject,
           // window window.
           window: window2,
           // priority request’s priority.
-          priority: request2.priority,
+          priority: request3.priority,
           // origin request’s origin. The propagation of the origin is only significant for navigation requests
           // being handled by a service worker. In this scenario a request can have an origin that is different
           // from the current client.
-          origin: request2.origin,
+          origin: request3.origin,
           // referrer request’s referrer.
-          referrer: request2.referrer,
+          referrer: request3.referrer,
           // referrer policy request’s referrer policy.
-          referrerPolicy: request2.referrerPolicy,
+          referrerPolicy: request3.referrerPolicy,
           // mode request’s mode.
-          mode: request2.mode,
+          mode: request3.mode,
           // credentials mode request’s credentials mode.
-          credentials: request2.credentials,
+          credentials: request3.credentials,
           // cache mode request’s cache mode.
-          cache: request2.cache,
+          cache: request3.cache,
           // redirect mode request’s redirect mode.
-          redirect: request2.redirect,
+          redirect: request3.redirect,
           // integrity metadata request’s integrity metadata.
-          integrity: request2.integrity,
+          integrity: request3.integrity,
           // keepalive request’s keepalive.
-          keepalive: request2.keepalive,
+          keepalive: request3.keepalive,
           // reload-navigation flag request’s reload-navigation flag.
-          reloadNavigation: request2.reloadNavigation,
+          reloadNavigation: request3.reloadNavigation,
           // history-navigation flag request’s history-navigation flag.
-          historyNavigation: request2.historyNavigation,
+          historyNavigation: request3.historyNavigation,
           // URL list A clone of request’s URL list.
-          urlList: [...request2.urlList]
+          urlList: [...request3.urlList]
         });
         const initHasKey = Object.keys(init).length !== 0;
         if (initHasKey) {
-          if (request2.mode === "navigate") {
-            request2.mode = "same-origin";
+          if (request3.mode === "navigate") {
+            request3.mode = "same-origin";
           }
-          request2.reloadNavigation = false;
-          request2.historyNavigation = false;
-          request2.origin = "client";
-          request2.referrer = "client";
-          request2.referrerPolicy = "";
-          request2.url = request2.urlList[request2.urlList.length - 1];
-          request2.urlList = [request2.url];
+          request3.reloadNavigation = false;
+          request3.historyNavigation = false;
+          request3.origin = "client";
+          request3.referrer = "client";
+          request3.referrerPolicy = "";
+          request3.url = request3.urlList[request3.urlList.length - 1];
+          request3.urlList = [request3.url];
         }
         if (init.referrer !== void 0) {
           const referrer = init.referrer;
           if (referrer === "") {
-            request2.referrer = "no-referrer";
+            request3.referrer = "no-referrer";
           } else {
             let parsedReferrer;
             try {
@@ -12340,14 +12327,14 @@ var require_request2 = __commonJS({
               throw new TypeError(`Referrer "${referrer}" is not a valid URL.`, { cause: err });
             }
             if (parsedReferrer.protocol === "about:" && parsedReferrer.hostname === "client" || origin && !sameOrigin(parsedReferrer, this[kRealm].settingsObject.baseUrl)) {
-              request2.referrer = "client";
+              request3.referrer = "client";
             } else {
-              request2.referrer = parsedReferrer;
+              request3.referrer = parsedReferrer;
             }
           }
         }
         if (init.referrerPolicy !== void 0) {
-          request2.referrerPolicy = init.referrerPolicy;
+          request3.referrerPolicy = init.referrerPolicy;
         }
         let mode;
         if (init.mode !== void 0) {
@@ -12362,27 +12349,27 @@ var require_request2 = __commonJS({
           });
         }
         if (mode != null) {
-          request2.mode = mode;
+          request3.mode = mode;
         }
         if (init.credentials !== void 0) {
-          request2.credentials = init.credentials;
+          request3.credentials = init.credentials;
         }
         if (init.cache !== void 0) {
-          request2.cache = init.cache;
+          request3.cache = init.cache;
         }
-        if (request2.cache === "only-if-cached" && request2.mode !== "same-origin") {
+        if (request3.cache === "only-if-cached" && request3.mode !== "same-origin") {
           throw new TypeError(
             "'only-if-cached' can be set only with 'same-origin' mode"
           );
         }
         if (init.redirect !== void 0) {
-          request2.redirect = init.redirect;
+          request3.redirect = init.redirect;
         }
         if (init.integrity != null) {
-          request2.integrity = String(init.integrity);
+          request3.integrity = String(init.integrity);
         }
         if (init.keepalive !== void 0) {
-          request2.keepalive = Boolean(init.keepalive);
+          request3.keepalive = Boolean(init.keepalive);
         }
         if (init.method !== void 0) {
           let method = init.method;
@@ -12393,12 +12380,12 @@ var require_request2 = __commonJS({
             throw new TypeError(`'${method}' HTTP method is unsupported.`);
           }
           method = normalizeMethodRecord[method] ?? normalizeMethod(method);
-          request2.method = method;
+          request3.method = method;
         }
         if (init.signal !== void 0) {
           signal = init.signal;
         }
-        this[kState] = request2;
+        this[kState] = request3;
         const ac = new AbortController();
         this[kSignal] = ac.signal;
         this[kSignal][kRealm] = this[kRealm];
@@ -12432,13 +12419,13 @@ var require_request2 = __commonJS({
           }
         }
         this[kHeaders] = new Headers2(kConstruct);
-        this[kHeaders][kHeadersList] = request2.headersList;
+        this[kHeaders][kHeadersList] = request3.headersList;
         this[kHeaders][kGuard] = "request";
         this[kHeaders][kRealm] = this[kRealm];
         if (mode === "no-cors") {
-          if (!corsSafeListedMethodsSet.has(request2.method)) {
+          if (!corsSafeListedMethodsSet.has(request3.method)) {
             throw new TypeError(
-              `'${request2.method} is unsupported in no-cors mode.`
+              `'${request3.method} is unsupported in no-cors mode.`
             );
           }
           this[kHeaders][kGuard] = "request-no-cors";
@@ -12457,14 +12444,14 @@ var require_request2 = __commonJS({
           }
         }
         const inputBody = input instanceof _Request ? input[kState].body : null;
-        if ((init.body != null || inputBody != null) && (request2.method === "GET" || request2.method === "HEAD")) {
+        if ((init.body != null || inputBody != null) && (request3.method === "GET" || request3.method === "HEAD")) {
           throw new TypeError("Request with GET/HEAD method cannot have body.");
         }
         let initBody = null;
         if (init.body != null) {
           const [extractedBody, contentType] = extractBody(
             init.body,
-            request2.keepalive
+            request3.keepalive
           );
           initBody = extractedBody;
           if (contentType && !this[kHeaders][kHeadersList].contains("content-type")) {
@@ -12476,12 +12463,12 @@ var require_request2 = __commonJS({
           if (initBody != null && init.duplex == null) {
             throw new TypeError("RequestInit: duplex option is required when sending a body.");
           }
-          if (request2.mode !== "same-origin" && request2.mode !== "cors") {
+          if (request3.mode !== "same-origin" && request3.mode !== "cors") {
             throw new TypeError(
               'If request is made from ReadableStream, mode should be "same-origin" or "cors"'
             );
           }
-          request2.useCORSPreflightFlag = true;
+          request3.useCORSPreflightFlag = true;
         }
         let finalBody = inputOrInitBody;
         if (initBody == null && inputBody != null) {
@@ -12651,7 +12638,7 @@ var require_request2 = __commonJS({
     };
     mixinBody(Request2);
     function makeRequest(init) {
-      const request2 = {
+      const request3 = {
         method: "GET",
         localURLsOnly: false,
         unsafeRequest: false,
@@ -12690,13 +12677,13 @@ var require_request2 = __commonJS({
         ...init,
         headersList: init.headersList ? new HeadersList(init.headersList) : new HeadersList()
       };
-      request2.url = request2.urlList[0];
-      return request2;
+      request3.url = request3.urlList[0];
+      return request3;
     }
-    function cloneRequest(request2) {
-      const newRequest = makeRequest({ ...request2, body: null });
-      if (request2.body != null) {
-        newRequest.body = cloneBody(request2.body);
+    function cloneRequest(request3) {
+      const newRequest = makeRequest({ ...request3, body: null });
+      if (request3.body != null) {
+        newRequest.body = cloneBody(request3.body);
       }
       return newRequest;
     }
@@ -12929,14 +12916,14 @@ var require_fetch = __commonJS({
         p.reject(e2);
         return p.promise;
       }
-      const request2 = requestObject[kState];
+      const request3 = requestObject[kState];
       if (requestObject.signal.aborted) {
-        abortFetch(p, request2, null, requestObject.signal.reason);
+        abortFetch(p, request3, null, requestObject.signal.reason);
         return p.promise;
       }
-      const globalObject = request2.client.globalObject;
+      const globalObject = request3.client.globalObject;
       if (globalObject?.constructor?.name === "ServiceWorkerGlobalScope") {
-        request2.serviceWorkers = "none";
+        request3.serviceWorkers = "none";
       }
       let responseObject = null;
       const relevantRealm = null;
@@ -12948,7 +12935,7 @@ var require_fetch = __commonJS({
           locallyAborted = true;
           assert(controller != null);
           controller.abort(requestObject.signal.reason);
-          abortFetch(p, request2, responseObject, requestObject.signal.reason);
+          abortFetch(p, request3, responseObject, requestObject.signal.reason);
         }
       );
       const handleFetchDone = (response) => finalizeAndReportTiming(response, "fetch");
@@ -12957,7 +12944,7 @@ var require_fetch = __commonJS({
           return Promise.resolve();
         }
         if (response.aborted) {
-          abortFetch(p, request2, responseObject, controller.serializedAbortReason);
+          abortFetch(p, request3, responseObject, controller.serializedAbortReason);
           return Promise.resolve();
         }
         if (response.type === "error") {
@@ -12975,7 +12962,7 @@ var require_fetch = __commonJS({
         p.resolve(responseObject);
       };
       controller = fetching({
-        request: request2,
+        request: request3,
         processResponseEndOfBody: handleFetchDone,
         processResponse,
         dispatcher: init.dispatcher ?? getGlobalDispatcher()
@@ -13020,13 +13007,13 @@ var require_fetch = __commonJS({
         performance.markResourceTiming(timingInfo, originalURL.href, initiatorType, globalThis2, cacheState);
       }
     }
-    function abortFetch(p, request2, responseObject, error) {
+    function abortFetch(p, request3, responseObject, error) {
       if (!error) {
         error = new DOMException3("The operation was aborted.", "AbortError");
       }
       p.reject(error);
-      if (request2.body != null && isReadable(request2.body?.stream)) {
-        request2.body.stream.cancel(error).catch((err) => {
+      if (request3.body != null && isReadable(request3.body?.stream)) {
+        request3.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -13047,7 +13034,7 @@ var require_fetch = __commonJS({
       }
     }
     function fetching({
-      request: request2,
+      request: request3,
       processRequestBodyChunkLength,
       processRequestEndOfBody,
       processResponse,
@@ -13059,9 +13046,9 @@ var require_fetch = __commonJS({
     }) {
       let taskDestination = null;
       let crossOriginIsolatedCapability = false;
-      if (request2.client != null) {
-        taskDestination = request2.client.globalObject;
-        crossOriginIsolatedCapability = request2.client.crossOriginIsolatedCapability;
+      if (request3.client != null) {
+        taskDestination = request3.client.globalObject;
+        crossOriginIsolatedCapability = request3.client.crossOriginIsolatedCapability;
       }
       const currenTime = coarsenedSharedCurrentTime(crossOriginIsolatedCapability);
       const timingInfo = createOpaqueTimingInfo({
@@ -13069,7 +13056,7 @@ var require_fetch = __commonJS({
       });
       const fetchParams = {
         controller: new Fetch(dispatcher),
-        request: request2,
+        request: request3,
         timingInfo,
         processRequestBodyChunkLength,
         processRequestEndOfBody,
@@ -13079,32 +13066,32 @@ var require_fetch = __commonJS({
         taskDestination,
         crossOriginIsolatedCapability
       };
-      assert(!request2.body || request2.body.stream);
-      if (request2.window === "client") {
-        request2.window = request2.client?.globalObject?.constructor?.name === "Window" ? request2.client : "no-window";
+      assert(!request3.body || request3.body.stream);
+      if (request3.window === "client") {
+        request3.window = request3.client?.globalObject?.constructor?.name === "Window" ? request3.client : "no-window";
       }
-      if (request2.origin === "client") {
-        request2.origin = request2.client?.origin;
+      if (request3.origin === "client") {
+        request3.origin = request3.client?.origin;
       }
-      if (request2.policyContainer === "client") {
-        if (request2.client != null) {
-          request2.policyContainer = clonePolicyContainer(
-            request2.client.policyContainer
+      if (request3.policyContainer === "client") {
+        if (request3.client != null) {
+          request3.policyContainer = clonePolicyContainer(
+            request3.client.policyContainer
           );
         } else {
-          request2.policyContainer = makePolicyContainer();
+          request3.policyContainer = makePolicyContainer();
         }
       }
-      if (!request2.headersList.contains("accept")) {
+      if (!request3.headersList.contains("accept")) {
         const value = "*/*";
-        request2.headersList.append("accept", value);
+        request3.headersList.append("accept", value);
       }
-      if (!request2.headersList.contains("accept-language")) {
-        request2.headersList.append("accept-language", "*");
+      if (!request3.headersList.contains("accept-language")) {
+        request3.headersList.append("accept-language", "*");
       }
-      if (request2.priority === null) {
+      if (request3.priority === null) {
       }
-      if (subresourceSet.has(request2.destination)) {
+      if (subresourceSet.has(request3.destination)) {
       }
       mainFetch(fetchParams).catch((err) => {
         fetchParams.controller.terminate(err);
@@ -13112,50 +13099,50 @@ var require_fetch = __commonJS({
       return fetchParams.controller;
     }
     async function mainFetch(fetchParams, recursive = false) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
-      if (request2.localURLsOnly && !urlIsLocal(requestCurrentURL(request2))) {
+      if (request3.localURLsOnly && !urlIsLocal(requestCurrentURL(request3))) {
         response = makeNetworkError("local URLs only");
       }
-      tryUpgradeRequestToAPotentiallyTrustworthyURL(request2);
-      if (requestBadPort(request2) === "blocked") {
+      tryUpgradeRequestToAPotentiallyTrustworthyURL(request3);
+      if (requestBadPort(request3) === "blocked") {
         response = makeNetworkError("bad port");
       }
-      if (request2.referrerPolicy === "") {
-        request2.referrerPolicy = request2.policyContainer.referrerPolicy;
+      if (request3.referrerPolicy === "") {
+        request3.referrerPolicy = request3.policyContainer.referrerPolicy;
       }
-      if (request2.referrer !== "no-referrer") {
-        request2.referrer = determineRequestsReferrer2(request2);
+      if (request3.referrer !== "no-referrer") {
+        request3.referrer = determineRequestsReferrer2(request3);
       }
       if (response === null) {
         response = await (async () => {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           if (
             // - request’s current URL’s origin is same origin with request’s origin,
             //   and request’s response tainting is "basic"
-            sameOrigin(currentURL, request2.url) && request2.responseTainting === "basic" || // request’s current URL’s scheme is "data"
+            sameOrigin(currentURL, request3.url) && request3.responseTainting === "basic" || // request’s current URL’s scheme is "data"
             currentURL.protocol === "data:" || // - request’s mode is "navigate" or "websocket"
-            (request2.mode === "navigate" || request2.mode === "websocket")
+            (request3.mode === "navigate" || request3.mode === "websocket")
           ) {
-            request2.responseTainting = "basic";
+            request3.responseTainting = "basic";
             return await schemeFetch(fetchParams);
           }
-          if (request2.mode === "same-origin") {
+          if (request3.mode === "same-origin") {
             return makeNetworkError('request mode cannot be "same-origin"');
           }
-          if (request2.mode === "no-cors") {
-            if (request2.redirect !== "follow") {
+          if (request3.mode === "no-cors") {
+            if (request3.redirect !== "follow") {
               return makeNetworkError(
                 'redirect mode cannot be "follow" for "no-cors" request'
               );
             }
-            request2.responseTainting = "opaque";
+            request3.responseTainting = "opaque";
             return await schemeFetch(fetchParams);
           }
-          if (!urlIsHttpHttpsScheme(requestCurrentURL(request2))) {
+          if (!urlIsHttpHttpsScheme(requestCurrentURL(request3))) {
             return makeNetworkError("URL scheme must be a HTTP(S) scheme");
           }
-          request2.responseTainting = "cors";
+          request3.responseTainting = "cors";
           return await httpFetch(fetchParams);
         })();
       }
@@ -13163,13 +13150,13 @@ var require_fetch = __commonJS({
         return response;
       }
       if (response.status !== 0 && !response.internalResponse) {
-        if (request2.responseTainting === "cors") {
+        if (request3.responseTainting === "cors") {
         }
-        if (request2.responseTainting === "basic") {
+        if (request3.responseTainting === "basic") {
           response = filterResponse(response, "basic");
-        } else if (request2.responseTainting === "cors") {
+        } else if (request3.responseTainting === "cors") {
           response = filterResponse(response, "cors");
-        } else if (request2.responseTainting === "opaque") {
+        } else if (request3.responseTainting === "opaque") {
           response = filterResponse(response, "opaque");
         } else {
           assert(false);
@@ -13177,26 +13164,26 @@ var require_fetch = __commonJS({
       }
       let internalResponse = response.status === 0 ? response : response.internalResponse;
       if (internalResponse.urlList.length === 0) {
-        internalResponse.urlList.push(...request2.urlList);
+        internalResponse.urlList.push(...request3.urlList);
       }
-      if (!request2.timingAllowFailed) {
+      if (!request3.timingAllowFailed) {
         response.timingAllowPassed = true;
       }
-      if (response.type === "opaque" && internalResponse.status === 206 && internalResponse.rangeRequested && !request2.headers.contains("range")) {
+      if (response.type === "opaque" && internalResponse.status === 206 && internalResponse.rangeRequested && !request3.headers.contains("range")) {
         response = internalResponse = makeNetworkError();
       }
-      if (response.status !== 0 && (request2.method === "HEAD" || request2.method === "CONNECT" || nullBodyStatus.includes(internalResponse.status))) {
+      if (response.status !== 0 && (request3.method === "HEAD" || request3.method === "CONNECT" || nullBodyStatus.includes(internalResponse.status))) {
         internalResponse.body = null;
         fetchParams.controller.dump = true;
       }
-      if (request2.integrity) {
+      if (request3.integrity) {
         const processBodyError = (reason) => fetchFinale(fetchParams, makeNetworkError(reason));
-        if (request2.responseTainting === "opaque" || response.body == null) {
+        if (request3.responseTainting === "opaque" || response.body == null) {
           processBodyError(response.error);
           return;
         }
         const processBody = (bytes) => {
-          if (!bytesMatch(bytes, request2.integrity)) {
+          if (!bytesMatch(bytes, request3.integrity)) {
             processBodyError("integrity mismatch");
             return;
           }
@@ -13212,8 +13199,8 @@ var require_fetch = __commonJS({
       if (isCancelled(fetchParams) && fetchParams.request.redirectCount === 0) {
         return Promise.resolve(makeAppropriateNetworkError(fetchParams));
       }
-      const { request: request2 } = fetchParams;
-      const { protocol: scheme } = requestCurrentURL(request2);
+      const { request: request3 } = fetchParams;
+      const { protocol: scheme } = requestCurrentURL(request3);
       switch (scheme) {
         case "about:": {
           return Promise.resolve(makeNetworkError("about scheme is not supported"));
@@ -13222,12 +13209,12 @@ var require_fetch = __commonJS({
           if (!resolveObjectURL) {
             resolveObjectURL = require("buffer").resolveObjectURL;
           }
-          const blobURLEntry = requestCurrentURL(request2);
+          const blobURLEntry = requestCurrentURL(request3);
           if (blobURLEntry.search.length !== 0) {
             return Promise.resolve(makeNetworkError("NetworkError when attempting to fetch resource."));
           }
           const blobURLEntryObject = resolveObjectURL(blobURLEntry.toString());
-          if (request2.method !== "GET" || !isBlobLike(blobURLEntryObject)) {
+          if (request3.method !== "GET" || !isBlobLike(blobURLEntryObject)) {
             return Promise.resolve(makeNetworkError("invalid method"));
           }
           const bodyWithType = safelyExtractBody(blobURLEntryObject);
@@ -13245,7 +13232,7 @@ var require_fetch = __commonJS({
           return Promise.resolve(response);
         }
         case "data:": {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           const dataURLStruct = dataURLProcessor(currentURL);
           if (dataURLStruct === "failure") {
             return Promise.resolve(makeNetworkError("failed to fetch the data URL"));
@@ -13327,41 +13314,41 @@ var require_fetch = __commonJS({
       }
     }
     async function httpFetch(fetchParams) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
       let actualResponse = null;
       const timingInfo = fetchParams.timingInfo;
-      if (request2.serviceWorkers === "all") {
+      if (request3.serviceWorkers === "all") {
       }
       if (response === null) {
-        if (request2.redirect === "follow") {
-          request2.serviceWorkers = "none";
+        if (request3.redirect === "follow") {
+          request3.serviceWorkers = "none";
         }
         actualResponse = response = await httpNetworkOrCacheFetch(fetchParams);
-        if (request2.responseTainting === "cors" && corsCheck(request2, response) === "failure") {
+        if (request3.responseTainting === "cors" && corsCheck(request3, response) === "failure") {
           return makeNetworkError("cors failure");
         }
-        if (TAOCheck(request2, response) === "failure") {
-          request2.timingAllowFailed = true;
+        if (TAOCheck(request3, response) === "failure") {
+          request3.timingAllowFailed = true;
         }
       }
-      if ((request2.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(
-        request2.origin,
-        request2.client,
-        request2.destination,
+      if ((request3.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(
+        request3.origin,
+        request3.client,
+        request3.destination,
         actualResponse
       ) === "blocked") {
         return makeNetworkError("blocked");
       }
       if (redirectStatusSet.has(actualResponse.status)) {
-        if (request2.redirect !== "manual") {
+        if (request3.redirect !== "manual") {
           fetchParams.controller.connection.destroy();
         }
-        if (request2.redirect === "error") {
+        if (request3.redirect === "error") {
           response = makeNetworkError("unexpected redirect");
-        } else if (request2.redirect === "manual") {
+        } else if (request3.redirect === "manual") {
           response = actualResponse;
-        } else if (request2.redirect === "follow") {
+        } else if (request3.redirect === "follow") {
           response = await httpRedirectFetch(fetchParams, response);
         } else {
           assert(false);
@@ -13371,13 +13358,13 @@ var require_fetch = __commonJS({
       return response;
     }
     function httpRedirectFetch(fetchParams, response) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       const actualResponse = response.internalResponse ? response.internalResponse : response;
       let locationURL;
       try {
         locationURL = responseLocationURL(
           actualResponse,
-          requestCurrentURL(request2).hash
+          requestCurrentURL(request3).hash
         );
         if (locationURL == null) {
           return response;
@@ -13388,63 +13375,63 @@ var require_fetch = __commonJS({
       if (!urlIsHttpHttpsScheme(locationURL)) {
         return Promise.resolve(makeNetworkError("URL scheme must be a HTTP(S) scheme"));
       }
-      if (request2.redirectCount === 20) {
+      if (request3.redirectCount === 20) {
         return Promise.resolve(makeNetworkError("redirect count exceeded"));
       }
-      request2.redirectCount += 1;
-      if (request2.mode === "cors" && (locationURL.username || locationURL.password) && !sameOrigin(request2, locationURL)) {
+      request3.redirectCount += 1;
+      if (request3.mode === "cors" && (locationURL.username || locationURL.password) && !sameOrigin(request3, locationURL)) {
         return Promise.resolve(makeNetworkError('cross origin not allowed for request mode "cors"'));
       }
-      if (request2.responseTainting === "cors" && (locationURL.username || locationURL.password)) {
+      if (request3.responseTainting === "cors" && (locationURL.username || locationURL.password)) {
         return Promise.resolve(makeNetworkError(
           'URL cannot contain credentials for request mode "cors"'
         ));
       }
-      if (actualResponse.status !== 303 && request2.body != null && request2.body.source == null) {
+      if (actualResponse.status !== 303 && request3.body != null && request3.body.source == null) {
         return Promise.resolve(makeNetworkError());
       }
-      if ([301, 302].includes(actualResponse.status) && request2.method === "POST" || actualResponse.status === 303 && !GET_OR_HEAD.includes(request2.method)) {
-        request2.method = "GET";
-        request2.body = null;
+      if ([301, 302].includes(actualResponse.status) && request3.method === "POST" || actualResponse.status === 303 && !GET_OR_HEAD.includes(request3.method)) {
+        request3.method = "GET";
+        request3.body = null;
         for (const headerName of requestBodyHeader) {
-          request2.headersList.delete(headerName);
+          request3.headersList.delete(headerName);
         }
       }
-      if (!sameOrigin(requestCurrentURL(request2), locationURL)) {
-        request2.headersList.delete("authorization");
-        request2.headersList.delete("proxy-authorization", true);
-        request2.headersList.delete("cookie");
-        request2.headersList.delete("host");
+      if (!sameOrigin(requestCurrentURL(request3), locationURL)) {
+        request3.headersList.delete("authorization");
+        request3.headersList.delete("proxy-authorization", true);
+        request3.headersList.delete("cookie");
+        request3.headersList.delete("host");
       }
-      if (request2.body != null) {
-        assert(request2.body.source != null);
-        request2.body = safelyExtractBody(request2.body.source)[0];
+      if (request3.body != null) {
+        assert(request3.body.source != null);
+        request3.body = safelyExtractBody(request3.body.source)[0];
       }
       const timingInfo = fetchParams.timingInfo;
       timingInfo.redirectEndTime = timingInfo.postRedirectStartTime = coarsenedSharedCurrentTime(fetchParams.crossOriginIsolatedCapability);
       if (timingInfo.redirectStartTime === 0) {
         timingInfo.redirectStartTime = timingInfo.startTime;
       }
-      request2.urlList.push(locationURL);
-      setRequestReferrerPolicyOnRedirect(request2, actualResponse);
+      request3.urlList.push(locationURL);
+      setRequestReferrerPolicyOnRedirect(request3, actualResponse);
       return mainFetch(fetchParams, true);
     }
     async function httpNetworkOrCacheFetch(fetchParams, isAuthenticationFetch = false, isNewConnectionFetch = false) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let httpFetchParams = null;
       let httpRequest = null;
       let response = null;
       const httpCache = null;
       const revalidatingFlag = false;
-      if (request2.window === "no-window" && request2.redirect === "error") {
+      if (request3.window === "no-window" && request3.redirect === "error") {
         httpFetchParams = fetchParams;
-        httpRequest = request2;
+        httpRequest = request3;
       } else {
-        httpRequest = makeRequest(request2);
+        httpRequest = makeRequest(request3);
         httpFetchParams = { ...fetchParams };
         httpFetchParams.request = httpRequest;
       }
-      const includeCredentials = request2.credentials === "include" || request2.credentials === "same-origin" && request2.responseTainting === "basic";
+      const includeCredentials = request3.credentials === "include" || request3.credentials === "same-origin" && request3.responseTainting === "basic";
       const contentLength = httpRequest.body ? httpRequest.body.length : null;
       let contentLengthHeaderValue = null;
       if (httpRequest.body == null && ["POST", "PUT"].includes(httpRequest.method)) {
@@ -13521,7 +13508,7 @@ var require_fetch = __commonJS({
       }
       response.requestIncludesCredentials = includeCredentials;
       if (response.status === 407) {
-        if (request2.window === "no-window") {
+        if (request3.window === "no-window") {
           return makeNetworkError();
         }
         if (isCancelled(fetchParams)) {
@@ -13533,7 +13520,7 @@ var require_fetch = __commonJS({
         // response’s status is 421
         response.status === 421 && // isNewConnectionFetch is false
         !isNewConnectionFetch && // request’s body is null, or request’s body is non-null and request’s body’s source is non-null
-        (request2.body == null || request2.body.source != null)
+        (request3.body == null || request3.body.source != null)
       ) {
         if (isCancelled(fetchParams)) {
           return makeAppropriateNetworkError(fetchParams);
@@ -13561,21 +13548,21 @@ var require_fetch = __commonJS({
           }
         }
       };
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
       const timingInfo = fetchParams.timingInfo;
       const httpCache = null;
       if (httpCache == null) {
-        request2.cache = "no-store";
+        request3.cache = "no-store";
       }
       const newConnection = forceNewConnection ? "yes" : "no";
-      if (request2.mode === "websocket") {
+      if (request3.mode === "websocket") {
       } else {
       }
       let requestBody = null;
-      if (request2.body == null && fetchParams.processRequestEndOfBody) {
+      if (request3.body == null && fetchParams.processRequestEndOfBody) {
         queueMicrotask(() => fetchParams.processRequestEndOfBody());
-      } else if (request2.body != null) {
+      } else if (request3.body != null) {
         const processBodyChunk = async function* (bytes) {
           if (isCancelled(fetchParams)) {
             return;
@@ -13603,7 +13590,7 @@ var require_fetch = __commonJS({
         };
         requestBody = async function* () {
           try {
-            for await (const bytes of request2.body.stream) {
+            for await (const bytes of request3.body.stream) {
               yield* processBodyChunk(bytes);
             }
             processEndOfBody();
@@ -13617,8 +13604,8 @@ var require_fetch = __commonJS({
         if (socket) {
           response = makeResponse({ status, statusText, headersList, socket });
         } else {
-          const iterator2 = body[Symbol.asyncIterator]();
-          fetchParams.controller.next = () => iterator2.next();
+          const iterator3 = body[Symbol.asyncIterator]();
+          fetchParams.controller.next = () => iterator3.next();
           response = makeResponse({ status, statusText, headersList });
         }
       } catch (err) {
@@ -13715,17 +13702,17 @@ var require_fetch = __commonJS({
       }
       return response;
       async function dispatch({ body }) {
-        const url = requestCurrentURL(request2);
+        const url = requestCurrentURL(request3);
         const agent = fetchParams.controller.dispatcher;
         return new Promise((resolve, reject) => agent.dispatch(
           {
             path: url.pathname + url.search,
             origin: url.origin,
-            method: request2.method,
-            body: fetchParams.controller.dispatcher.isMockActive ? request2.body && (request2.body.source || request2.body.stream) : body,
-            headers: request2.headersList.entries,
+            method: request3.method,
+            body: fetchParams.controller.dispatcher.isMockActive ? request3.body && (request3.body.source || request3.body.stream) : body,
+            headers: request3.headersList.entries,
             maxRedirections: 0,
-            upgrade: request2.mode === "websocket" ? "websocket" : void 0
+            upgrade: request3.mode === "websocket" ? "websocket" : void 0
           },
           {
             body: null,
@@ -13771,8 +13758,8 @@ var require_fetch = __commonJS({
               }
               this.body = new Readable({ read: resume });
               const decoders = [];
-              const willFollow = request2.redirect === "follow" && location && redirectStatusSet.has(status);
-              if (request2.method !== "HEAD" && request2.method !== "CONNECT" && !nullBodyStatus.includes(status) && !willFollow) {
+              const willFollow = request3.redirect === "follow" && location && redirectStatusSet.has(status);
+              if (request3.method !== "HEAD" && request3.method !== "CONNECT" && !nullBodyStatus.includes(status) && !willFollow) {
                 for (const coding of codings) {
                   if (coding === "x-gzip" || coding === "gzip") {
                     decoders.push(zlib2.createGunzip({
@@ -14742,35 +14729,34 @@ var require_cache = __commonJS({
         }
         this.#relevantRequestResponseList = arguments[1];
       }
-      async match(request2, options = {}) {
+      async match(request3, options = {}) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.match" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
-        const p = await this.matchAll(request2, options);
+        const p = await this.matchAll(request3, options);
         if (p.length === 0) {
           return;
         }
         return p[0];
       }
-      async matchAll(request2 = void 0, options = {}) {
+      async matchAll(request3 = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request2 !== void 0)
-          request2 = webidl.converters.RequestInfo(request2);
+        if (request3 !== void 0) request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
         let r2 = null;
-        if (request2 !== void 0) {
-          if (request2 instanceof Request2) {
-            r2 = request2[kState];
+        if (request3 !== void 0) {
+          if (request3 instanceof Request2) {
+            r2 = request3[kState];
             if (r2.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
-          } else if (typeof request2 === "string") {
-            r2 = new Request2(request2)[kState];
+          } else if (typeof request3 === "string") {
+            r2 = new Request2(request3)[kState];
           }
         }
         const responses = [];
-        if (request2 === void 0) {
+        if (request3 === void 0) {
           for (const requestResponse of this.#relevantRequestResponseList) {
             responses.push(requestResponse[1]);
           }
@@ -14792,11 +14778,11 @@ var require_cache = __commonJS({
         }
         return Object.freeze(responseList);
       }
-      async add(request2) {
+      async add(request3) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.add" });
-        request2 = webidl.converters.RequestInfo(request2);
-        const requests = [request2];
+        request3 = webidl.converters.RequestInfo(request3);
+        const requests = [request3];
         const responseArrayPromise = this.addAll(requests);
         return await responseArrayPromise;
       }
@@ -14806,11 +14792,11 @@ var require_cache = __commonJS({
         requests = webidl.converters["sequence<RequestInfo>"](requests);
         const responsePromises = [];
         const requestList = [];
-        for (const request2 of requests) {
-          if (typeof request2 === "string") {
+        for (const request3 of requests) {
+          if (typeof request3 === "string") {
             continue;
           }
-          const r2 = request2[kState];
+          const r2 = request3[kState];
           if (!urlIsHttpHttpsScheme(r2.url) || r2.method !== "GET") {
             throw webidl.errors.exception({
               header: "Cache.addAll",
@@ -14819,8 +14805,8 @@ var require_cache = __commonJS({
           }
         }
         const fetchControllers = [];
-        for (const request2 of requests) {
-          const r2 = new Request2(request2)[kState];
+        for (const request3 of requests) {
+          const r2 = new Request2(request3)[kState];
           if (!urlIsHttpHttpsScheme(r2.url)) {
             throw webidl.errors.exception({
               header: "Cache.addAll",
@@ -14898,16 +14884,16 @@ var require_cache = __commonJS({
         });
         return cacheJobPromise.promise;
       }
-      async put(request2, response) {
+      async put(request3, response) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 2, { header: "Cache.put" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         response = webidl.converters.Response(response);
         let innerRequest = null;
-        if (request2 instanceof Request2) {
-          innerRequest = request2[kState];
+        if (request3 instanceof Request2) {
+          innerRequest = request3[kState];
         } else {
-          innerRequest = new Request2(request2)[kState];
+          innerRequest = new Request2(request3)[kState];
         }
         if (!urlIsHttpHttpsScheme(innerRequest.url) || innerRequest.method !== "GET") {
           throw webidl.errors.exception({
@@ -14978,20 +14964,20 @@ var require_cache = __commonJS({
         });
         return cacheJobPromise.promise;
       }
-      async delete(request2, options = {}) {
+      async delete(request3, options = {}) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.delete" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
         let r2 = null;
-        if (request2 instanceof Request2) {
-          r2 = request2[kState];
+        if (request3 instanceof Request2) {
+          r2 = request3[kState];
           if (r2.method !== "GET" && !options.ignoreMethod) {
             return false;
           }
         } else {
-          assert(typeof request2 === "string");
-          r2 = new Request2(request2)[kState];
+          assert(typeof request3 === "string");
+          r2 = new Request2(request3)[kState];
         }
         const operations = [];
         const operation = {
@@ -15023,25 +15009,24 @@ var require_cache = __commonJS({
        * @param {import('../../types/cache').CacheQueryOptions} options
        * @returns {readonly Request[]}
        */
-      async keys(request2 = void 0, options = {}) {
+      async keys(request3 = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request2 !== void 0)
-          request2 = webidl.converters.RequestInfo(request2);
+        if (request3 !== void 0) request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
         let r2 = null;
-        if (request2 !== void 0) {
-          if (request2 instanceof Request2) {
-            r2 = request2[kState];
+        if (request3 !== void 0) {
+          if (request3 instanceof Request2) {
+            r2 = request3[kState];
             if (r2.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
-          } else if (typeof request2 === "string") {
-            r2 = new Request2(request2)[kState];
+          } else if (typeof request3 === "string") {
+            r2 = new Request2(request3)[kState];
           }
         }
         const promise = createDeferredPromise();
         const requests = [];
-        if (request2 === void 0) {
+        if (request3 === void 0) {
           for (const requestResponse of this.#relevantRequestResponseList) {
             requests.push(requestResponse[0]);
           }
@@ -15053,12 +15038,12 @@ var require_cache = __commonJS({
         }
         queueMicrotask(() => {
           const requestList = [];
-          for (const request3 of requests) {
+          for (const request4 of requests) {
             const requestObject = new Request2("https://a");
-            requestObject[kState] = request3;
-            requestObject[kHeaders][kHeadersList] = request3.headersList;
+            requestObject[kState] = request4;
+            requestObject[kHeaders][kHeadersList] = request4.headersList;
             requestObject[kHeaders][kGuard] = "immutable";
-            requestObject[kRealm] = request3.client;
+            requestObject[kRealm] = request4.client;
             requestList.push(requestObject);
           }
           promise.resolve(Object.freeze(requestList));
@@ -15173,9 +15158,9 @@ var require_cache = __commonJS({
        * @param {import('../../types/cache').CacheQueryOptions | undefined} options
        * @returns {boolean}
        */
-      #requestMatchesCachedItem(requestQuery, request2, response = null, options) {
+      #requestMatchesCachedItem(requestQuery, request3, response = null, options) {
         const queryURL = new URL(requestQuery.url);
-        const cachedURL = new URL(request2.url);
+        const cachedURL = new URL(request3.url);
         if (options?.ignoreSearch) {
           cachedURL.search = "";
           queryURL.search = "";
@@ -15191,7 +15176,7 @@ var require_cache = __commonJS({
           if (fieldValue === "*") {
             return false;
           }
-          const requestValue = request2.headersList.get(fieldValue);
+          const requestValue = request3.headersList.get(fieldValue);
           const queryValue = requestQuery.headersList.get(fieldValue);
           if (requestValue !== queryValue) {
             return false;
@@ -15267,21 +15252,21 @@ var require_cachestorage = __commonJS({
           webidl.illegalConstructor();
         }
       }
-      async match(request2, options = {}) {
+      async match(request3, options = {}) {
         webidl.brandCheck(this, _CacheStorage);
         webidl.argumentLengthCheck(arguments, 1, { header: "CacheStorage.match" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.MultiCacheQueryOptions(options);
         if (options.cacheName != null) {
           if (this.#caches.has(options.cacheName)) {
             const cacheList = this.#caches.get(options.cacheName);
             const cache2 = new Cache(kConstruct, cacheList);
-            return await cache2.match(request2, options);
+            return await cache2.match(request3, options);
           }
         } else {
           for (const cacheList of this.#caches.values()) {
             const cache2 = new Cache(kConstruct, cacheList);
-            const response = await cache2.match(request2, options);
+            const response = await cache2.match(request3, options);
             if (response !== void 0) {
               return response;
             }
@@ -15455,7 +15440,7 @@ var require_util6 = __commonJS({
         throw new Error("Invalid cookie max-age");
       }
     }
-    function stringify2(cookie) {
+    function stringify(cookie) {
       if (cookie.name.length === 0) {
         return null;
       }
@@ -15520,7 +15505,7 @@ var require_util6 = __commonJS({
     }
     module2.exports = {
       isCTLExcludingHtab,
-      stringify: stringify2,
+      stringify,
       getHeadersList
     };
   }
@@ -15671,7 +15656,7 @@ var require_cookies = __commonJS({
   "node_modules/@actions/http-client/node_modules/undici/lib/cookies/index.js"(exports2, module2) {
     "use strict";
     var { parseSetCookie } = require_parse();
-    var { stringify: stringify2, getHeadersList } = require_util6();
+    var { stringify, getHeadersList } = require_util6();
     var { webidl } = require_webidl();
     var { Headers: Headers2 } = require_headers();
     function getCookies(headers) {
@@ -15713,9 +15698,9 @@ var require_cookies = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
       webidl.brandCheck(headers, Headers2, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify2(cookie);
+      const str = stringify(cookie);
       if (str) {
-        headers.append("Set-Cookie", stringify2(cookie));
+        headers.append("Set-Cookie", stringify(cookie));
       }
     }
     webidl.converters.DeleteCookieAttributes = webidl.dictionaryConverter([
@@ -16211,15 +16196,15 @@ var require_connection = __commonJS({
     channels.open = diagnosticsChannel.channel("undici:websocket:open");
     channels.close = diagnosticsChannel.channel("undici:websocket:close");
     channels.socketError = diagnosticsChannel.channel("undici:websocket:socket_error");
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
     } catch {
     }
     function establishWebSocketConnection(url, protocols, ws, onEstablish, options) {
       const requestURL = url;
       requestURL.protocol = url.protocol === "ws:" ? "http:" : "https:";
-      const request2 = makeRequest({
+      const request3 = makeRequest({
         urlList: [requestURL],
         serviceWorkers: "none",
         referrer: "no-referrer",
@@ -16230,17 +16215,17 @@ var require_connection = __commonJS({
       });
       if (options.headers) {
         const headersList = new Headers2(options.headers)[kHeadersList];
-        request2.headersList = headersList;
+        request3.headersList = headersList;
       }
-      const keyValue = crypto4.randomBytes(16).toString("base64");
-      request2.headersList.append("sec-websocket-key", keyValue);
-      request2.headersList.append("sec-websocket-version", "13");
+      const keyValue = crypto.randomBytes(16).toString("base64");
+      request3.headersList.append("sec-websocket-key", keyValue);
+      request3.headersList.append("sec-websocket-version", "13");
       for (const protocol of protocols) {
-        request2.headersList.append("sec-websocket-protocol", protocol);
+        request3.headersList.append("sec-websocket-protocol", protocol);
       }
       const permessageDeflate = "";
       const controller = fetching({
-        request: request2,
+        request: request3,
         useParallelQueue: true,
         dispatcher: options.dispatcher ?? getGlobalDispatcher(),
         processResponse(response) {
@@ -16261,7 +16246,7 @@ var require_connection = __commonJS({
             return;
           }
           const secWSAccept = response.headersList.get("Sec-WebSocket-Accept");
-          const digest = crypto4.createHash("sha1").update(keyValue + uid).digest("base64");
+          const digest = crypto.createHash("sha1").update(keyValue + uid).digest("base64");
           if (secWSAccept !== digest) {
             failWebsocketConnection(ws, "Incorrect hash received in Sec-WebSocket-Accept header.");
             return;
@@ -16272,7 +16257,7 @@ var require_connection = __commonJS({
             return;
           }
           const secProtocol = response.headersList.get("Sec-WebSocket-Protocol");
-          if (secProtocol !== null && secProtocol !== request2.headersList.get("Sec-WebSocket-Protocol")) {
+          if (secProtocol !== null && secProtocol !== request3.headersList.get("Sec-WebSocket-Protocol")) {
             failWebsocketConnection(ws, "Protocol was not set in the opening handshake.");
             return;
           }
@@ -16341,9 +16326,9 @@ var require_frame = __commonJS({
   "node_modules/@actions/http-client/node_modules/undici/lib/websocket/frame.js"(exports2, module2) {
     "use strict";
     var { maxUnsigned16Bit } = require_constants5();
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
     } catch {
     }
     var WebsocketFrameSend = class {
@@ -16352,7 +16337,7 @@ var require_frame = __commonJS({
        */
       constructor(data) {
         this.frameData = data;
-        this.maskKey = crypto4.randomBytes(4);
+        this.maskKey = crypto.randomBytes(4);
       }
       createFrame(opcode) {
         const bodyLength = this.frameData?.byteLength ?? 0;
@@ -16930,12 +16915,12 @@ var require_websocket = __commonJS({
        */
       #onConnectionEstablished(response) {
         this[kResponse] = response;
-        const parser3 = new ByteParser(this);
-        parser3.on("drain", function onParserDrain() {
+        const parser4 = new ByteParser(this);
+        parser4.on("drain", function onParserDrain() {
           this.ws[kResponse].socket.resume();
         });
         response.socket.ws = this;
-        this[kByteParser] = parser3;
+        this[kByteParser] = parser4;
         this[kReadyState] = states.OPEN;
         const extensions = response.headersList.get("sec-websocket-extensions");
         if (extensions !== null) {
@@ -17079,9 +17064,9 @@ var require_undici = __commonJS({
     module2.exports.buildConnector = buildConnector;
     module2.exports.errors = errors;
     function makeDispatcher(fn) {
-      return (url, opts, handler2) => {
+      return (url, opts, handler3) => {
         if (typeof opts === "function") {
-          handler2 = opts;
+          handler3 = opts;
           opts = null;
         }
         if (!url || typeof url !== "string" && typeof url !== "object" && !(url instanceof URL)) {
@@ -17114,7 +17099,7 @@ var require_undici = __commonJS({
           origin: url.origin,
           path: url.search ? `${url.pathname}${url.search}` : url.pathname,
           method: opts.method || (opts.body ? "PUT" : "GET")
-        }, handler2);
+        }, handler3);
       };
     }
     module2.exports.setGlobalDispatcher = setGlobalDispatcher;
@@ -17178,8 +17163,7 @@ var require_lib = __commonJS({
   "node_modules/@actions/http-client/lib/index.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m2, k);
       if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -17188,8 +17172,7 @@ var require_lib = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -17198,13 +17181,10 @@ var require_lib = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -17349,7 +17329,7 @@ var require_lib = __commonJS({
     }
     exports2.isHttps = isHttps;
     var HttpClient = class {
-      constructor(userAgent2, handlers, requestOptions) {
+      constructor(userAgent3, handlers, requestOptions) {
         this._ignoreSslError = false;
         this._allowRedirects = true;
         this._allowRedirectDowngrade = false;
@@ -17358,7 +17338,7 @@ var require_lib = __commonJS({
         this._maxRetries = 1;
         this._keepAlive = false;
         this._disposed = false;
-        this.userAgent = userAgent2;
+        this.userAgent = userAgent3;
         this.handlers = handlers || [];
         this.requestOptions = requestOptions;
         if (requestOptions) {
@@ -17483,9 +17463,9 @@ var require_lib = __commonJS({
             response = yield this.requestRaw(info, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
-              for (const handler2 of this.handlers) {
-                if (handler2.canHandleAuthentication(response)) {
-                  authenticationHandler = handler2;
+              for (const handler3 of this.handlers) {
+                if (handler3.canHandleAuthentication(response)) {
+                  authenticationHandler = handler3;
                   break;
                 }
               }
@@ -17643,22 +17623,22 @@ var require_lib = __commonJS({
         }
         info.options.agent = this._getAgent(info.parsedUrl);
         if (this.handlers) {
-          for (const handler2 of this.handlers) {
-            handler2.prepareRequest(info.options);
+          for (const handler3 of this.handlers) {
+            handler3.prepareRequest(info.options);
           }
         }
         return info;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
-          return Object.assign({}, lowercaseKeys2(this.requestOptions.headers), lowercaseKeys2(headers || {}));
+          return Object.assign({}, lowercaseKeys3(this.requestOptions.headers), lowercaseKeys3(headers || {}));
         }
-        return lowercaseKeys2(headers || {});
+        return lowercaseKeys3(headers || {});
       }
       _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
         let clientHeader;
         if (this.requestOptions && this.requestOptions.headers) {
-          clientHeader = lowercaseKeys2(this.requestOptions.headers)[header];
+          clientHeader = lowercaseKeys3(this.requestOptions.headers)[header];
         }
         return additionalHeaders[header] || clientHeader || _default;
       }
@@ -17793,7 +17773,7 @@ var require_lib = __commonJS({
       }
     };
     exports2.HttpClient = HttpClient;
-    var lowercaseKeys2 = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
+    var lowercaseKeys3 = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
   }
 });
 
@@ -18349,7 +18329,7 @@ var require_util8 = __commonJS({
     var { InvalidArgumentError } = require_errors2();
     var { Blob: Blob4 } = require("buffer");
     var nodeUtil = require("util");
-    var { stringify: stringify2 } = require("querystring");
+    var { stringify } = require("querystring");
     var { headerNameLowerCasedRecord } = require_constants6();
     var { tree } = require_tree();
     var [nodeMajor, nodeMinor] = process.versions.node.split(".").map((v) => Number(v));
@@ -18374,7 +18354,7 @@ var require_util8 = __commonJS({
       if (url.includes("?") || url.includes("#")) {
         throw new Error('Query params cannot be passed when url already contains "?" or "#".');
       }
-      const stringified = stringify2(queryParams);
+      const stringified = stringify(queryParams);
       if (stringified) {
         url += "?" + stringified;
       }
@@ -18437,8 +18417,7 @@ var require_util8 = __commonJS({
         return host.substring(1, idx2);
       }
       const idx = host.indexOf(":");
-      if (idx === -1)
-        return host;
+      if (idx === -1) return host;
       return host.substring(0, idx);
     }
     function getServerName(host) {
@@ -18511,8 +18490,7 @@ var require_util8 = __commonJS({
       return tree.lookup(value) ?? value.toString("latin1").toLowerCase();
     }
     function parseHeaders(headers, obj) {
-      if (obj === void 0)
-        obj = {};
+      if (obj === void 0) obj = {};
       for (let i2 = 0; i2 < headers.length; i2 += 2) {
         const key = headerNameToString(headers[i2]);
         let val = obj[key];
@@ -18566,31 +18544,31 @@ var require_util8 = __commonJS({
     function isBuffer(buffer) {
       return buffer instanceof Uint8Array || Buffer.isBuffer(buffer);
     }
-    function validateHandler(handler2, method, upgrade) {
-      if (!handler2 || typeof handler2 !== "object") {
+    function validateHandler(handler3, method, upgrade) {
+      if (!handler3 || typeof handler3 !== "object") {
         throw new InvalidArgumentError("handler must be an object");
       }
-      if (typeof handler2.onConnect !== "function") {
+      if (typeof handler3.onConnect !== "function") {
         throw new InvalidArgumentError("invalid onConnect method");
       }
-      if (typeof handler2.onError !== "function") {
+      if (typeof handler3.onError !== "function") {
         throw new InvalidArgumentError("invalid onError method");
       }
-      if (typeof handler2.onBodySent !== "function" && handler2.onBodySent !== void 0) {
+      if (typeof handler3.onBodySent !== "function" && handler3.onBodySent !== void 0) {
         throw new InvalidArgumentError("invalid onBodySent method");
       }
       if (upgrade || method === "CONNECT") {
-        if (typeof handler2.onUpgrade !== "function") {
+        if (typeof handler3.onUpgrade !== "function") {
           throw new InvalidArgumentError("invalid onUpgrade method");
         }
       } else {
-        if (typeof handler2.onHeaders !== "function") {
+        if (typeof handler3.onHeaders !== "function") {
           throw new InvalidArgumentError("invalid onHeaders method");
         }
-        if (typeof handler2.onData !== "function") {
+        if (typeof handler3.onData !== "function") {
           throw new InvalidArgumentError("invalid onData method");
         }
-        if (typeof handler2.onComplete !== "function") {
+        if (typeof handler3.onComplete !== "function") {
           throw new InvalidArgumentError("invalid onComplete method");
         }
       }
@@ -18617,14 +18595,14 @@ var require_util8 = __commonJS({
       };
     }
     function ReadableStreamFrom(iterable) {
-      let iterator2;
+      let iterator3;
       return new ReadableStream(
         {
           async start() {
-            iterator2 = iterable[Symbol.asyncIterator]();
+            iterator3 = iterable[Symbol.asyncIterator]();
           },
           async pull(controller) {
-            const { done, value } = await iterator2.next();
+            const { done, value } = await iterator3.next();
             if (done) {
               queueMicrotask(() => {
                 controller.close();
@@ -18639,7 +18617,7 @@ var require_util8 = __commonJS({
             return controller.desiredSize > 0;
           },
           async cancel(reason) {
-            await iterator2.return();
+            await iterator3.return();
           },
           type: "bytes"
         }
@@ -18704,8 +18682,7 @@ var require_util8 = __commonJS({
       return !headerCharRegex.test(characters);
     }
     function parseRangeHeader(range) {
-      if (range == null || range === "")
-        return { start: 0, end: null, size: null };
+      if (range == null || range === "") return { start: 0, end: null, size: null };
       const m2 = range ? range.match(/^bytes (\d+)-(\d+)\/(\d+)?$/) : null;
       return m2 ? {
         start: parseInt(m2[1]),
@@ -18725,10 +18702,10 @@ var require_util8 = __commonJS({
       }
       obj[kListeners] = null;
     }
-    function errorRequest(client, request2, err) {
+    function errorRequest(client, request3, err) {
       try {
-        request2.onError(err);
-        assert(request2.aborted);
+        request3.onError(err);
+        assert(request3.aborted);
       } catch (err2) {
         client.emit("error", err2);
       }
@@ -18815,36 +18792,36 @@ var require_diagnostics = __commonJS({
       const debuglog = fetchDebuglog.enabled ? fetchDebuglog : undiciDebugLog;
       diagnosticsChannel.channel("undici:client:beforeConnect").subscribe((evt) => {
         const {
-          connectParams: { version: version2, protocol, port, host }
+          connectParams: { version, protocol, port, host }
         } = evt;
         debuglog(
           "connecting to %s using %s%s",
           `${host}${port ? `:${port}` : ""}`,
           protocol,
-          version2
+          version
         );
       });
       diagnosticsChannel.channel("undici:client:connected").subscribe((evt) => {
         const {
-          connectParams: { version: version2, protocol, port, host }
+          connectParams: { version, protocol, port, host }
         } = evt;
         debuglog(
           "connected to %s using %s%s",
           `${host}${port ? `:${port}` : ""}`,
           protocol,
-          version2
+          version
         );
       });
       diagnosticsChannel.channel("undici:client:connectError").subscribe((evt) => {
         const {
-          connectParams: { version: version2, protocol, port, host },
+          connectParams: { version, protocol, port, host },
           error
         } = evt;
         debuglog(
           "connection to %s using %s%s errored - %s",
           `${host}${port ? `:${port}` : ""}`,
           protocol,
-          version2,
+          version,
           error.message
         );
       });
@@ -18893,31 +18870,31 @@ var require_diagnostics = __commonJS({
         const debuglog = undiciDebugLog.enabled ? undiciDebugLog : websocketDebuglog;
         diagnosticsChannel.channel("undici:client:beforeConnect").subscribe((evt) => {
           const {
-            connectParams: { version: version2, protocol, port, host }
+            connectParams: { version, protocol, port, host }
           } = evt;
           debuglog(
             "connecting to %s%s using %s%s",
             host,
             port ? `:${port}` : "",
             protocol,
-            version2
+            version
           );
         });
         diagnosticsChannel.channel("undici:client:connected").subscribe((evt) => {
           const {
-            connectParams: { version: version2, protocol, port, host }
+            connectParams: { version, protocol, port, host }
           } = evt;
           debuglog(
             "connected to %s%s using %s%s",
             host,
             port ? `:${port}` : "",
             protocol,
-            version2
+            version
           );
         });
         diagnosticsChannel.channel("undici:client:connectError").subscribe((evt) => {
           const {
-            connectParams: { version: version2, protocol, port, host },
+            connectParams: { version, protocol, port, host },
             error
           } = evt;
           debuglog(
@@ -18925,7 +18902,7 @@ var require_diagnostics = __commonJS({
             host,
             port ? `:${port}` : "",
             protocol,
-            version2,
+            version,
             error.message
           );
         });
@@ -19009,7 +18986,7 @@ var require_request3 = __commonJS({
         throwOnError,
         expectContinue,
         servername
-      }, handler2) {
+      }, handler3) {
         if (typeof path2 !== "string") {
           throw new InvalidArgumentError("path must be a string");
         } else if (path2[0] !== "/" && !(path2.startsWith("http://") || path2.startsWith("https://")) && method !== "CONNECT") {
@@ -19111,9 +19088,9 @@ var require_request3 = __commonJS({
         } else if (headers != null) {
           throw new InvalidArgumentError("headers must be an object or an array");
         }
-        validateHandler(handler2, method, upgrade);
+        validateHandler(handler3, method, upgrade);
         this.servername = servername || getServerName(this.host);
-        this[kHandler] = handler2;
+        this[kHandler] = handler3;
         if (channels.create.hasSubscribers) {
           channels.create.publish({ request: this });
         }
@@ -19218,7 +19195,7 @@ var require_request3 = __commonJS({
         return this;
       }
     };
-    function processHeader(request2, key, val) {
+    function processHeader(request3, key, val) {
       if (val && (typeof val === "object" && !Array.isArray(val))) {
         throw new InvalidArgumentError(`invalid ${key} header`);
       } else if (val === void 0) {
@@ -19259,19 +19236,19 @@ var require_request3 = __commonJS({
       } else {
         val = `${val}`;
       }
-      if (request2.host === null && headerName === "host") {
+      if (request3.host === null && headerName === "host") {
         if (typeof val !== "string") {
           throw new InvalidArgumentError("invalid host header");
         }
-        request2.host = val;
-      } else if (request2.contentLength === null && headerName === "content-length") {
-        request2.contentLength = parseInt(val, 10);
-        if (!Number.isFinite(request2.contentLength)) {
+        request3.host = val;
+      } else if (request3.contentLength === null && headerName === "content-length") {
+        request3.contentLength = parseInt(val, 10);
+        if (!Number.isFinite(request3.contentLength)) {
           throw new InvalidArgumentError("invalid content-length header");
         }
-      } else if (request2.contentType === null && headerName === "content-type") {
-        request2.contentType = val;
-        request2.headers.push(key, val);
+      } else if (request3.contentType === null && headerName === "content-type") {
+        request3.contentType = val;
+        request3.headers.push(key, val);
       } else if (headerName === "transfer-encoding" || headerName === "keep-alive" || headerName === "upgrade") {
         throw new InvalidArgumentError(`invalid ${headerName} header`);
       } else if (headerName === "connection") {
@@ -19280,12 +19257,12 @@ var require_request3 = __commonJS({
           throw new InvalidArgumentError("invalid connection header");
         }
         if (value === "close") {
-          request2.reset = true;
+          request3.reset = true;
         }
       } else if (headerName === "expect") {
         throw new NotSupportedError("expect header not supported");
       } else {
-        request2.headers.push(key, val);
+        request3.headers.push(key, val);
       }
     }
     module2.exports = Request2;
@@ -19470,20 +19447,20 @@ var require_dispatcher_base2 = __commonJS({
           queueMicrotask(onDestroyed);
         });
       }
-      [kInterceptedDispatch](opts, handler2) {
+      [kInterceptedDispatch](opts, handler3) {
         if (!this[kInterceptors] || this[kInterceptors].length === 0) {
           this[kInterceptedDispatch] = this[kDispatch];
-          return this[kDispatch](opts, handler2);
+          return this[kDispatch](opts, handler3);
         }
         let dispatch = this[kDispatch].bind(this);
         for (let i2 = this[kInterceptors].length - 1; i2 >= 0; i2--) {
           dispatch = this[kInterceptors][i2](dispatch);
         }
         this[kInterceptedDispatch] = dispatch;
-        return dispatch(opts, handler2);
+        return dispatch(opts, handler3);
       }
-      dispatch(opts, handler2) {
-        if (!handler2 || typeof handler2 !== "object") {
+      dispatch(opts, handler3) {
+        if (!handler3 || typeof handler3 !== "object") {
           throw new InvalidArgumentError("handler must be an object");
         }
         try {
@@ -19496,12 +19473,12 @@ var require_dispatcher_base2 = __commonJS({
           if (this[kClosed]) {
             throw new ClientClosedError();
           }
-          return this[kInterceptedDispatch](opts, handler2);
+          return this[kInterceptedDispatch](opts, handler3);
         } catch (err) {
-          if (typeof handler2.onError !== "function") {
+          if (typeof handler3.onError !== "function") {
             throw new InvalidArgumentError("invalid onError method");
           }
-          handler2.onError(err);
+          handler3.onError(err);
           return false;
         }
       }
@@ -20598,12 +20575,10 @@ var require_data_url = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        while (lead < str.length && predicate(str.charCodeAt(lead)))
-          lead++;
+        while (lead < str.length && predicate(str.charCodeAt(lead))) lead++;
       }
       if (trailing) {
-        while (trail > 0 && predicate(str.charCodeAt(trail)))
-          trail--;
+        while (trail > 0 && predicate(str.charCodeAt(trail))) trail--;
       }
       return lead === 0 && trail === str.length - 1 ? str : str.slice(lead, trail + 1);
     }
@@ -21095,11 +21070,11 @@ var require_util9 = __commonJS({
     var { isUint8Array } = require("util/types");
     var { webidl } = require_webidl2();
     var supportedHashes = [];
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
       const possibleRelevantHashes = ["sha256", "sha384", "sha512"];
-      supportedHashes = crypto4.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
+      supportedHashes = crypto.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
     } catch {
     }
     function responseURL(response) {
@@ -21138,11 +21113,11 @@ var require_util9 = __commonJS({
     function normalizeBinaryStringToUtf8(value) {
       return Buffer.from(value, "binary").toString("utf8");
     }
-    function requestCurrentURL(request2) {
-      return request2.urlList[request2.urlList.length - 1];
+    function requestCurrentURL(request3) {
+      return request3.urlList[request3.urlList.length - 1];
     }
-    function requestBadPort(request2) {
-      const url = requestCurrentURL(request2);
+    function requestBadPort(request3) {
+      const url = requestCurrentURL(request3);
       if (urlIsHttpHttpsScheme(url) && badPortsSet.has(url.port)) {
         return "blocked";
       }
@@ -21172,7 +21147,7 @@ var require_util9 = __commonJS({
       }
       return true;
     }
-    function setRequestReferrerPolicyOnRedirect(request2, actualResponse) {
+    function setRequestReferrerPolicyOnRedirect(request3, actualResponse) {
       const { headersList } = actualResponse;
       const policyHeader = (headersList.get("referrer-policy", true) ?? "").split(",");
       let policy = "";
@@ -21186,7 +21161,7 @@ var require_util9 = __commonJS({
         }
       }
       if (policy !== "") {
-        request2.referrerPolicy = policy;
+        request3.referrerPolicy = policy;
       }
     }
     function crossOriginResourcePolicyCheck() {
@@ -21203,33 +21178,33 @@ var require_util9 = __commonJS({
       header = httpRequest.mode;
       httpRequest.headersList.set("sec-fetch-mode", header, true);
     }
-    function appendRequestOriginHeader(request2) {
-      let serializedOrigin = request2.origin;
-      if (request2.responseTainting === "cors" || request2.mode === "websocket") {
+    function appendRequestOriginHeader(request3) {
+      let serializedOrigin = request3.origin;
+      if (request3.responseTainting === "cors" || request3.mode === "websocket") {
         if (serializedOrigin) {
-          request2.headersList.append("origin", serializedOrigin, true);
+          request3.headersList.append("origin", serializedOrigin, true);
         }
-      } else if (request2.method !== "GET" && request2.method !== "HEAD") {
-        switch (request2.referrerPolicy) {
+      } else if (request3.method !== "GET" && request3.method !== "HEAD") {
+        switch (request3.referrerPolicy) {
           case "no-referrer":
             serializedOrigin = null;
             break;
           case "no-referrer-when-downgrade":
           case "strict-origin":
           case "strict-origin-when-cross-origin":
-            if (request2.origin && urlHasHttpsScheme(request2.origin) && !urlHasHttpsScheme(requestCurrentURL(request2))) {
+            if (request3.origin && urlHasHttpsScheme(request3.origin) && !urlHasHttpsScheme(requestCurrentURL(request3))) {
               serializedOrigin = null;
             }
             break;
           case "same-origin":
-            if (!sameOrigin(request2, requestCurrentURL(request2))) {
+            if (!sameOrigin(request3, requestCurrentURL(request3))) {
               serializedOrigin = null;
             }
             break;
           default:
         }
         if (serializedOrigin) {
-          request2.headersList.append("origin", serializedOrigin, true);
+          request3.headersList.append("origin", serializedOrigin, true);
         }
       }
     }
@@ -21284,26 +21259,26 @@ var require_util9 = __commonJS({
         referrerPolicy: policyContainer.referrerPolicy
       };
     }
-    function determineRequestsReferrer2(request2) {
-      const policy = request2.referrerPolicy;
+    function determineRequestsReferrer2(request3) {
+      const policy = request3.referrerPolicy;
       assert(policy);
       let referrerSource = null;
-      if (request2.referrer === "client") {
+      if (request3.referrer === "client") {
         const globalOrigin = getGlobalOrigin();
         if (!globalOrigin || globalOrigin.origin === "null") {
           return "no-referrer";
         }
         referrerSource = new URL(globalOrigin);
-      } else if (request2.referrer instanceof URL) {
-        referrerSource = request2.referrer;
+      } else if (request3.referrer instanceof URL) {
+        referrerSource = request3.referrer;
       }
       let referrerURL = stripURLForReferrer(referrerSource);
       const referrerOrigin = stripURLForReferrer(referrerSource, true);
       if (referrerURL.toString().length > 4096) {
         referrerURL = referrerOrigin;
       }
-      const areSameOrigin = sameOrigin(request2, referrerURL);
-      const isNonPotentiallyTrustWorthy = isURLPotentiallyTrustworthy(referrerURL) && !isURLPotentiallyTrustworthy(request2.url);
+      const areSameOrigin = sameOrigin(request3, referrerURL);
+      const isNonPotentiallyTrustWorthy = isURLPotentiallyTrustworthy(referrerURL) && !isURLPotentiallyTrustworthy(request3.url);
       switch (policy) {
         case "origin":
           return referrerOrigin != null ? referrerOrigin : stripURLForReferrer(referrerSource, true);
@@ -21314,7 +21289,7 @@ var require_util9 = __commonJS({
         case "origin-when-cross-origin":
           return areSameOrigin ? referrerURL : referrerOrigin;
         case "strict-origin-when-cross-origin": {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           if (sameOrigin(referrerURL, currentURL)) {
             return referrerURL;
           }
@@ -21324,7 +21299,21 @@ var require_util9 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -21351,14 +21340,11 @@ var require_util9 = __commonJS({
       if (url.href === "about:blank" || url.href === "about:srcdoc") {
         return true;
       }
-      if (url.protocol === "data:")
-        return true;
-      if (url.protocol === "file:")
-        return true;
+      if (url.protocol === "data:") return true;
+      if (url.protocol === "file:") return true;
       return isOriginPotentiallyTrustworthy2(url.origin);
       function isOriginPotentiallyTrustworthy2(origin) {
-        if (origin == null || origin === "null")
-          return false;
+        if (origin == null || origin === "null") return false;
         const originAsURL = new URL(origin);
         if (originAsURL.protocol === "https:" || originAsURL.protocol === "wss:") {
           return true;
@@ -21370,7 +21356,7 @@ var require_util9 = __commonJS({
       }
     }
     function bytesMatch(bytes, metadataList) {
-      if (crypto4 === void 0) {
+      if (crypto === void 0) {
         return true;
       }
       const parsedMetadata = parseMetadata(metadataList);
@@ -21385,7 +21371,7 @@ var require_util9 = __commonJS({
       for (const item of metadata) {
         const algorithm = item.algo;
         const expectedValue = item.hash;
-        let actualValue = crypto4.createHash(algorithm).update(bytes).digest("base64");
+        let actualValue = crypto.createHash(algorithm).update(bytes).digest("base64");
         if (actualValue[actualValue.length - 1] === "=") {
           if (actualValue[actualValue.length - 2] === "=") {
             actualValue = actualValue.slice(0, -2);
@@ -21464,7 +21450,7 @@ var require_util9 = __commonJS({
       }
       return true;
     }
-    function tryUpgradeRequestToAPotentiallyTrustworthyURL(request2) {
+    function tryUpgradeRequestToAPotentiallyTrustworthyURL(request3) {
     }
     function sameOrigin(A2, B) {
       if (A2.origin === B.origin && A2.origin === "null") {
@@ -22523,12 +22509,10 @@ var require_formdata_parser = __commonJS({
       let lead = 0;
       let trail = buf.length - 1;
       if (leading) {
-        while (lead < buf.length && predicate(buf[lead]))
-          lead++;
+        while (lead < buf.length && predicate(buf[lead])) lead++;
       }
       if (trailing) {
-        while (trail > 0 && predicate(buf[trail]))
-          trail--;
+        while (trail > 0 && predicate(buf[trail])) trail--;
       }
       return lead === 0 && trail === buf.length - 1 ? buf : buf.subarray(lead, trail + 1);
     }
@@ -22680,13 +22664,13 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         length = Buffer.byteLength(source);
       }
       if (action != null) {
-        let iterator2;
+        let iterator3;
         stream = new ReadableStream({
           async start() {
-            iterator2 = action(object)[Symbol.asyncIterator]();
+            iterator3 = action(object)[Symbol.asyncIterator]();
           },
           async pull(controller) {
-            const { value, done } = await iterator2.next();
+            const { value, done } = await iterator3.next();
             if (done) {
               queueMicrotask(() => {
                 controller.close();
@@ -22703,7 +22687,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             return controller.desiredSize > 0;
           },
           async cancel(reason) {
-            await iterator2.return();
+            await iterator3.return();
           },
           type: "bytes"
         });
@@ -23088,11 +23072,11 @@ var require_client_h1 = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        if (!request2) {
+        const request3 = client[kQueue][client[kRunningIdx]];
+        if (!request3) {
           return -1;
         }
-        request2.onResponseStarted();
+        request3.onResponseStarted();
       }
       onHeaderField(buf) {
         const len = this.headers.length;
@@ -23133,12 +23117,12 @@ var require_client_h1 = __commonJS({
       onUpgrade(head) {
         const { upgrade, client, socket, headers, statusCode } = this;
         assert(upgrade);
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert(!socket.destroyed);
         assert(socket === client[kSocket]);
         assert(!this.paused);
-        assert(request2.upgrade || request2.method === "CONNECT");
+        assert(request3.upgrade || request3.method === "CONNECT");
         this.statusCode = null;
         this.statusText = "";
         this.shouldKeepAlive = null;
@@ -23156,7 +23140,7 @@ var require_client_h1 = __commonJS({
         client[kQueue][client[kRunningIdx]++] = null;
         client.emit("disconnect", client[kUrl], [client], new InformationalError("upgrade"));
         try {
-          request2.onUpgrade(statusCode, headers, socket);
+          request3.onUpgrade(statusCode, headers, socket);
         } catch (err) {
           util.destroy(socket, err);
         }
@@ -23167,8 +23151,8 @@ var require_client_h1 = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        if (!request2) {
+        const request3 = client[kQueue][client[kRunningIdx]];
+        if (!request3) {
           return -1;
         }
         assert(!this.upgrade);
@@ -23177,23 +23161,23 @@ var require_client_h1 = __commonJS({
           util.destroy(socket, new SocketError("bad response", util.getSocketInfo(socket)));
           return -1;
         }
-        if (upgrade && !request2.upgrade) {
+        if (upgrade && !request3.upgrade) {
           util.destroy(socket, new SocketError("bad upgrade", util.getSocketInfo(socket)));
           return -1;
         }
         assert.strictEqual(this.timeoutType, TIMEOUT_HEADERS);
         this.statusCode = statusCode;
         this.shouldKeepAlive = shouldKeepAlive || // Override llhttp value which does not allow keepAlive for HEAD.
-        request2.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
+        request3.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
         if (this.statusCode >= 200) {
-          const bodyTimeout = request2.bodyTimeout != null ? request2.bodyTimeout : client[kBodyTimeout];
+          const bodyTimeout = request3.bodyTimeout != null ? request3.bodyTimeout : client[kBodyTimeout];
           this.setTimeout(bodyTimeout, TIMEOUT_BODY);
         } else if (this.timeout) {
           if (this.timeout.refresh) {
             this.timeout.refresh();
           }
         }
-        if (request2.method === "CONNECT") {
+        if (request3.method === "CONNECT") {
           assert(client[kRunning] === 1);
           this.upgrade = true;
           return 2;
@@ -23224,11 +23208,11 @@ var require_client_h1 = __commonJS({
         } else {
           socket[kReset] = true;
         }
-        const pause = request2.onHeaders(statusCode, headers, this.resume, statusText) === false;
-        if (request2.aborted) {
+        const pause = request3.onHeaders(statusCode, headers, this.resume, statusText) === false;
+        if (request3.aborted) {
           return -1;
         }
-        if (request2.method === "HEAD") {
+        if (request3.method === "HEAD") {
           return 1;
         }
         if (statusCode < 200) {
@@ -23245,8 +23229,8 @@ var require_client_h1 = __commonJS({
         if (socket.destroyed) {
           return -1;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert.strictEqual(this.timeoutType, TIMEOUT_BODY);
         if (this.timeout) {
           if (this.timeout.refresh) {
@@ -23259,7 +23243,7 @@ var require_client_h1 = __commonJS({
           return -1;
         }
         this.bytesRead += buf.length;
-        if (request2.onData(buf) === false) {
+        if (request3.onData(buf) === false) {
           return constants.ERROR.PAUSED;
         }
       }
@@ -23271,8 +23255,8 @@ var require_client_h1 = __commonJS({
         if (upgrade) {
           return;
         }
-        const request2 = client[kQueue][client[kRunningIdx]];
-        assert(request2);
+        const request3 = client[kQueue][client[kRunningIdx]];
+        assert(request3);
         assert(statusCode >= 100);
         this.statusCode = null;
         this.statusText = "";
@@ -23286,11 +23270,11 @@ var require_client_h1 = __commonJS({
         if (statusCode < 200) {
           return;
         }
-        if (request2.method !== "HEAD" && contentLength && bytesRead !== parseInt(contentLength, 10)) {
+        if (request3.method !== "HEAD" && contentLength && bytesRead !== parseInt(contentLength, 10)) {
           util.destroy(socket, new ResponseContentLengthMismatchError());
           return -1;
         }
-        request2.onComplete(headers);
+        request3.onComplete(headers);
         client[kQueue][client[kRunningIdx]++] = null;
         if (socket[kWriting]) {
           assert.strictEqual(client[kRunning], 0);
@@ -23309,15 +23293,15 @@ var require_client_h1 = __commonJS({
         }
       }
     };
-    function onParserTimeout(parser3) {
-      const { socket, timeoutType, client } = parser3;
+    function onParserTimeout(parser4) {
+      const { socket, timeoutType, client } = parser4;
       if (timeoutType === TIMEOUT_HEADERS) {
         if (!socket[kWriting] || socket.writableNeedDrain || client[kRunning] > 1) {
-          assert(!parser3.paused, "cannot be paused while waiting for headers");
+          assert(!parser4.paused, "cannot be paused while waiting for headers");
           util.destroy(socket, new HeadersTimeoutError());
         }
       } else if (timeoutType === TIMEOUT_BODY) {
-        if (!parser3.paused) {
+        if (!parser4.paused) {
           util.destroy(socket, new BodyTimeoutError());
         }
       } else if (timeoutType === TIMEOUT_IDLE) {
@@ -23337,35 +23321,35 @@ var require_client_h1 = __commonJS({
       socket[kBlocking] = false;
       socket[kParser] = new Parser(client, socket, llhttpInstance);
       addListener(socket, "error", function(err) {
-        const parser3 = this[kParser];
+        const parser4 = this[kParser];
         assert(err.code !== "ERR_TLS_CERT_ALTNAME_INVALID");
-        if (err.code === "ECONNRESET" && parser3.statusCode && !parser3.shouldKeepAlive) {
-          parser3.onMessageComplete();
+        if (err.code === "ECONNRESET" && parser4.statusCode && !parser4.shouldKeepAlive) {
+          parser4.onMessageComplete();
           return;
         }
         this[kError] = err;
         this[kClient][kOnError](err);
       });
       addListener(socket, "readable", function() {
-        const parser3 = this[kParser];
-        if (parser3) {
-          parser3.readMore();
+        const parser4 = this[kParser];
+        if (parser4) {
+          parser4.readMore();
         }
       });
       addListener(socket, "end", function() {
-        const parser3 = this[kParser];
-        if (parser3.statusCode && !parser3.shouldKeepAlive) {
-          parser3.onMessageComplete();
+        const parser4 = this[kParser];
+        if (parser4.statusCode && !parser4.shouldKeepAlive) {
+          parser4.onMessageComplete();
           return;
         }
         util.destroy(this, new SocketError("other side closed", util.getSocketInfo(this)));
       });
       addListener(socket, "close", function() {
         const client2 = this[kClient];
-        const parser3 = this[kParser];
-        if (parser3) {
-          if (!this[kError] && parser3.statusCode && !parser3.shouldKeepAlive) {
-            parser3.onMessageComplete();
+        const parser4 = this[kParser];
+        if (parser4) {
+          if (!this[kError] && parser4.statusCode && !parser4.shouldKeepAlive) {
+            parser4.onMessageComplete();
           }
           this[kParser].destroy();
           this[kParser] = null;
@@ -23377,13 +23361,13 @@ var require_client_h1 = __commonJS({
           assert(client2[kPending] === 0);
           const requests = client2[kQueue].splice(client2[kRunningIdx]);
           for (let i2 = 0; i2 < requests.length; i2++) {
-            const request2 = requests[i2];
-            util.errorRequest(client2, request2, err);
+            const request3 = requests[i2];
+            util.errorRequest(client2, request3, err);
           }
         } else if (client2[kRunning] > 0 && err.code !== "UND_ERR_INFO") {
-          const request2 = client2[kQueue][client2[kRunningIdx]];
+          const request3 = client2[kQueue][client2[kRunningIdx]];
           client2[kQueue][client2[kRunningIdx]++] = null;
-          util.errorRequest(client2, request2, err);
+          util.errorRequest(client2, request3, err);
         }
         client2[kPendingIdx] = client2[kRunningIdx];
         assert(client2[kRunning] === 0);
@@ -23413,18 +23397,18 @@ var require_client_h1 = __commonJS({
         get destroyed() {
           return socket.destroyed;
         },
-        busy(request2) {
+        busy(request3) {
           if (socket[kWriting] || socket[kReset] || socket[kBlocking]) {
             return true;
           }
-          if (request2) {
-            if (client[kRunning] > 0 && !request2.idempotent) {
+          if (request3) {
+            if (client[kRunning] > 0 && !request3.idempotent) {
               return true;
             }
-            if (client[kRunning] > 0 && (request2.upgrade || request2.method === "CONNECT")) {
+            if (client[kRunning] > 0 && (request3.upgrade || request3.method === "CONNECT")) {
               return true;
             }
-            if (client[kRunning] > 0 && util.bodyLength(request2.body) !== 0 && (util.isStream(request2.body) || util.isAsyncIterable(request2.body) || util.isFormDataLike(request2.body))) {
+            if (client[kRunning] > 0 && util.bodyLength(request3.body) !== 0 && (util.isStream(request3.body) || util.isAsyncIterable(request3.body) || util.isFormDataLike(request3.body))) {
               return true;
             }
           }
@@ -23450,8 +23434,8 @@ var require_client_h1 = __commonJS({
           }
         } else if (client[kRunning] > 0 && socket[kParser].statusCode < 200) {
           if (socket[kParser].timeoutType !== TIMEOUT_HEADERS) {
-            const request2 = client[kQueue][client[kRunningIdx]];
-            const headersTimeout = request2.headersTimeout != null ? request2.headersTimeout : client[kHeadersTimeout];
+            const request3 = client[kQueue][client[kRunningIdx]];
+            const headersTimeout = request3.headersTimeout != null ? request3.headersTimeout : client[kHeadersTimeout];
             socket[kParser].setTimeout(headersTimeout, TIMEOUT_HEADERS);
           }
         }
@@ -23460,21 +23444,21 @@ var require_client_h1 = __commonJS({
     function shouldSendContentLength(method) {
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
-    function writeH1(client, request2) {
-      const { method, path: path2, host, upgrade, blocking, reset } = request2;
-      let { body, headers, contentLength } = request2;
+    function writeH1(client, request3) {
+      const { method, path: path2, host, upgrade, blocking, reset } = request3;
+      let { body, headers, contentLength } = request3;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (util.isFormDataLike(body)) {
         if (!extractBody) {
           extractBody = require_body2().extractBody;
         }
         const [bodyStream, contentType] = extractBody(body);
-        if (request2.contentType == null) {
+        if (request3.contentType == null) {
           headers.push("content-type", contentType);
         }
         body = bodyStream.stream;
         contentLength = bodyStream.length;
-      } else if (util.isBlobLike(body) && request2.contentType == null && body.type) {
+      } else if (util.isBlobLike(body) && request3.contentType == null && body.type) {
         headers.push("content-type", body.type);
       }
       if (body && typeof body.read === "function") {
@@ -23483,33 +23467,33 @@ var require_client_h1 = __commonJS({
       const bodyLength = util.bodyLength(body);
       contentLength = bodyLength ?? contentLength;
       if (contentLength === null) {
-        contentLength = request2.contentLength;
+        contentLength = request3.contentLength;
       }
       if (contentLength === 0 && !expectsPayload) {
         contentLength = null;
       }
-      if (shouldSendContentLength(method) && contentLength > 0 && request2.contentLength !== null && request2.contentLength !== contentLength) {
+      if (shouldSendContentLength(method) && contentLength > 0 && request3.contentLength !== null && request3.contentLength !== contentLength) {
         if (client[kStrictContentLength]) {
-          util.errorRequest(client, request2, new RequestContentLengthMismatchError());
+          util.errorRequest(client, request3, new RequestContentLengthMismatchError());
           return false;
         }
         process.emitWarning(new RequestContentLengthMismatchError());
       }
       const socket = client[kSocket];
       const abort = (err) => {
-        if (request2.aborted || request2.completed) {
+        if (request3.aborted || request3.completed) {
           return;
         }
-        util.errorRequest(client, request2, err || new RequestAbortedError());
+        util.errorRequest(client, request3, err || new RequestAbortedError());
         util.destroy(body);
         util.destroy(socket, new InformationalError("aborted"));
       };
       try {
-        request2.onConnect(abort);
+        request3.onConnect(abort);
       } catch (err) {
-        util.errorRequest(client, request2, err);
+        util.errorRequest(client, request3, err);
       }
-      if (request2.aborted) {
+      if (request3.aborted) {
         return false;
       }
       if (method === "HEAD") {
@@ -23560,31 +23544,31 @@ upgrade: ${upgrade}\r
         }
       }
       if (channels.sendHeaders.hasSubscribers) {
-        channels.sendHeaders.publish({ request: request2, headers: header, socket });
+        channels.sendHeaders.publish({ request: request3, headers: header, socket });
       }
       if (!body || bodyLength === 0) {
-        writeBuffer({ abort, body: null, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeBuffer({ abort, body: null, client, request: request3, socket, contentLength, header, expectsPayload });
       } else if (util.isBuffer(body)) {
-        writeBuffer({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeBuffer({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload });
       } else if (util.isBlobLike(body)) {
         if (typeof body.stream === "function") {
-          writeIterable({ abort, body: body.stream(), client, request: request2, socket, contentLength, header, expectsPayload });
+          writeIterable({ abort, body: body.stream(), client, request: request3, socket, contentLength, header, expectsPayload });
         } else {
-          writeBlob({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload });
+          writeBlob({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload });
         }
       } else if (util.isStream(body)) {
-        writeStream({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeStream({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload });
       } else if (util.isIterable(body)) {
-        writeIterable({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload });
+        writeIterable({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload });
       } else {
         assert(false);
       }
       return true;
     }
-    function writeStream({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    function writeStream({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "stream body cannot be pipelined");
       let finished = false;
-      const writer = new AsyncWriter({ abort, socket, request: request2, contentLength, client, expectsPayload, header });
+      const writer = new AsyncWriter({ abort, socket, request: request3, contentLength, client, expectsPayload, header });
       const onData = function(chunk) {
         if (finished) {
           return;
@@ -23650,7 +23634,7 @@ upgrade: ${upgrade}\r
         setImmediate(onClose);
       }
     }
-    async function writeBuffer({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeBuffer({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       try {
         if (!body) {
           if (contentLength === 0) {
@@ -23670,18 +23654,18 @@ upgrade: ${upgrade}\r
 `, "latin1");
           socket.write(body);
           socket.uncork();
-          request2.onBodySent(body);
+          request3.onBodySent(body);
           if (!expectsPayload) {
             socket[kReset] = true;
           }
         }
-        request2.onRequestSent();
+        request3.onRequestSent();
         client[kResume]();
       } catch (err) {
         abort(err);
       }
     }
-    async function writeBlob({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeBlob({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength === body.size, "blob body must have content length");
       try {
         if (contentLength != null && contentLength !== body.size) {
@@ -23694,8 +23678,8 @@ upgrade: ${upgrade}\r
 `, "latin1");
         socket.write(buffer);
         socket.uncork();
-        request2.onBodySent(buffer);
-        request2.onRequestSent();
+        request3.onBodySent(buffer);
+        request3.onRequestSent();
         if (!expectsPayload) {
           socket[kReset] = true;
         }
@@ -23704,7 +23688,7 @@ upgrade: ${upgrade}\r
         abort(err);
       }
     }
-    async function writeIterable({ abort, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeIterable({ abort, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "iterator body cannot be pipelined");
       let callback = null;
       function onDrain() {
@@ -23723,7 +23707,7 @@ upgrade: ${upgrade}\r
         }
       });
       socket.on("close", onDrain).on("drain", onDrain);
-      const writer = new AsyncWriter({ abort, socket, request: request2, contentLength, client, expectsPayload, header });
+      const writer = new AsyncWriter({ abort, socket, request: request3, contentLength, client, expectsPayload, header });
       try {
         for await (const chunk of body) {
           if (socket[kError]) {
@@ -23741,9 +23725,9 @@ upgrade: ${upgrade}\r
       }
     }
     var AsyncWriter = class {
-      constructor({ abort, socket, request: request2, contentLength, client, expectsPayload, header }) {
+      constructor({ abort, socket, request: request3, contentLength, client, expectsPayload, header }) {
         this.socket = socket;
-        this.request = request2;
+        this.request = request3;
         this.contentLength = contentLength;
         this.client = client;
         this.bytesWritten = 0;
@@ -23753,7 +23737,7 @@ upgrade: ${upgrade}\r
         socket[kWriting] = true;
       }
       write(chunk) {
-        const { socket, request: request2, contentLength, client, bytesWritten, expectsPayload, header } = this;
+        const { socket, request: request3, contentLength, client, bytesWritten, expectsPayload, header } = this;
         if (socket[kError]) {
           throw socket[kError];
         }
@@ -23792,7 +23776,7 @@ ${len.toString(16)}\r
         this.bytesWritten += len;
         const ret = socket.write(chunk);
         socket.uncork();
-        request2.onBodySent(chunk);
+        request3.onBodySent(chunk);
         if (!ret) {
           if (socket[kParser].timeout && socket[kParser].timeoutType === TIMEOUT_HEADERS) {
             if (socket[kParser].timeout.refresh) {
@@ -23803,8 +23787,8 @@ ${len.toString(16)}\r
         return ret;
       }
       end() {
-        const { socket, contentLength, client, bytesWritten, expectsPayload, header, request: request2 } = this;
-        request2.onRequestSent();
+        const { socket, contentLength, client, bytesWritten, expectsPayload, header, request: request3 } = this;
+        request3.onRequestSent();
         socket[kWriting] = false;
         if (socket[kError]) {
           throw socket[kError];
@@ -23940,8 +23924,8 @@ var require_client_h2 = __commonJS({
         assert(client2[kPending] === 0);
         const requests = client2[kQueue].splice(client2[kRunningIdx]);
         for (let i2 = 0; i2 < requests.length; i2++) {
-          const request2 = requests[i2];
-          util.errorRequest(client2, request2, err);
+          const request3 = requests[i2];
+          util.errorRequest(client2, request3, err);
         }
         client2[kPendingIdx] = client2[kRunningIdx];
         assert(client2[kRunning] === 0);
@@ -24015,14 +23999,14 @@ var require_client_h2 = __commonJS({
     function shouldSendContentLength(method) {
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
-    function writeH2(client, request2) {
+    function writeH2(client, request3) {
       const session = client[kHTTP2Session];
-      const { body, method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request2;
+      const { body, method, path: path2, host, upgrade, expectContinue, signal, headers: reqHeaders } = request3;
       if (upgrade) {
-        util.errorRequest(client, request2, new Error("Upgrade not supported for H2"));
+        util.errorRequest(client, request3, new Error("Upgrade not supported for H2"));
         return false;
       }
-      if (request2.aborted) {
+      if (request3.aborted) {
         return false;
       }
       const headers = {};
@@ -24046,8 +24030,8 @@ var require_client_h2 = __commonJS({
       headers[HTTP2_HEADER_AUTHORITY] = host || `${hostname}${port ? `:${port}` : ""}`;
       headers[HTTP2_HEADER_METHOD] = method;
       try {
-        request2.onConnect((err) => {
-          if (request2.aborted || request2.completed) {
+        request3.onConnect((err) => {
+          if (request3.aborted || request3.completed) {
             return;
           }
           err = err || new RequestAbortedError();
@@ -24058,27 +24042,26 @@ var require_client_h2 = __commonJS({
               session.unref();
             }
           }
-          util.errorRequest(client, request2, err);
+          util.errorRequest(client, request3, err);
         });
       } catch (err) {
-        util.errorRequest(client, request2, err);
+        util.errorRequest(client, request3, err);
       }
       if (method === "CONNECT") {
         session.ref();
         stream = session.request(headers, { endStream: false, signal });
         if (stream.id && !stream.pending) {
-          request2.onUpgrade(null, null, stream);
+          request3.onUpgrade(null, null, stream);
           ++session[kOpenStreams];
         } else {
           stream.once("ready", () => {
-            request2.onUpgrade(null, null, stream);
+            request3.onUpgrade(null, null, stream);
             ++session[kOpenStreams];
           });
         }
         stream.once("close", () => {
           session[kOpenStreams] -= 1;
-          if (session[kOpenStreams] === 0)
-            session.unref();
+          if (session[kOpenStreams] === 0) session.unref();
         });
         return true;
       }
@@ -24090,14 +24073,14 @@ var require_client_h2 = __commonJS({
       }
       let contentLength = util.bodyLength(body);
       if (contentLength == null) {
-        contentLength = request2.contentLength;
+        contentLength = request3.contentLength;
       }
       if (contentLength === 0 || !expectsPayload) {
         contentLength = null;
       }
-      if (shouldSendContentLength(method) && contentLength > 0 && request2.contentLength != null && request2.contentLength !== contentLength) {
+      if (shouldSendContentLength(method) && contentLength > 0 && request3.contentLength != null && request3.contentLength !== contentLength) {
         if (client[kStrictContentLength]) {
-          util.errorRequest(client, request2, new RequestContentLengthMismatchError());
+          util.errorRequest(client, request3, new RequestContentLengthMismatchError());
           return false;
         }
         process.emitWarning(new RequestContentLengthMismatchError());
@@ -24122,25 +24105,25 @@ var require_client_h2 = __commonJS({
       ++session[kOpenStreams];
       stream.once("response", (headers2) => {
         const { [HTTP2_HEADER_STATUS]: statusCode, ...realHeaders } = headers2;
-        request2.onResponseStarted();
-        if (request2.aborted || request2.completed) {
+        request3.onResponseStarted();
+        if (request3.aborted || request3.completed) {
           const err = new RequestAbortedError();
-          util.errorRequest(client, request2, err);
+          util.errorRequest(client, request3, err);
           util.destroy(stream, err);
           return;
         }
-        if (request2.onHeaders(Number(statusCode), parseH2Headers(realHeaders), stream.resume.bind(stream), "") === false) {
+        if (request3.onHeaders(Number(statusCode), parseH2Headers(realHeaders), stream.resume.bind(stream), "") === false) {
           stream.pause();
         }
         stream.on("data", (chunk) => {
-          if (request2.onData(chunk) === false) {
+          if (request3.onData(chunk) === false) {
             stream.pause();
           }
         });
       });
       stream.once("end", () => {
         if (stream.state?.state == null || stream.state.state < 6) {
-          request2.onComplete([]);
+          request3.onComplete([]);
           return;
         }
         session[kOpenStreams] -= 1;
@@ -24148,7 +24131,7 @@ var require_client_h2 = __commonJS({
           session.unref();
         }
         const err = new InformationalError("HTTP/2: stream half-closed (remote)");
-        util.errorRequest(client, request2, err);
+        util.errorRequest(client, request3, err);
         util.destroy(stream, err);
       });
       stream.once("close", () => {
@@ -24160,13 +24143,13 @@ var require_client_h2 = __commonJS({
       stream.once("error", function(err) {
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           session[kOpenStreams] -= 1;
-          util.errorRequest(client, request2, err);
+          util.errorRequest(client, request3, err);
           util.destroy(stream, err);
         }
       });
       stream.once("frameError", (type, code) => {
         const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
-        util.errorRequest(client, request2, err);
+        util.errorRequest(client, request3, err);
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           session[kOpenStreams] -= 1;
           util.destroy(stream, err);
@@ -24175,20 +24158,20 @@ var require_client_h2 = __commonJS({
       return true;
       function writeBodyH2() {
         if (!body) {
-          request2.onRequestSent();
+          request3.onRequestSent();
         } else if (util.isBuffer(body)) {
           assert(contentLength === body.byteLength, "buffer body must have content length");
           stream.cork();
           stream.write(body);
           stream.uncork();
           stream.end();
-          request2.onBodySent(body);
-          request2.onRequestSent();
+          request3.onBodySent(body);
+          request3.onRequestSent();
         } else if (util.isBlobLike(body)) {
           if (typeof body.stream === "function") {
             writeIterable({
               client,
-              request: request2,
+              request: request3,
               contentLength,
               h2stream: stream,
               expectsPayload,
@@ -24200,7 +24183,7 @@ var require_client_h2 = __commonJS({
             writeBlob({
               body,
               client,
-              request: request2,
+              request: request3,
               contentLength,
               expectsPayload,
               h2stream: stream,
@@ -24212,7 +24195,7 @@ var require_client_h2 = __commonJS({
           writeStream({
             body,
             client,
-            request: request2,
+            request: request3,
             contentLength,
             expectsPayload,
             socket: client[kSocket],
@@ -24223,7 +24206,7 @@ var require_client_h2 = __commonJS({
           writeIterable({
             body,
             client,
-            request: request2,
+            request: request3,
             contentLength,
             expectsPayload,
             header: "",
@@ -24235,7 +24218,7 @@ var require_client_h2 = __commonJS({
         }
       }
     }
-    function writeStream({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    function writeStream({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "stream body cannot be pipelined");
       const pipe = pipeline2(
         body,
@@ -24245,7 +24228,7 @@ var require_client_h2 = __commonJS({
             util.destroy(body, err);
             util.destroy(h2stream, err);
           } else {
-            request2.onRequestSent();
+            request3.onRequestSent();
           }
         }
       );
@@ -24255,10 +24238,10 @@ var require_client_h2 = __commonJS({
         util.destroy(pipe);
       });
       function onPipeData(chunk) {
-        request2.onBodySent(chunk);
+        request3.onBodySent(chunk);
       }
     }
-    async function writeBlob({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeBlob({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength === body.size, "blob body must have content length");
       try {
         if (contentLength != null && contentLength !== body.size) {
@@ -24268,8 +24251,8 @@ var require_client_h2 = __commonJS({
         h2stream.cork();
         h2stream.write(buffer);
         h2stream.uncork();
-        request2.onBodySent(buffer);
-        request2.onRequestSent();
+        request3.onBodySent(buffer);
+        request3.onRequestSent();
         if (!expectsPayload) {
           socket[kReset] = true;
         }
@@ -24278,7 +24261,7 @@ var require_client_h2 = __commonJS({
         util.destroy(h2stream);
       }
     }
-    async function writeIterable({ h2stream, body, client, request: request2, socket, contentLength, header, expectsPayload }) {
+    async function writeIterable({ h2stream, body, client, request: request3, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "iterator body cannot be pipelined");
       let callback = null;
       function onDrain() {
@@ -24303,7 +24286,7 @@ var require_client_h2 = __commonJS({
             throw socket[kError];
           }
           const res = h2stream.write(chunk);
-          request2.onBodySent(chunk);
+          request3.onBodySent(chunk);
           if (!res) {
             await waitForDrain();
           }
@@ -24311,7 +24294,7 @@ var require_client_h2 = __commonJS({
       } catch (err) {
         h2stream.destroy(err);
       } finally {
-        request2.onRequestSent();
+        request3.onRequestSent();
         h2stream.end();
         h2stream.off("close", onDrain).off("drain", onDrain);
       }
@@ -24343,17 +24326,17 @@ var require_redirect_handler = __commonJS({
       }
     };
     var RedirectHandler = class {
-      constructor(dispatch, maxRedirections, opts, handler2) {
+      constructor(dispatch, maxRedirections, opts, handler3) {
         if (maxRedirections != null && (!Number.isInteger(maxRedirections) || maxRedirections < 0)) {
           throw new InvalidArgumentError("maxRedirections must be a positive number");
         }
-        util.validateHandler(handler2, opts.method, opts.upgrade);
+        util.validateHandler(handler3, opts.method, opts.upgrade);
         this.dispatch = dispatch;
         this.location = null;
         this.abort = null;
         this.opts = { ...opts, maxRedirections: 0 };
         this.maxRedirections = maxRedirections;
-        this.handler = handler2;
+        this.handler = handler3;
         this.history = [];
         this.redirectionLimitReached = false;
         if (util.isStream(this.opts.body)) {
@@ -24486,12 +24469,12 @@ var require_redirect_interceptor = __commonJS({
     var RedirectHandler = require_redirect_handler();
     function createRedirectInterceptor({ maxRedirections: defaultMaxRedirections }) {
       return (dispatch) => {
-        return function Intercept(opts, handler2) {
+        return function Intercept(opts, handler3) {
           const { maxRedirections = defaultMaxRedirections } = opts;
           if (!maxRedirections) {
-            return dispatch(opts, handler2);
+            return dispatch(opts, handler3);
           }
-          const redirectHandler = new RedirectHandler(dispatch, maxRedirections, opts, handler2);
+          const redirectHandler = new RedirectHandler(dispatch, maxRedirections, opts, handler3);
           opts = { ...opts, maxRedirections: 0 };
           return dispatch(opts, redirectHandler);
         };
@@ -24747,12 +24730,12 @@ var require_client2 = __commonJS({
         connect(this);
         this.once("connect", cb);
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         const origin = opts.origin || this[kUrl].origin;
-        const request2 = new Request2(origin, opts, handler2);
-        this[kQueue].push(request2);
+        const request3 = new Request2(origin, opts, handler3);
+        this[kQueue].push(request3);
         if (this[kResuming]) {
-        } else if (util.bodyLength(request2.body) == null && util.isIterable(request2.body)) {
+        } else if (util.bodyLength(request3.body) == null && util.isIterable(request3.body)) {
           this[kResuming] = 1;
           queueMicrotask(() => resume(this));
         } else {
@@ -24776,8 +24759,8 @@ var require_client2 = __commonJS({
         return new Promise((resolve) => {
           const requests = this[kQueue].splice(this[kPendingIdx]);
           for (let i2 = 0; i2 < requests.length; i2++) {
-            const request2 = requests[i2];
-            util.errorRequest(this, request2, err);
+            const request3 = requests[i2];
+            util.errorRequest(this, request3, err);
           }
           const callback = () => {
             if (this[kClosedResolve]) {
@@ -24802,8 +24785,8 @@ var require_client2 = __commonJS({
         assert(client[kPendingIdx] === client[kRunningIdx]);
         const requests = client[kQueue].splice(client[kRunningIdx]);
         for (let i2 = 0; i2 < requests.length; i2++) {
-          const request2 = requests[i2];
-          util.errorRequest(client, request2, err);
+          const request3 = requests[i2];
+          util.errorRequest(client, request3, err);
         }
         assert(client[kSize] === 0);
       }
@@ -24908,8 +24891,8 @@ var require_client2 = __commonJS({
         if (err.code === "ERR_TLS_CERT_ALTNAME_INVALID") {
           assert(client[kRunning] === 0);
           while (client[kPending] > 0 && client[kQueue][client[kPendingIdx]].servername === client[kServerName]) {
-            const request2 = client[kQueue][client[kPendingIdx]++];
-            util.errorRequest(client, request2, err);
+            const request3 = client[kQueue][client[kPendingIdx]++];
+            util.errorRequest(client, request3, err);
           }
         } else {
           onError2(client, err);
@@ -24966,12 +24949,12 @@ var require_client2 = __commonJS({
         if (client[kRunning] >= (getPipelining(client) || 1)) {
           return;
         }
-        const request2 = client[kQueue][client[kPendingIdx]];
-        if (client[kUrl].protocol === "https:" && client[kServerName] !== request2.servername) {
+        const request3 = client[kQueue][client[kPendingIdx]];
+        if (client[kUrl].protocol === "https:" && client[kServerName] !== request3.servername) {
           if (client[kRunning] > 0) {
             return;
           }
-          client[kServerName] = request2.servername;
+          client[kServerName] = request3.servername;
           client[kHTTPContext]?.destroy(new InformationalError("servername changed"), () => {
             client[kHTTPContext] = null;
             resume(client);
@@ -24987,10 +24970,10 @@ var require_client2 = __commonJS({
         if (client[kHTTPContext].destroyed) {
           return;
         }
-        if (client[kHTTPContext].busy(request2)) {
+        if (client[kHTTPContext].busy(request3)) {
           return;
         }
-        if (!request2.aborted && client[kHTTPContext].write(request2)) {
+        if (!request3.aborted && client[kHTTPContext].write(request3)) {
           client[kPendingIdx]++;
         } else {
           client[kQueue].splice(client[kPendingIdx], 1);
@@ -25201,13 +25184,13 @@ var require_pool_base2 = __commonJS({
         }
         return Promise.all(this[kClients].map((c) => c.destroy(err)));
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         const dispatcher = this[kGetDispatcher]();
         if (!dispatcher) {
           this[kNeedDrain] = true;
-          this[kQueue].push({ opts, handler: handler2 });
+          this[kQueue].push({ opts, handler: handler3 });
           this[kQueued]++;
-        } else if (!dispatcher.dispatch(opts, handler2)) {
+        } else if (!dispatcher.dispatch(opts, handler3)) {
           dispatcher[kNeedDrain] = true;
           this[kNeedDrain] = !this[kGetDispatcher]();
         }
@@ -25357,8 +25340,7 @@ var require_balanced_pool2 = __commonJS({
     var kMaxWeightPerServer = Symbol("kMaxWeightPerServer");
     var kErrorPenalty = Symbol("kErrorPenalty");
     function getGreatestCommonDivisor(a, b) {
-      if (b === 0)
-        return a;
+      if (b === 0) return a;
       return getGreatestCommonDivisor(b, a % b);
     }
     function defaultFactory(origin, opts) {
@@ -25527,7 +25509,7 @@ var require_agent2 = __commonJS({
         }
         return ret;
       }
-      [kDispatch](opts, handler2) {
+      [kDispatch](opts, handler3) {
         let key;
         if (opts.origin && (typeof opts.origin === "string" || opts.origin instanceof URL)) {
           key = String(opts.origin);
@@ -25539,7 +25521,7 @@ var require_agent2 = __commonJS({
           dispatcher = this[kFactory](opts.origin, this[kOptions]).on("drain", this[kOnDrain]).on("connect", this[kOnConnect]).on("disconnect", this[kOnDisconnect]).on("connectionError", this[kOnConnectionError]);
           this[kClients].set(key, dispatcher);
         }
-        return dispatcher.dispatch(opts, handler2);
+        return dispatcher.dispatch(opts, handler3);
       }
       async [kClose]() {
         const closePromises = [];
@@ -25567,7 +25549,7 @@ var require_proxy_agent2 = __commonJS({
   "node_modules/undici/lib/dispatcher/proxy-agent.js"(exports2, module2) {
     "use strict";
     var { kProxy, kClose, kDestroy, kInterceptors } = require_symbols6();
-    var { URL: URL3 } = require("url");
+    var { URL: URL2 } = require("url");
     var Agent = require_agent2();
     var Pool = require_pool2();
     var DispatcherBase = require_dispatcher_base2();
@@ -25588,7 +25570,7 @@ var require_proxy_agent2 = __commonJS({
     var ProxyAgent2 = class extends DispatcherBase {
       constructor(opts) {
         super();
-        if (!opts || typeof opts === "object" && !(opts instanceof URL3) && !opts.uri) {
+        if (!opts || typeof opts === "object" && !(opts instanceof URL2) && !opts.uri) {
           throw new InvalidArgumentError("Proxy uri is mandatory");
         }
         const { clientFactory = defaultFactory } = opts;
@@ -25659,11 +25641,11 @@ var require_proxy_agent2 = __commonJS({
           }
         });
       }
-      dispatch(opts, handler2) {
+      dispatch(opts, handler3) {
         const headers = buildHeaders(opts.headers);
         throwIfProxyAuthIsSent(headers);
         if (headers && !("host" in headers) && !("Host" in headers)) {
-          const { host } = new URL3(opts.origin);
+          const { host } = new URL2(opts.origin);
           headers.host = host;
         }
         return this[kAgent].dispatch(
@@ -25671,7 +25653,7 @@ var require_proxy_agent2 = __commonJS({
             ...opts,
             headers
           },
-          handler2
+          handler3
         );
       }
       /**
@@ -25680,11 +25662,11 @@ var require_proxy_agent2 = __commonJS({
        */
       #getUrl(opts) {
         if (typeof opts === "string") {
-          return new URL3(opts);
-        } else if (opts instanceof URL3) {
+          return new URL2(opts);
+        } else if (opts instanceof URL2) {
           return opts;
         } else {
-          return new URL3(opts.uri);
+          return new URL2(opts.uri);
         }
       }
       async [kClose]() {
@@ -25809,8 +25791,7 @@ var require_retry_handler = __commonJS({
         }
       }
       onBodySent(chunk) {
-        if (this.handler.onBodySent)
-          return this.handler.onBodySent(chunk);
+        if (this.handler.onBodySent) return this.handler.onBodySent(chunk);
       }
       static [kRetryHandlerDefaultRetry](err, { state, opts }, cb) {
         const { statusCode, code, headers } = err;
@@ -26013,13 +25994,13 @@ var require_retry_agent = __commonJS({
         this.#agent = agent;
         this.#options = options;
       }
-      dispatch(opts, handler2) {
+      dispatch(opts, handler3) {
         const retry = new RetryHandler({
           ...opts,
           retryOptions: this.#options
         }, {
           dispatch: this.#agent.dispatch.bind(this.#agent),
-          handler: handler2
+          handler: handler3
         });
         return this.#agent.dispatch(opts, retry);
       }
@@ -26049,7 +26030,7 @@ var require_readable2 = __commonJS({
     var kAbort = Symbol("kAbort");
     var kContentType = Symbol("kContentType");
     var kContentLength = Symbol("kContentLength");
-    var noop3 = () => {
+    var noop4 = () => {
     };
     var BodyReadable = class extends Readable {
       constructor({
@@ -26173,7 +26154,7 @@ var require_readable2 = __commonJS({
             } else {
               resolve(null);
             }
-          }).on("error", noop3).on("data", function(chunk) {
+          }).on("error", noop4).on("data", function(chunk) {
             limit -= chunk.length;
             if (limit <= 0) {
               this.destroy();
@@ -26547,10 +26528,10 @@ var require_api_request2 = __commonJS({
         }
       }
     };
-    function request2(opts, callback) {
+    function request3(opts, callback) {
       if (callback === void 0) {
         return new Promise((resolve, reject) => {
-          request2.call(this, opts, (err, data) => {
+          request3.call(this, opts, (err, data) => {
             return err ? reject(err) : resolve(data);
           });
         });
@@ -26565,7 +26546,7 @@ var require_api_request2 = __commonJS({
         queueMicrotask(() => callback(err, { opaque }));
       }
     }
-    module2.exports = request2;
+    module2.exports = request3;
     module2.exports.RequestHandler = RequestHandler;
   }
 });
@@ -26795,11 +26776,11 @@ var require_api_pipeline2 = __commonJS({
       }
     };
     var PipelineHandler = class extends AsyncResource {
-      constructor(opts, handler2) {
+      constructor(opts, handler3) {
         if (!opts || typeof opts !== "object") {
           throw new InvalidArgumentError("invalid opts");
         }
-        if (typeof handler2 !== "function") {
+        if (typeof handler3 !== "function") {
           throw new InvalidArgumentError("invalid handler");
         }
         const { signal, method, opaque, onInfo, responseHeaders } = opts;
@@ -26815,7 +26796,7 @@ var require_api_pipeline2 = __commonJS({
         super("UNDICI_PIPELINE");
         this.opaque = opaque || null;
         this.responseHeaders = responseHeaders || null;
-        this.handler = handler2;
+        this.handler = handler3;
         this.abort = null;
         this.context = null;
         this.onInfo = onInfo || null;
@@ -26870,7 +26851,7 @@ var require_api_pipeline2 = __commonJS({
         this.context = context2;
       }
       onHeaders(statusCode, rawHeaders, resume) {
-        const { opaque, handler: handler2, context: context2 } = this;
+        const { opaque, handler: handler3, context: context2 } = this;
         if (statusCode < 200) {
           if (this.onInfo) {
             const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
@@ -26883,7 +26864,7 @@ var require_api_pipeline2 = __commonJS({
         try {
           this.handler = null;
           const headers = this.responseHeaders === "raw" ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders);
-          body = this.runInAsyncScope(handler2, null, {
+          body = this.runInAsyncScope(handler3, null, {
             statusCode,
             headers,
             opaque,
@@ -26930,9 +26911,9 @@ var require_api_pipeline2 = __commonJS({
         util.destroy(ret, err);
       }
     };
-    function pipeline2(opts, handler2) {
+    function pipeline2(opts, handler3) {
       try {
-        const pipelineHandler = new PipelineHandler(opts, handler2);
+        const pipelineHandler = new PipelineHandler(opts, handler3);
         this.dispatch({ ...opts, body: pipelineHandler.req }, pipelineHandler);
         return pipelineHandler.ret;
       } catch (err) {
@@ -27285,7 +27266,7 @@ var require_mock_utils2 = __commonJS({
       const headersMatch = matchHeaders(mockDispatch2, headers);
       return pathMatch && methodMatch && bodyMatch && headersMatch;
     }
-    function getResponseData2(data) {
+    function getResponseData3(data) {
       if (Buffer.isBuffer(data)) {
         return data;
       } else if (typeof data === "object") {
@@ -27371,7 +27352,7 @@ var require_mock_utils2 = __commonJS({
       }
       return Buffer.concat(buffers).toString("utf8");
     }
-    function mockDispatch(opts, handler2) {
+    function mockDispatch(opts, handler3) {
       const key = buildKey(opts);
       const mockDispatch2 = getMockDispatch(this[kDispatches], key);
       mockDispatch2.timesInvoked++;
@@ -27384,7 +27365,7 @@ var require_mock_utils2 = __commonJS({
       mockDispatch2.pending = timesInvoked < times;
       if (error !== null) {
         deleteMockDispatch(this[kDispatches], key);
-        handler2.onError(error);
+        handler3.onError(error);
         return true;
       }
       if (typeof delay2 === "number" && delay2 > 0) {
@@ -27401,13 +27382,13 @@ var require_mock_utils2 = __commonJS({
           body.then((newData) => handleReply(mockDispatches, newData));
           return;
         }
-        const responseData = getResponseData2(body);
+        const responseData = getResponseData3(body);
         const responseHeaders = generateKeyValues(headers);
         const responseTrailers = generateKeyValues(trailers);
-        handler2.onConnect?.((err) => handler2.onError(err), null);
-        handler2.onHeaders?.(statusCode, responseHeaders, resume, getStatusText(statusCode));
-        handler2.onData?.(Buffer.from(responseData));
-        handler2.onComplete?.(responseTrailers);
+        handler3.onConnect?.((err) => handler3.onError(err), null);
+        handler3.onHeaders?.(statusCode, responseHeaders, resume, getStatusText(statusCode));
+        handler3.onData?.(Buffer.from(responseData));
+        handler3.onComplete?.(responseTrailers);
         deleteMockDispatch(mockDispatches, key);
       }
       function resume() {
@@ -27418,10 +27399,10 @@ var require_mock_utils2 = __commonJS({
       const agent = this[kMockAgent];
       const origin = this[kOrigin];
       const originalDispatch = this[kOriginalDispatch];
-      return function dispatch(opts, handler2) {
+      return function dispatch(opts, handler3) {
         if (agent.isMockActive) {
           try {
-            mockDispatch.call(this, opts, handler2);
+            mockDispatch.call(this, opts, handler3);
           } catch (error) {
             if (error instanceof MockNotMatchedError) {
               const netConnect = agent[kGetNetConnect]();
@@ -27429,7 +27410,7 @@ var require_mock_utils2 = __commonJS({
                 throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
               }
               if (checkNetConnect(netConnect, origin)) {
-                originalDispatch.call(this, opts, handler2);
+                originalDispatch.call(this, opts, handler3);
               } else {
                 throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
               }
@@ -27438,7 +27419,7 @@ var require_mock_utils2 = __commonJS({
             }
           }
         } else {
-          originalDispatch.call(this, opts, handler2);
+          originalDispatch.call(this, opts, handler3);
         }
       };
     }
@@ -27458,7 +27439,7 @@ var require_mock_utils2 = __commonJS({
       }
     }
     module2.exports = {
-      getResponseData: getResponseData2,
+      getResponseData: getResponseData3,
       getMockDispatch,
       addMockDispatch,
       deleteMockDispatch,
@@ -27481,7 +27462,7 @@ var require_mock_utils2 = __commonJS({
 var require_mock_interceptor2 = __commonJS({
   "node_modules/undici/lib/mock/mock-interceptor.js"(exports2, module2) {
     "use strict";
-    var { getResponseData: getResponseData2, buildKey, addMockDispatch } = require_mock_utils2();
+    var { getResponseData: getResponseData3, buildKey, addMockDispatch } = require_mock_utils2();
     var {
       kDispatches,
       kDispatchKey,
@@ -27553,7 +27534,7 @@ var require_mock_interceptor2 = __commonJS({
         this[kContentLength] = false;
       }
       createMockScopeDispatchData({ statusCode, data, responseOptions }) {
-        const responseData = getResponseData2(data);
+        const responseData = getResponseData3(data);
         const contentLength = this[kContentLength] ? { "content-length": responseData.length } : {};
         const headers = { ...this[kDefaultHeaders], ...contentLength, ...responseOptions.headers };
         const trailers = { ...this[kDefaultTrailers], ...responseOptions.trailers };
@@ -27862,9 +27843,9 @@ var require_mock_agent2 = __commonJS({
         }
         return dispatcher;
       }
-      dispatch(opts, handler2) {
+      dispatch(opts, handler3) {
         this.get(opts.origin);
-        return this[kAgent].dispatch(opts, handler2);
+        return this[kAgent].dispatch(opts, handler3);
       }
       async close() {
         await this[kAgent].close();
@@ -27983,8 +27964,8 @@ var require_decorator_handler = __commonJS({
   "node_modules/undici/lib/handler/decorator-handler.js"(exports2, module2) {
     "use strict";
     module2.exports = class DecoratorHandler {
-      constructor(handler2) {
-        this.handler = handler2;
+      constructor(handler3) {
+        this.handler = handler3;
       }
       onConnect(...args) {
         return this.handler.onConnect(...args);
@@ -28019,16 +28000,16 @@ var require_redirect = __commonJS({
     module2.exports = (opts) => {
       const globalMaxRedirections = opts?.maxRedirections;
       return (dispatch) => {
-        return function redirectInterceptor(opts2, handler2) {
+        return function redirectInterceptor(opts2, handler3) {
           const { maxRedirections = globalMaxRedirections, ...baseOpts } = opts2;
           if (!maxRedirections) {
-            return dispatch(opts2, handler2);
+            return dispatch(opts2, handler3);
           }
           const redirectHandler = new RedirectHandler(
             dispatch,
             maxRedirections,
             opts2,
-            handler2
+            handler3
           );
           return dispatch(baseOpts, redirectHandler);
         };
@@ -28044,13 +28025,13 @@ var require_retry = __commonJS({
     var RetryHandler = require_retry_handler();
     module2.exports = (globalOpts) => {
       return (dispatch) => {
-        return function retryInterceptor(opts, handler2) {
+        return function retryInterceptor(opts, handler3) {
           return dispatch(
             opts,
             new RetryHandler(
               { ...opts, retryOptions: { ...globalOpts, ...opts.retryOptions } },
               {
-                handler: handler2,
+                handler: handler3,
                 dispatch
               }
             )
@@ -28084,10 +28065,8 @@ var require_headers2 = __commonJS({
     function headerValueNormalize(potentialValue) {
       let i2 = 0;
       let j = potentialValue.length;
-      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1)))
-        --j;
-      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i2)))
-        ++i2;
+      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1))) --j;
+      while (j > i2 && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i2))) ++i2;
       return i2 === 0 && j === potentialValue.length ? potentialValue : potentialValue.substring(i2, j);
     }
     function fill(headers, object) {
@@ -28209,8 +28188,7 @@ var require_headers2 = __commonJS({
        */
       delete(name, isLowerCase) {
         this[kHeadersSortedMap] = null;
-        if (!isLowerCase)
-          name = name.toLowerCase();
+        if (!isLowerCase) name = name.toLowerCase();
         if (name === "set-cookie") {
           this.cookies = null;
         }
@@ -28247,12 +28225,12 @@ var require_headers2 = __commonJS({
           if (size === 0) {
             return array;
           }
-          const iterator2 = this[kHeadersMap][Symbol.iterator]();
-          const firstValue = iterator2.next().value;
+          const iterator3 = this[kHeadersMap][Symbol.iterator]();
+          const firstValue = iterator3.next().value;
           array[0] = [firstValue[0], firstValue[1].value];
           assert(firstValue[1].value !== null);
           for (let i2 = 1, j = 0, right = 0, left = 0, pivot = 0, x2, value; i2 < size; ++i2) {
-            value = iterator2.next().value;
+            value = iterator3.next().value;
             x2 = array[i2] = [value[0], value[1].value];
             assert(x2[1] !== null);
             left = 0;
@@ -28273,7 +28251,7 @@ var require_headers2 = __commonJS({
               array[left] = x2;
             }
           }
-          if (!iterator2.next().done) {
+          if (!iterator3.next().done) {
             throw new TypeError("Unreachable");
           }
           return array;
@@ -28437,9 +28415,9 @@ var require_headers2 = __commonJS({
     });
     webidl.converters.HeadersInit = function(V) {
       if (webidl.util.Type(V) === "Object") {
-        const iterator2 = Reflect.get(V, Symbol.iterator);
-        if (typeof iterator2 === "function") {
-          return webidl.converters["sequence<sequence<ByteString>>"](V, iterator2.bind(V));
+        const iterator3 = Reflect.get(V, Symbol.iterator);
+        if (typeof iterator3 === "function") {
+          return webidl.converters["sequence<sequence<ByteString>>"](V, iterator3.bind(V));
         }
         return webidl.converters["record<ByteString, ByteString>"](V);
       }
@@ -28956,7 +28934,7 @@ var require_request4 = __commonJS({
             policyContainer: makePolicyContainer()
           }
         };
-        let request2 = null;
+        let request3 = null;
         let fallbackMode = null;
         const baseUrl = this[kRealm].settingsObject.baseUrl;
         let signal = null;
@@ -28973,18 +28951,18 @@ var require_request4 = __commonJS({
               "Request cannot be constructed from a URL that includes credentials: " + input
             );
           }
-          request2 = makeRequest({ urlList: [parsedURL] });
+          request3 = makeRequest({ urlList: [parsedURL] });
           fallbackMode = "cors";
         } else {
           this[kDispatcher] = init.dispatcher || input[kDispatcher];
           assert(input instanceof _Request);
-          request2 = input[kState];
+          request3 = input[kState];
           signal = input[kSignal];
         }
         const origin = this[kRealm].settingsObject.origin;
         let window2 = "client";
-        if (request2.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request2.window, origin)) {
-          window2 = request2.window;
+        if (request3.window?.constructor?.name === "EnvironmentSettingsObject" && sameOrigin(request3.window, origin)) {
+          window2 = request3.window;
         }
         if (init.window != null) {
           throw new TypeError(`'window' option '${window2}' must be null`);
@@ -28992,66 +28970,66 @@ var require_request4 = __commonJS({
         if ("window" in init) {
           window2 = "no-window";
         }
-        request2 = makeRequest({
+        request3 = makeRequest({
           // URL request’s URL.
           // undici implementation note: this is set as the first item in request's urlList in makeRequest
           // method request’s method.
-          method: request2.method,
+          method: request3.method,
           // header list A copy of request’s header list.
           // undici implementation note: headersList is cloned in makeRequest
-          headersList: request2.headersList,
+          headersList: request3.headersList,
           // unsafe-request flag Set.
-          unsafeRequest: request2.unsafeRequest,
+          unsafeRequest: request3.unsafeRequest,
           // client This’s relevant settings object.
           client: this[kRealm].settingsObject,
           // window window.
           window: window2,
           // priority request’s priority.
-          priority: request2.priority,
+          priority: request3.priority,
           // origin request’s origin. The propagation of the origin is only significant for navigation requests
           // being handled by a service worker. In this scenario a request can have an origin that is different
           // from the current client.
-          origin: request2.origin,
+          origin: request3.origin,
           // referrer request’s referrer.
-          referrer: request2.referrer,
+          referrer: request3.referrer,
           // referrer policy request’s referrer policy.
-          referrerPolicy: request2.referrerPolicy,
+          referrerPolicy: request3.referrerPolicy,
           // mode request’s mode.
-          mode: request2.mode,
+          mode: request3.mode,
           // credentials mode request’s credentials mode.
-          credentials: request2.credentials,
+          credentials: request3.credentials,
           // cache mode request’s cache mode.
-          cache: request2.cache,
+          cache: request3.cache,
           // redirect mode request’s redirect mode.
-          redirect: request2.redirect,
+          redirect: request3.redirect,
           // integrity metadata request’s integrity metadata.
-          integrity: request2.integrity,
+          integrity: request3.integrity,
           // keepalive request’s keepalive.
-          keepalive: request2.keepalive,
+          keepalive: request3.keepalive,
           // reload-navigation flag request’s reload-navigation flag.
-          reloadNavigation: request2.reloadNavigation,
+          reloadNavigation: request3.reloadNavigation,
           // history-navigation flag request’s history-navigation flag.
-          historyNavigation: request2.historyNavigation,
+          historyNavigation: request3.historyNavigation,
           // URL list A clone of request’s URL list.
-          urlList: [...request2.urlList]
+          urlList: [...request3.urlList]
         });
         const initHasKey = Object.keys(init).length !== 0;
         if (initHasKey) {
-          if (request2.mode === "navigate") {
-            request2.mode = "same-origin";
+          if (request3.mode === "navigate") {
+            request3.mode = "same-origin";
           }
-          request2.reloadNavigation = false;
-          request2.historyNavigation = false;
-          request2.origin = "client";
-          request2.referrer = "client";
-          request2.referrerPolicy = "";
-          request2.url = request2.urlList[request2.urlList.length - 1];
-          request2.urlList = [request2.url];
+          request3.reloadNavigation = false;
+          request3.historyNavigation = false;
+          request3.origin = "client";
+          request3.referrer = "client";
+          request3.referrerPolicy = "";
+          request3.url = request3.urlList[request3.urlList.length - 1];
+          request3.urlList = [request3.url];
         }
         if (init.referrer !== void 0) {
           const referrer = init.referrer;
           if (referrer === "") {
-            request2.referrer = "no-referrer";
+            request3.referrer = "no-referrer";
           } else {
             let parsedReferrer;
             try {
@@ -29060,14 +29038,14 @@ var require_request4 = __commonJS({
               throw new TypeError(`Referrer "${referrer}" is not a valid URL.`, { cause: err });
             }
             if (parsedReferrer.protocol === "about:" && parsedReferrer.hostname === "client" || origin && !sameOrigin(parsedReferrer, this[kRealm].settingsObject.baseUrl)) {
-              request2.referrer = "client";
+              request3.referrer = "client";
             } else {
-              request2.referrer = parsedReferrer;
+              request3.referrer = parsedReferrer;
             }
           }
         }
         if (init.referrerPolicy !== void 0) {
-          request2.referrerPolicy = init.referrerPolicy;
+          request3.referrerPolicy = init.referrerPolicy;
         }
         let mode;
         if (init.mode !== void 0) {
@@ -29082,33 +29060,33 @@ var require_request4 = __commonJS({
           });
         }
         if (mode != null) {
-          request2.mode = mode;
+          request3.mode = mode;
         }
         if (init.credentials !== void 0) {
-          request2.credentials = init.credentials;
+          request3.credentials = init.credentials;
         }
         if (init.cache !== void 0) {
-          request2.cache = init.cache;
+          request3.cache = init.cache;
         }
-        if (request2.cache === "only-if-cached" && request2.mode !== "same-origin") {
+        if (request3.cache === "only-if-cached" && request3.mode !== "same-origin") {
           throw new TypeError(
             "'only-if-cached' can be set only with 'same-origin' mode"
           );
         }
         if (init.redirect !== void 0) {
-          request2.redirect = init.redirect;
+          request3.redirect = init.redirect;
         }
         if (init.integrity != null) {
-          request2.integrity = String(init.integrity);
+          request3.integrity = String(init.integrity);
         }
         if (init.keepalive !== void 0) {
-          request2.keepalive = Boolean(init.keepalive);
+          request3.keepalive = Boolean(init.keepalive);
         }
         if (init.method !== void 0) {
           let method = init.method;
           const mayBeNormalized = normalizeMethodRecord[method];
           if (mayBeNormalized !== void 0) {
-            request2.method = mayBeNormalized;
+            request3.method = mayBeNormalized;
           } else {
             if (!isValidHTTPToken(method)) {
               throw new TypeError(`'${method}' is not a valid HTTP method.`);
@@ -29117,9 +29095,9 @@ var require_request4 = __commonJS({
               throw new TypeError(`'${method}' HTTP method is unsupported.`);
             }
             method = normalizeMethod(method);
-            request2.method = method;
+            request3.method = method;
           }
-          if (!patchMethodWarning && request2.method === "patch") {
+          if (!patchMethodWarning && request3.method === "patch") {
             process.emitWarning("Using `patch` is highly likely to result in a `405 Method Not Allowed`. `PATCH` is much more likely to succeed.", {
               code: "UNDICI-FETCH-patch"
             });
@@ -29129,7 +29107,7 @@ var require_request4 = __commonJS({
         if (init.signal !== void 0) {
           signal = init.signal;
         }
-        this[kState] = request2;
+        this[kState] = request3;
         const ac = new AbortController();
         this[kSignal] = ac.signal;
         this[kSignal][kRealm] = this[kRealm];
@@ -29165,13 +29143,13 @@ var require_request4 = __commonJS({
           }
         }
         this[kHeaders] = new Headers2(kConstruct);
-        this[kHeaders][kHeadersList] = request2.headersList;
+        this[kHeaders][kHeadersList] = request3.headersList;
         this[kHeaders][kGuard] = "request";
         this[kHeaders][kRealm] = this[kRealm];
         if (mode === "no-cors") {
-          if (!corsSafeListedMethodsSet.has(request2.method)) {
+          if (!corsSafeListedMethodsSet.has(request3.method)) {
             throw new TypeError(
-              `'${request2.method} is unsupported in no-cors mode.`
+              `'${request3.method} is unsupported in no-cors mode.`
             );
           }
           this[kHeaders][kGuard] = "request-no-cors";
@@ -29190,14 +29168,14 @@ var require_request4 = __commonJS({
           }
         }
         const inputBody = input instanceof _Request ? input[kState].body : null;
-        if ((init.body != null || inputBody != null) && (request2.method === "GET" || request2.method === "HEAD")) {
+        if ((init.body != null || inputBody != null) && (request3.method === "GET" || request3.method === "HEAD")) {
           throw new TypeError("Request with GET/HEAD method cannot have body.");
         }
         let initBody = null;
         if (init.body != null) {
           const [extractedBody, contentType] = extractBody(
             init.body,
-            request2.keepalive
+            request3.keepalive
           );
           initBody = extractedBody;
           if (contentType && !this[kHeaders][kHeadersList].contains("content-type", true)) {
@@ -29209,12 +29187,12 @@ var require_request4 = __commonJS({
           if (initBody != null && init.duplex == null) {
             throw new TypeError("RequestInit: duplex option is required when sending a body.");
           }
-          if (request2.mode !== "same-origin" && request2.mode !== "cors") {
+          if (request3.mode !== "same-origin" && request3.mode !== "cors") {
             throw new TypeError(
               'If request is made from ReadableStream, mode should be "same-origin" or "cors"'
             );
           }
-          request2.useCORSPreflightFlag = true;
+          request3.useCORSPreflightFlag = true;
         }
         let finalBody = inputOrInitBody;
         if (initBody == null && inputBody != null) {
@@ -29397,7 +29375,7 @@ var require_request4 = __commonJS({
     };
     mixinBody(Request2);
     function makeRequest(init) {
-      const request2 = {
+      const request3 = {
         method: "GET",
         localURLsOnly: false,
         unsafeRequest: false,
@@ -29436,27 +29414,27 @@ var require_request4 = __commonJS({
         ...init,
         headersList: init.headersList ? new HeadersList(init.headersList) : new HeadersList()
       };
-      request2.url = request2.urlList[0];
-      return request2;
+      request3.url = request3.urlList[0];
+      return request3;
     }
-    function cloneRequest(request2) {
-      const newRequest = makeRequest({ ...request2, body: null });
-      if (request2.body != null) {
-        newRequest.body = cloneBody(request2.body);
+    function cloneRequest(request3) {
+      const newRequest = makeRequest({ ...request3, body: null });
+      if (request3.body != null) {
+        newRequest.body = cloneBody(request3.body);
       }
       return newRequest;
     }
     function fromInnerRequest(innerRequest, signal, guard, realm) {
-      const request2 = new Request2(kConstruct);
-      request2[kState] = innerRequest;
-      request2[kRealm] = realm;
-      request2[kSignal] = signal;
-      request2[kSignal][kRealm] = realm;
-      request2[kHeaders] = new Headers2(kConstruct);
-      request2[kHeaders][kHeadersList] = innerRequest.headersList;
-      request2[kHeaders][kGuard] = guard;
-      request2[kHeaders][kRealm] = realm;
-      return request2;
+      const request3 = new Request2(kConstruct);
+      request3[kState] = innerRequest;
+      request3[kRealm] = realm;
+      request3[kSignal] = signal;
+      request3[kSignal][kRealm] = realm;
+      request3[kHeaders] = new Headers2(kConstruct);
+      request3[kHeaders][kHeadersList] = innerRequest.headersList;
+      request3[kHeaders][kGuard] = guard;
+      request3[kHeaders][kRealm] = realm;
+      return request3;
     }
     Object.defineProperties(Request2.prototype, {
       method: kEnumerableProperty,
@@ -29693,14 +29671,14 @@ var require_fetch2 = __commonJS({
         p.reject(e2);
         return p.promise;
       }
-      const request2 = requestObject[kState];
+      const request3 = requestObject[kState];
       if (requestObject.signal.aborted) {
-        abortFetch(p, request2, null, requestObject.signal.reason);
+        abortFetch(p, request3, null, requestObject.signal.reason);
         return p.promise;
       }
-      const globalObject = request2.client.globalObject;
+      const globalObject = request3.client.globalObject;
       if (globalObject?.constructor?.name === "ServiceWorkerGlobalScope") {
-        request2.serviceWorkers = "none";
+        request3.serviceWorkers = "none";
       }
       let responseObject = null;
       const relevantRealm = null;
@@ -29712,7 +29690,7 @@ var require_fetch2 = __commonJS({
           locallyAborted = true;
           assert(controller != null);
           controller.abort(requestObject.signal.reason);
-          abortFetch(p, request2, responseObject, requestObject.signal.reason);
+          abortFetch(p, request3, responseObject, requestObject.signal.reason);
         }
       );
       const handleFetchDone = (response) => finalizeAndReportTiming(response, "fetch");
@@ -29721,7 +29699,7 @@ var require_fetch2 = __commonJS({
           return;
         }
         if (response.aborted) {
-          abortFetch(p, request2, responseObject, controller.serializedAbortReason);
+          abortFetch(p, request3, responseObject, controller.serializedAbortReason);
           return;
         }
         if (response.type === "error") {
@@ -29732,7 +29710,7 @@ var require_fetch2 = __commonJS({
         p.resolve(responseObject);
       };
       controller = fetching({
-        request: request2,
+        request: request3,
         processResponseEndOfBody: handleFetchDone,
         processResponse,
         dispatcher: requestObject[kDispatcher]
@@ -29774,10 +29752,10 @@ var require_fetch2 = __commonJS({
     }
     var markResourceTiming = nodeMajor > 18 || nodeMajor === 18 && nodeMinor >= 2 ? performance.markResourceTiming : () => {
     };
-    function abortFetch(p, request2, responseObject, error) {
+    function abortFetch(p, request3, responseObject, error) {
       p.reject(error);
-      if (request2.body != null && isReadable(request2.body?.stream)) {
-        request2.body.stream.cancel(error).catch((err) => {
+      if (request3.body != null && isReadable(request3.body?.stream)) {
+        request3.body.stream.cancel(error).catch((err) => {
           if (err.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -29798,7 +29776,7 @@ var require_fetch2 = __commonJS({
       }
     }
     function fetching({
-      request: request2,
+      request: request3,
       processRequestBodyChunkLength,
       processRequestEndOfBody,
       processResponse,
@@ -29811,9 +29789,9 @@ var require_fetch2 = __commonJS({
       assert(dispatcher);
       let taskDestination = null;
       let crossOriginIsolatedCapability = false;
-      if (request2.client != null) {
-        taskDestination = request2.client.globalObject;
-        crossOriginIsolatedCapability = request2.client.crossOriginIsolatedCapability;
+      if (request3.client != null) {
+        taskDestination = request3.client.globalObject;
+        crossOriginIsolatedCapability = request3.client.crossOriginIsolatedCapability;
       }
       const currentTime = coarsenedSharedCurrentTime(crossOriginIsolatedCapability);
       const timingInfo = createOpaqueTimingInfo({
@@ -29821,7 +29799,7 @@ var require_fetch2 = __commonJS({
       });
       const fetchParams = {
         controller: new Fetch(dispatcher),
-        request: request2,
+        request: request3,
         timingInfo,
         processRequestBodyChunkLength,
         processRequestEndOfBody,
@@ -29831,32 +29809,32 @@ var require_fetch2 = __commonJS({
         taskDestination,
         crossOriginIsolatedCapability
       };
-      assert(!request2.body || request2.body.stream);
-      if (request2.window === "client") {
-        request2.window = request2.client?.globalObject?.constructor?.name === "Window" ? request2.client : "no-window";
+      assert(!request3.body || request3.body.stream);
+      if (request3.window === "client") {
+        request3.window = request3.client?.globalObject?.constructor?.name === "Window" ? request3.client : "no-window";
       }
-      if (request2.origin === "client") {
-        request2.origin = request2.client?.origin;
+      if (request3.origin === "client") {
+        request3.origin = request3.client?.origin;
       }
-      if (request2.policyContainer === "client") {
-        if (request2.client != null) {
-          request2.policyContainer = clonePolicyContainer(
-            request2.client.policyContainer
+      if (request3.policyContainer === "client") {
+        if (request3.client != null) {
+          request3.policyContainer = clonePolicyContainer(
+            request3.client.policyContainer
           );
         } else {
-          request2.policyContainer = makePolicyContainer();
+          request3.policyContainer = makePolicyContainer();
         }
       }
-      if (!request2.headersList.contains("accept", true)) {
+      if (!request3.headersList.contains("accept", true)) {
         const value = "*/*";
-        request2.headersList.append("accept", value, true);
+        request3.headersList.append("accept", value, true);
       }
-      if (!request2.headersList.contains("accept-language", true)) {
-        request2.headersList.append("accept-language", "*", true);
+      if (!request3.headersList.contains("accept-language", true)) {
+        request3.headersList.append("accept-language", "*", true);
       }
-      if (request2.priority === null) {
+      if (request3.priority === null) {
       }
-      if (subresourceSet.has(request2.destination)) {
+      if (subresourceSet.has(request3.destination)) {
       }
       mainFetch(fetchParams).catch((err) => {
         fetchParams.controller.terminate(err);
@@ -29864,50 +29842,50 @@ var require_fetch2 = __commonJS({
       return fetchParams.controller;
     }
     async function mainFetch(fetchParams, recursive = false) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
-      if (request2.localURLsOnly && !urlIsLocal(requestCurrentURL(request2))) {
+      if (request3.localURLsOnly && !urlIsLocal(requestCurrentURL(request3))) {
         response = makeNetworkError("local URLs only");
       }
-      tryUpgradeRequestToAPotentiallyTrustworthyURL(request2);
-      if (requestBadPort(request2) === "blocked") {
+      tryUpgradeRequestToAPotentiallyTrustworthyURL(request3);
+      if (requestBadPort(request3) === "blocked") {
         response = makeNetworkError("bad port");
       }
-      if (request2.referrerPolicy === "") {
-        request2.referrerPolicy = request2.policyContainer.referrerPolicy;
+      if (request3.referrerPolicy === "") {
+        request3.referrerPolicy = request3.policyContainer.referrerPolicy;
       }
-      if (request2.referrer !== "no-referrer") {
-        request2.referrer = determineRequestsReferrer2(request2);
+      if (request3.referrer !== "no-referrer") {
+        request3.referrer = determineRequestsReferrer2(request3);
       }
       if (response === null) {
         response = await (async () => {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           if (
             // - request’s current URL’s origin is same origin with request’s origin,
             //   and request’s response tainting is "basic"
-            sameOrigin(currentURL, request2.url) && request2.responseTainting === "basic" || // request’s current URL’s scheme is "data"
+            sameOrigin(currentURL, request3.url) && request3.responseTainting === "basic" || // request’s current URL’s scheme is "data"
             currentURL.protocol === "data:" || // - request’s mode is "navigate" or "websocket"
-            (request2.mode === "navigate" || request2.mode === "websocket")
+            (request3.mode === "navigate" || request3.mode === "websocket")
           ) {
-            request2.responseTainting = "basic";
+            request3.responseTainting = "basic";
             return await schemeFetch(fetchParams);
           }
-          if (request2.mode === "same-origin") {
+          if (request3.mode === "same-origin") {
             return makeNetworkError('request mode cannot be "same-origin"');
           }
-          if (request2.mode === "no-cors") {
-            if (request2.redirect !== "follow") {
+          if (request3.mode === "no-cors") {
+            if (request3.redirect !== "follow") {
               return makeNetworkError(
                 'redirect mode cannot be "follow" for "no-cors" request'
               );
             }
-            request2.responseTainting = "opaque";
+            request3.responseTainting = "opaque";
             return await schemeFetch(fetchParams);
           }
-          if (!urlIsHttpHttpsScheme(requestCurrentURL(request2))) {
+          if (!urlIsHttpHttpsScheme(requestCurrentURL(request3))) {
             return makeNetworkError("URL scheme must be a HTTP(S) scheme");
           }
-          request2.responseTainting = "cors";
+          request3.responseTainting = "cors";
           return await httpFetch(fetchParams);
         })();
       }
@@ -29915,13 +29893,13 @@ var require_fetch2 = __commonJS({
         return response;
       }
       if (response.status !== 0 && !response.internalResponse) {
-        if (request2.responseTainting === "cors") {
+        if (request3.responseTainting === "cors") {
         }
-        if (request2.responseTainting === "basic") {
+        if (request3.responseTainting === "basic") {
           response = filterResponse(response, "basic");
-        } else if (request2.responseTainting === "cors") {
+        } else if (request3.responseTainting === "cors") {
           response = filterResponse(response, "cors");
-        } else if (request2.responseTainting === "opaque") {
+        } else if (request3.responseTainting === "opaque") {
           response = filterResponse(response, "opaque");
         } else {
           assert(false);
@@ -29929,26 +29907,26 @@ var require_fetch2 = __commonJS({
       }
       let internalResponse = response.status === 0 ? response : response.internalResponse;
       if (internalResponse.urlList.length === 0) {
-        internalResponse.urlList.push(...request2.urlList);
+        internalResponse.urlList.push(...request3.urlList);
       }
-      if (!request2.timingAllowFailed) {
+      if (!request3.timingAllowFailed) {
         response.timingAllowPassed = true;
       }
-      if (response.type === "opaque" && internalResponse.status === 206 && internalResponse.rangeRequested && !request2.headers.contains("range", true)) {
+      if (response.type === "opaque" && internalResponse.status === 206 && internalResponse.rangeRequested && !request3.headers.contains("range", true)) {
         response = internalResponse = makeNetworkError();
       }
-      if (response.status !== 0 && (request2.method === "HEAD" || request2.method === "CONNECT" || nullBodyStatus.includes(internalResponse.status))) {
+      if (response.status !== 0 && (request3.method === "HEAD" || request3.method === "CONNECT" || nullBodyStatus.includes(internalResponse.status))) {
         internalResponse.body = null;
         fetchParams.controller.dump = true;
       }
-      if (request2.integrity) {
+      if (request3.integrity) {
         const processBodyError = (reason) => fetchFinale(fetchParams, makeNetworkError(reason));
-        if (request2.responseTainting === "opaque" || response.body == null) {
+        if (request3.responseTainting === "opaque" || response.body == null) {
           processBodyError(response.error);
           return;
         }
         const processBody = (bytes) => {
-          if (!bytesMatch(bytes, request2.integrity)) {
+          if (!bytesMatch(bytes, request3.integrity)) {
             processBodyError("integrity mismatch");
             return;
           }
@@ -29964,8 +29942,8 @@ var require_fetch2 = __commonJS({
       if (isCancelled(fetchParams) && fetchParams.request.redirectCount === 0) {
         return Promise.resolve(makeAppropriateNetworkError(fetchParams));
       }
-      const { request: request2 } = fetchParams;
-      const { protocol: scheme } = requestCurrentURL(request2);
+      const { request: request3 } = fetchParams;
+      const { protocol: scheme } = requestCurrentURL(request3);
       switch (scheme) {
         case "about:": {
           return Promise.resolve(makeNetworkError("about scheme is not supported"));
@@ -29974,19 +29952,19 @@ var require_fetch2 = __commonJS({
           if (!resolveObjectURL) {
             resolveObjectURL = require("buffer").resolveObjectURL;
           }
-          const blobURLEntry = requestCurrentURL(request2);
+          const blobURLEntry = requestCurrentURL(request3);
           if (blobURLEntry.search.length !== 0) {
             return Promise.resolve(makeNetworkError("NetworkError when attempting to fetch resource."));
           }
           const blob = resolveObjectURL(blobURLEntry.toString());
-          if (request2.method !== "GET" || !isBlobLike(blob)) {
+          if (request3.method !== "GET" || !isBlobLike(blob)) {
             return Promise.resolve(makeNetworkError("invalid method"));
           }
           const response = makeResponse();
           const fullLength = blob.size;
           const serializedFullLength = isomorphicEncode(`${fullLength}`);
           const type = blob.type;
-          if (!request2.headersList.contains("range", true)) {
+          if (!request3.headersList.contains("range", true)) {
             const bodyWithType = extractBody(blob);
             response.statusText = "OK";
             response.body = bodyWithType[0];
@@ -29994,7 +29972,7 @@ var require_fetch2 = __commonJS({
             response.headersList.set("content-type", type, true);
           } else {
             response.rangeRequested = true;
-            const rangeHeader = request2.headersList.get("range", true);
+            const rangeHeader = request3.headersList.get("range", true);
             const rangeValue = simpleRangeHeaderValue(rangeHeader, true);
             if (rangeValue === "failure") {
               return Promise.resolve(makeNetworkError("failed to fetch the data URL"));
@@ -30025,7 +30003,7 @@ var require_fetch2 = __commonJS({
           return Promise.resolve(response);
         }
         case "data:": {
-          const currentURL = requestCurrentURL(request2);
+          const currentURL = requestCurrentURL(request3);
           const dataURLStruct = dataURLProcessor(currentURL);
           if (dataURLStruct === "failure") {
             return Promise.resolve(makeNetworkError("failed to fetch the data URL"));
@@ -30135,41 +30113,41 @@ var require_fetch2 = __commonJS({
       }
     }
     async function httpFetch(fetchParams) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
       let actualResponse = null;
       const timingInfo = fetchParams.timingInfo;
-      if (request2.serviceWorkers === "all") {
+      if (request3.serviceWorkers === "all") {
       }
       if (response === null) {
-        if (request2.redirect === "follow") {
-          request2.serviceWorkers = "none";
+        if (request3.redirect === "follow") {
+          request3.serviceWorkers = "none";
         }
         actualResponse = response = await httpNetworkOrCacheFetch(fetchParams);
-        if (request2.responseTainting === "cors" && corsCheck(request2, response) === "failure") {
+        if (request3.responseTainting === "cors" && corsCheck(request3, response) === "failure") {
           return makeNetworkError("cors failure");
         }
-        if (TAOCheck(request2, response) === "failure") {
-          request2.timingAllowFailed = true;
+        if (TAOCheck(request3, response) === "failure") {
+          request3.timingAllowFailed = true;
         }
       }
-      if ((request2.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(
-        request2.origin,
-        request2.client,
-        request2.destination,
+      if ((request3.responseTainting === "opaque" || response.type === "opaque") && crossOriginResourcePolicyCheck(
+        request3.origin,
+        request3.client,
+        request3.destination,
         actualResponse
       ) === "blocked") {
         return makeNetworkError("blocked");
       }
       if (redirectStatusSet.has(actualResponse.status)) {
-        if (request2.redirect !== "manual") {
+        if (request3.redirect !== "manual") {
           fetchParams.controller.connection.destroy(void 0, false);
         }
-        if (request2.redirect === "error") {
+        if (request3.redirect === "error") {
           response = makeNetworkError("unexpected redirect");
-        } else if (request2.redirect === "manual") {
+        } else if (request3.redirect === "manual") {
           response = actualResponse;
-        } else if (request2.redirect === "follow") {
+        } else if (request3.redirect === "follow") {
           response = await httpRedirectFetch(fetchParams, response);
         } else {
           assert(false);
@@ -30179,13 +30157,13 @@ var require_fetch2 = __commonJS({
       return response;
     }
     function httpRedirectFetch(fetchParams, response) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       const actualResponse = response.internalResponse ? response.internalResponse : response;
       let locationURL;
       try {
         locationURL = responseLocationURL(
           actualResponse,
-          requestCurrentURL(request2).hash
+          requestCurrentURL(request3).hash
         );
         if (locationURL == null) {
           return response;
@@ -30196,63 +30174,63 @@ var require_fetch2 = __commonJS({
       if (!urlIsHttpHttpsScheme(locationURL)) {
         return Promise.resolve(makeNetworkError("URL scheme must be a HTTP(S) scheme"));
       }
-      if (request2.redirectCount === 20) {
+      if (request3.redirectCount === 20) {
         return Promise.resolve(makeNetworkError("redirect count exceeded"));
       }
-      request2.redirectCount += 1;
-      if (request2.mode === "cors" && (locationURL.username || locationURL.password) && !sameOrigin(request2, locationURL)) {
+      request3.redirectCount += 1;
+      if (request3.mode === "cors" && (locationURL.username || locationURL.password) && !sameOrigin(request3, locationURL)) {
         return Promise.resolve(makeNetworkError('cross origin not allowed for request mode "cors"'));
       }
-      if (request2.responseTainting === "cors" && (locationURL.username || locationURL.password)) {
+      if (request3.responseTainting === "cors" && (locationURL.username || locationURL.password)) {
         return Promise.resolve(makeNetworkError(
           'URL cannot contain credentials for request mode "cors"'
         ));
       }
-      if (actualResponse.status !== 303 && request2.body != null && request2.body.source == null) {
+      if (actualResponse.status !== 303 && request3.body != null && request3.body.source == null) {
         return Promise.resolve(makeNetworkError());
       }
-      if ([301, 302].includes(actualResponse.status) && request2.method === "POST" || actualResponse.status === 303 && !GET_OR_HEAD.includes(request2.method)) {
-        request2.method = "GET";
-        request2.body = null;
+      if ([301, 302].includes(actualResponse.status) && request3.method === "POST" || actualResponse.status === 303 && !GET_OR_HEAD.includes(request3.method)) {
+        request3.method = "GET";
+        request3.body = null;
         for (const headerName of requestBodyHeader) {
-          request2.headersList.delete(headerName);
+          request3.headersList.delete(headerName);
         }
       }
-      if (!sameOrigin(requestCurrentURL(request2), locationURL)) {
-        request2.headersList.delete("authorization", true);
-        request2.headersList.delete("proxy-authorization", true);
-        request2.headersList.delete("cookie", true);
-        request2.headersList.delete("host", true);
+      if (!sameOrigin(requestCurrentURL(request3), locationURL)) {
+        request3.headersList.delete("authorization", true);
+        request3.headersList.delete("proxy-authorization", true);
+        request3.headersList.delete("cookie", true);
+        request3.headersList.delete("host", true);
       }
-      if (request2.body != null) {
-        assert(request2.body.source != null);
-        request2.body = safelyExtractBody(request2.body.source)[0];
+      if (request3.body != null) {
+        assert(request3.body.source != null);
+        request3.body = safelyExtractBody(request3.body.source)[0];
       }
       const timingInfo = fetchParams.timingInfo;
       timingInfo.redirectEndTime = timingInfo.postRedirectStartTime = coarsenedSharedCurrentTime(fetchParams.crossOriginIsolatedCapability);
       if (timingInfo.redirectStartTime === 0) {
         timingInfo.redirectStartTime = timingInfo.startTime;
       }
-      request2.urlList.push(locationURL);
-      setRequestReferrerPolicyOnRedirect(request2, actualResponse);
+      request3.urlList.push(locationURL);
+      setRequestReferrerPolicyOnRedirect(request3, actualResponse);
       return mainFetch(fetchParams, true);
     }
     async function httpNetworkOrCacheFetch(fetchParams, isAuthenticationFetch = false, isNewConnectionFetch = false) {
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let httpFetchParams = null;
       let httpRequest = null;
       let response = null;
       const httpCache = null;
       const revalidatingFlag = false;
-      if (request2.window === "no-window" && request2.redirect === "error") {
+      if (request3.window === "no-window" && request3.redirect === "error") {
         httpFetchParams = fetchParams;
-        httpRequest = request2;
+        httpRequest = request3;
       } else {
-        httpRequest = cloneRequest(request2);
+        httpRequest = cloneRequest(request3);
         httpFetchParams = { ...fetchParams };
         httpFetchParams.request = httpRequest;
       }
-      const includeCredentials = request2.credentials === "include" || request2.credentials === "same-origin" && request2.responseTainting === "basic";
+      const includeCredentials = request3.credentials === "include" || request3.credentials === "same-origin" && request3.responseTainting === "basic";
       const contentLength = httpRequest.body ? httpRequest.body.length : null;
       let contentLengthHeaderValue = null;
       if (httpRequest.body == null && ["POST", "PUT"].includes(httpRequest.method)) {
@@ -30329,7 +30307,7 @@ var require_fetch2 = __commonJS({
       }
       response.requestIncludesCredentials = includeCredentials;
       if (response.status === 407) {
-        if (request2.window === "no-window") {
+        if (request3.window === "no-window") {
           return makeNetworkError();
         }
         if (isCancelled(fetchParams)) {
@@ -30341,7 +30319,7 @@ var require_fetch2 = __commonJS({
         // response’s status is 421
         response.status === 421 && // isNewConnectionFetch is false
         !isNewConnectionFetch && // request’s body is null, or request’s body is non-null and request’s body’s source is non-null
-        (request2.body == null || request2.body.source != null)
+        (request3.body == null || request3.body.source != null)
       ) {
         if (isCancelled(fetchParams)) {
           return makeAppropriateNetworkError(fetchParams);
@@ -30371,21 +30349,21 @@ var require_fetch2 = __commonJS({
           }
         }
       };
-      const request2 = fetchParams.request;
+      const request3 = fetchParams.request;
       let response = null;
       const timingInfo = fetchParams.timingInfo;
       const httpCache = null;
       if (httpCache == null) {
-        request2.cache = "no-store";
+        request3.cache = "no-store";
       }
       const newConnection = forceNewConnection ? "yes" : "no";
-      if (request2.mode === "websocket") {
+      if (request3.mode === "websocket") {
       } else {
       }
       let requestBody = null;
-      if (request2.body == null && fetchParams.processRequestEndOfBody) {
+      if (request3.body == null && fetchParams.processRequestEndOfBody) {
         queueMicrotask(() => fetchParams.processRequestEndOfBody());
-      } else if (request2.body != null) {
+      } else if (request3.body != null) {
         const processBodyChunk = async function* (bytes) {
           if (isCancelled(fetchParams)) {
             return;
@@ -30413,7 +30391,7 @@ var require_fetch2 = __commonJS({
         };
         requestBody = async function* () {
           try {
-            for await (const bytes of request2.body.stream) {
+            for await (const bytes of request3.body.stream) {
               yield* processBodyChunk(bytes);
             }
             processEndOfBody();
@@ -30427,8 +30405,8 @@ var require_fetch2 = __commonJS({
         if (socket) {
           response = makeResponse({ status, statusText, headersList, socket });
         } else {
-          const iterator2 = body[Symbol.asyncIterator]();
-          fetchParams.controller.next = () => iterator2.next();
+          const iterator3 = body[Symbol.asyncIterator]();
+          fetchParams.controller.next = () => iterator3.next();
           response = makeResponse({ status, statusText, headersList });
         }
       } catch (err) {
@@ -30521,17 +30499,17 @@ var require_fetch2 = __commonJS({
       }
       return response;
       function dispatch({ body }) {
-        const url = requestCurrentURL(request2);
+        const url = requestCurrentURL(request3);
         const agent = fetchParams.controller.dispatcher;
         return new Promise((resolve, reject) => agent.dispatch(
           {
             path: url.pathname + url.search,
             origin: url.origin,
-            method: request2.method,
-            body: agent.isMockActive ? request2.body && (request2.body.source || request2.body.stream) : body,
-            headers: request2.headersList.entries,
+            method: request3.method,
+            body: agent.isMockActive ? request3.body && (request3.body.source || request3.body.stream) : body,
+            headers: request3.headersList.entries,
             maxRedirections: 0,
-            upgrade: request2.mode === "websocket" ? "websocket" : void 0
+            upgrade: request3.mode === "websocket" ? "websocket" : void 0
           },
           {
             body: null,
@@ -30569,8 +30547,8 @@ var require_fetch2 = __commonJS({
               }
               this.body = new Readable({ read: resume });
               const decoders = [];
-              const willFollow = location && request2.redirect === "follow" && redirectStatusSet.has(status);
-              if (request2.method !== "HEAD" && request2.method !== "CONNECT" && !nullBodyStatus.includes(status) && !willFollow) {
+              const willFollow = location && request3.redirect === "follow" && redirectStatusSet.has(status);
+              if (request3.method !== "HEAD" && request3.method !== "CONNECT" && !nullBodyStatus.includes(status) && !willFollow) {
                 for (let i2 = 0; i2 < codings.length; ++i2) {
                   const coding = codings[i2];
                   if (coding === "x-gzip" || coding === "gzip") {
@@ -31536,29 +31514,28 @@ var require_cache2 = __commonJS({
         }
         this.#relevantRequestResponseList = arguments[1];
       }
-      async match(request2, options = {}) {
+      async match(request3, options = {}) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.match" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
-        const p = this.#internalMatchAll(request2, options, 1);
+        const p = this.#internalMatchAll(request3, options, 1);
         if (p.length === 0) {
           return;
         }
         return p[0];
       }
-      async matchAll(request2 = void 0, options = {}) {
+      async matchAll(request3 = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request2 !== void 0)
-          request2 = webidl.converters.RequestInfo(request2);
+        if (request3 !== void 0) request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
-        return this.#internalMatchAll(request2, options);
+        return this.#internalMatchAll(request3, options);
       }
-      async add(request2) {
+      async add(request3) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.add" });
-        request2 = webidl.converters.RequestInfo(request2);
-        const requests = [request2];
+        request3 = webidl.converters.RequestInfo(request3);
+        const requests = [request3];
         const responseArrayPromise = this.addAll(requests);
         return await responseArrayPromise;
       }
@@ -31567,19 +31544,19 @@ var require_cache2 = __commonJS({
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.addAll" });
         const responsePromises = [];
         const requestList = [];
-        for (let request2 of requests) {
-          if (request2 === void 0) {
+        for (let request3 of requests) {
+          if (request3 === void 0) {
             throw webidl.errors.conversionFailed({
               prefix: "Cache.addAll",
               argument: "Argument 1",
               types: ["undefined is not allowed"]
             });
           }
-          request2 = webidl.converters.RequestInfo(request2);
-          if (typeof request2 === "string") {
+          request3 = webidl.converters.RequestInfo(request3);
+          if (typeof request3 === "string") {
             continue;
           }
-          const r2 = request2[kState];
+          const r2 = request3[kState];
           if (!urlIsHttpHttpsScheme(r2.url) || r2.method !== "GET") {
             throw webidl.errors.exception({
               header: "Cache.addAll",
@@ -31588,8 +31565,8 @@ var require_cache2 = __commonJS({
           }
         }
         const fetchControllers = [];
-        for (const request2 of requests) {
-          const r2 = new Request2(request2)[kState];
+        for (const request3 of requests) {
+          const r2 = new Request2(request3)[kState];
           if (!urlIsHttpHttpsScheme(r2.url)) {
             throw webidl.errors.exception({
               header: "Cache.addAll",
@@ -31666,16 +31643,16 @@ var require_cache2 = __commonJS({
         });
         return cacheJobPromise.promise;
       }
-      async put(request2, response) {
+      async put(request3, response) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 2, { header: "Cache.put" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         response = webidl.converters.Response(response);
         let innerRequest = null;
-        if (request2 instanceof Request2) {
-          innerRequest = request2[kState];
+        if (request3 instanceof Request2) {
+          innerRequest = request3[kState];
         } else {
-          innerRequest = new Request2(request2)[kState];
+          innerRequest = new Request2(request3)[kState];
         }
         if (!urlIsHttpHttpsScheme(innerRequest.url) || innerRequest.method !== "GET") {
           throw webidl.errors.exception({
@@ -31746,20 +31723,20 @@ var require_cache2 = __commonJS({
         });
         return cacheJobPromise.promise;
       }
-      async delete(request2, options = {}) {
+      async delete(request3, options = {}) {
         webidl.brandCheck(this, _Cache);
         webidl.argumentLengthCheck(arguments, 1, { header: "Cache.delete" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
         let r2 = null;
-        if (request2 instanceof Request2) {
-          r2 = request2[kState];
+        if (request3 instanceof Request2) {
+          r2 = request3[kState];
           if (r2.method !== "GET" && !options.ignoreMethod) {
             return false;
           }
         } else {
-          assert(typeof request2 === "string");
-          r2 = new Request2(request2)[kState];
+          assert(typeof request3 === "string");
+          r2 = new Request2(request3)[kState];
         }
         const operations = [];
         const operation = {
@@ -31791,25 +31768,24 @@ var require_cache2 = __commonJS({
        * @param {import('../../types/cache').CacheQueryOptions} options
        * @returns {Promise<readonly Request[]>}
        */
-      async keys(request2 = void 0, options = {}) {
+      async keys(request3 = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request2 !== void 0)
-          request2 = webidl.converters.RequestInfo(request2);
+        if (request3 !== void 0) request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.CacheQueryOptions(options);
         let r2 = null;
-        if (request2 !== void 0) {
-          if (request2 instanceof Request2) {
-            r2 = request2[kState];
+        if (request3 !== void 0) {
+          if (request3 instanceof Request2) {
+            r2 = request3[kState];
             if (r2.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
-          } else if (typeof request2 === "string") {
-            r2 = new Request2(request2)[kState];
+          } else if (typeof request3 === "string") {
+            r2 = new Request2(request3)[kState];
           }
         }
         const promise = createDeferredPromise();
         const requests = [];
-        if (request2 === void 0) {
+        if (request3 === void 0) {
           for (const requestResponse of this.#relevantRequestResponseList) {
             requests.push(requestResponse[0]);
           }
@@ -31821,12 +31797,12 @@ var require_cache2 = __commonJS({
         }
         queueMicrotask(() => {
           const requestList = [];
-          for (const request3 of requests) {
+          for (const request4 of requests) {
             const requestObject = fromInnerRequest(
-              request3,
+              request4,
               new AbortController().signal,
               "immutable",
-              { settingsObject: request3.client }
+              { settingsObject: request4.client }
             );
             requestList.push(requestObject);
           }
@@ -31942,9 +31918,9 @@ var require_cache2 = __commonJS({
        * @param {import('../../types/cache').CacheQueryOptions | undefined} options
        * @returns {boolean}
        */
-      #requestMatchesCachedItem(requestQuery, request2, response = null, options) {
+      #requestMatchesCachedItem(requestQuery, request3, response = null, options) {
         const queryURL = new URL(requestQuery.url);
-        const cachedURL = new URL(request2.url);
+        const cachedURL = new URL(request3.url);
         if (options?.ignoreSearch) {
           cachedURL.search = "";
           queryURL.search = "";
@@ -31960,7 +31936,7 @@ var require_cache2 = __commonJS({
           if (fieldValue === "*") {
             return false;
           }
-          const requestValue = request2.headersList.get(fieldValue);
+          const requestValue = request3.headersList.get(fieldValue);
           const queryValue = requestQuery.headersList.get(fieldValue);
           if (requestValue !== queryValue) {
             return false;
@@ -31968,20 +31944,20 @@ var require_cache2 = __commonJS({
         }
         return true;
       }
-      #internalMatchAll(request2, options, maxResponses = Infinity) {
+      #internalMatchAll(request3, options, maxResponses = Infinity) {
         let r2 = null;
-        if (request2 !== void 0) {
-          if (request2 instanceof Request2) {
-            r2 = request2[kState];
+        if (request3 !== void 0) {
+          if (request3 instanceof Request2) {
+            r2 = request3[kState];
             if (r2.method !== "GET" && !options.ignoreMethod) {
               return [];
             }
-          } else if (typeof request2 === "string") {
-            r2 = new Request2(request2)[kState];
+          } else if (typeof request3 === "string") {
+            r2 = new Request2(request3)[kState];
           }
         }
         const responses = [];
-        if (request2 === void 0) {
+        if (request3 === void 0) {
           for (const requestResponse of this.#relevantRequestResponseList) {
             responses.push(requestResponse[1]);
           }
@@ -32069,21 +32045,21 @@ var require_cachestorage2 = __commonJS({
           webidl.illegalConstructor();
         }
       }
-      async match(request2, options = {}) {
+      async match(request3, options = {}) {
         webidl.brandCheck(this, _CacheStorage);
         webidl.argumentLengthCheck(arguments, 1, { header: "CacheStorage.match" });
-        request2 = webidl.converters.RequestInfo(request2);
+        request3 = webidl.converters.RequestInfo(request3);
         options = webidl.converters.MultiCacheQueryOptions(options);
         if (options.cacheName != null) {
           if (this.#caches.has(options.cacheName)) {
             const cacheList = this.#caches.get(options.cacheName);
             const cache2 = new Cache(kConstruct, cacheList);
-            return await cache2.match(request2, options);
+            return await cache2.match(request3, options);
           }
         } else {
           for (const cacheList of this.#caches.values()) {
             const cache2 = new Cache(kConstruct, cacheList);
-            const response = await cache2.match(request2, options);
+            const response = await cache2.match(request3, options);
             if (response !== void 0) {
               return response;
             }
@@ -32282,7 +32258,7 @@ var require_util13 = __commonJS({
         throw new Error("Invalid cookie max-age");
       }
     }
-    function stringify2(cookie) {
+    function stringify(cookie) {
       if (cookie.name.length === 0) {
         return null;
       }
@@ -32351,7 +32327,7 @@ var require_util13 = __commonJS({
       validateCookiePath,
       validateCookieValue,
       toIMFDate,
-      stringify: stringify2,
+      stringify,
       getHeadersList
     };
   }
@@ -32502,7 +32478,7 @@ var require_cookies2 = __commonJS({
   "node_modules/undici/lib/web/cookies/index.js"(exports2, module2) {
     "use strict";
     var { parseSetCookie } = require_parse2();
-    var { stringify: stringify2, getHeadersList } = require_util13();
+    var { stringify, getHeadersList } = require_util13();
     var { webidl } = require_webidl2();
     var { Headers: Headers2 } = require_headers2();
     function getCookies(headers) {
@@ -32544,7 +32520,7 @@ var require_cookies2 = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
       webidl.brandCheck(headers, Headers2, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify2(cookie);
+      const str = stringify(cookie);
       if (str) {
         headers.append("Set-Cookie", str);
       }
@@ -33083,15 +33059,15 @@ var require_connection2 = __commonJS({
     var { Headers: Headers2 } = require_headers2();
     var { getDecodeSplit } = require_util9();
     var { kHeadersList } = require_symbols6();
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
     } catch {
     }
     function establishWebSocketConnection(url, protocols, ws, onEstablish, options) {
       const requestURL = url;
       requestURL.protocol = url.protocol === "ws:" ? "http:" : "https:";
-      const request2 = makeRequest({
+      const request3 = makeRequest({
         urlList: [requestURL],
         serviceWorkers: "none",
         referrer: "no-referrer",
@@ -33102,17 +33078,17 @@ var require_connection2 = __commonJS({
       });
       if (options.headers) {
         const headersList = new Headers2(options.headers)[kHeadersList];
-        request2.headersList = headersList;
+        request3.headersList = headersList;
       }
-      const keyValue = crypto4.randomBytes(16).toString("base64");
-      request2.headersList.append("sec-websocket-key", keyValue);
-      request2.headersList.append("sec-websocket-version", "13");
+      const keyValue = crypto.randomBytes(16).toString("base64");
+      request3.headersList.append("sec-websocket-key", keyValue);
+      request3.headersList.append("sec-websocket-version", "13");
       for (const protocol of protocols) {
-        request2.headersList.append("sec-websocket-protocol", protocol);
+        request3.headersList.append("sec-websocket-protocol", protocol);
       }
       const permessageDeflate = "";
       const controller = fetching({
-        request: request2,
+        request: request3,
         useParallelQueue: true,
         dispatcher: options.dispatcher,
         processResponse(response) {
@@ -33133,7 +33109,7 @@ var require_connection2 = __commonJS({
             return;
           }
           const secWSAccept = response.headersList.get("Sec-WebSocket-Accept");
-          const digest = crypto4.createHash("sha1").update(keyValue + uid).digest("base64");
+          const digest = crypto.createHash("sha1").update(keyValue + uid).digest("base64");
           if (secWSAccept !== digest) {
             failWebsocketConnection(ws, "Incorrect hash received in Sec-WebSocket-Accept header.");
             return;
@@ -33145,7 +33121,7 @@ var require_connection2 = __commonJS({
           }
           const secProtocol = response.headersList.get("Sec-WebSocket-Protocol");
           if (secProtocol !== null) {
-            const requestProtocols = getDecodeSplit("sec-websocket-protocol", request2.headersList);
+            const requestProtocols = getDecodeSplit("sec-websocket-protocol", request3.headersList);
             if (!requestProtocols.includes(secProtocol)) {
               failWebsocketConnection(ws, "Protocol was not set in the opening handshake.");
               return;
@@ -33216,9 +33192,9 @@ var require_frame2 = __commonJS({
   "node_modules/undici/lib/web/websocket/frame.js"(exports2, module2) {
     "use strict";
     var { maxUnsigned16Bit } = require_constants10();
-    var crypto4;
+    var crypto;
     try {
-      crypto4 = require("crypto");
+      crypto = require("crypto");
     } catch {
     }
     var WebsocketFrameSend = class {
@@ -33227,7 +33203,7 @@ var require_frame2 = __commonJS({
        */
       constructor(data) {
         this.frameData = data;
-        this.maskKey = crypto4.randomBytes(4);
+        this.maskKey = crypto.randomBytes(4);
       }
       createFrame(opcode) {
         const bodyLength = this.frameData?.byteLength ?? 0;
@@ -33806,12 +33782,12 @@ var require_websocket2 = __commonJS({
        */
       #onConnectionEstablished(response) {
         this[kResponse] = response;
-        const parser3 = new ByteParser(this);
-        parser3.on("drain", function onParserDrain() {
+        const parser4 = new ByteParser(this);
+        parser4.on("drain", function onParserDrain() {
           this.ws[kResponse].socket.resume();
         });
         response.socket.ws = this;
-        this[kByteParser] = parser3;
+        this[kByteParser] = parser4;
         this[kReadyState] = states.OPEN;
         const extensions = response.headersList.get("sec-websocket-extensions");
         if (extensions !== null) {
@@ -33918,11 +33894,9 @@ var require_util15 = __commonJS({
       return value.indexOf("\0") === -1;
     }
     function isASCIINumber(value) {
-      if (value.length === 0)
-        return false;
+      if (value.length === 0) return false;
       for (let i2 = 0; i2 < value.length; i2++) {
-        if (value.charCodeAt(i2) < 48 || value.charCodeAt(i2) > 57)
-          return false;
+        if (value.charCodeAt(i2) < 48 || value.charCodeAt(i2) > 57) return false;
       }
       return true;
     }
@@ -34288,8 +34262,7 @@ var require_eventsource = __commonJS({
         return this.#withCredentials;
       }
       #connect() {
-        if (this.#readyState === CLOSED)
-          return;
+        if (this.#readyState === CLOSED) return;
         this.#readyState = CONNECTING;
         const fetchParam = {
           request: this.#request
@@ -34351,13 +34324,11 @@ var require_eventsource = __commonJS({
        * @returns {Promise<void>}
        */
       async #reconnect() {
-        if (this.#readyState === CLOSED)
-          return;
+        if (this.#readyState === CLOSED) return;
         this.#readyState = CONNECTING;
         this.dispatchEvent(new Event("error"));
         await delay2(this.#settings.reconnectionTime);
-        if (this.#readyState !== CONNECTING)
-          return;
+        if (this.#readyState !== CONNECTING) return;
         if (this.#settings.lastEventId !== "") {
           this.#request.headersList.set("last-event-id", this.#settings.lastEventId, true);
         }
@@ -34369,8 +34340,7 @@ var require_eventsource = __commonJS({
        */
       close() {
         webidl.brandCheck(this, _EventSource);
-        if (this.#readyState === CLOSED)
-          return;
+        if (this.#readyState === CLOSED) return;
         this.#readyState = CLOSED;
         clearTimeout(this.#settings.reconnectionTimer);
         this.#controller.abort();
@@ -34513,9 +34483,9 @@ var require_undici2 = __commonJS({
       headerNameToString: util.headerNameToString
     };
     function makeDispatcher(fn) {
-      return (url, opts, handler2) => {
+      return (url, opts, handler3) => {
         if (typeof opts === "function") {
-          handler2 = opts;
+          handler3 = opts;
           opts = null;
         }
         if (!url || typeof url !== "string" && typeof url !== "object" && !(url instanceof URL)) {
@@ -34548,7 +34518,7 @@ var require_undici2 = __commonJS({
           origin: url.origin,
           path: url.search ? `${url.pathname}${url.search}` : url.pathname,
           method: opts.method || (opts.body ? "PUT" : "GET")
-        }, handler2);
+        }, handler3);
       };
     }
     module2.exports.setGlobalDispatcher = setGlobalDispatcher;
@@ -34608,8 +34578,7 @@ var require_utils3 = __commonJS({
   "node_modules/@actions/github/lib/internal/utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m2, k);
       if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -34618,8 +34587,7 @@ var require_utils3 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -34628,13 +34596,10 @@ var require_utils3 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -34704,7 +34669,7 @@ var require_utils3 = __commonJS({
   }
 });
 
-// node_modules/universal-user-agent/dist-web/index.js
+// node_modules/@octokit/core/node_modules/universal-user-agent/dist-web/index.js
 function getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -34715,7 +34680,7 @@ function getUserAgent() {
   return "<environment undetectable>";
 }
 var init_dist_web = __esm({
-  "node_modules/universal-user-agent/dist-web/index.js"() {
+  "node_modules/@octokit/core/node_modules/universal-user-agent/dist-web/index.js"() {
     "use strict";
   }
 });
@@ -34724,8 +34689,8 @@ var init_dist_web = __esm({
 var require_register = __commonJS({
   "node_modules/before-after-hook/lib/register.js"(exports2, module2) {
     "use strict";
-    module2.exports = register;
-    function register(state, name, method, options) {
+    module2.exports = register2;
+    function register2(state, name, method, options) {
       if (typeof method !== "function") {
         throw new Error("method for before hook must be a function");
       }
@@ -34734,7 +34699,7 @@ var require_register = __commonJS({
       }
       if (Array.isArray(name)) {
         return name.reverse().reduce(function(callback, name2) {
-          return register.bind(null, state, name2, callback, options);
+          return register2.bind(null, state, name2, callback, options);
         }, method)();
       }
       return Promise.resolve().then(function() {
@@ -34753,19 +34718,19 @@ var require_register = __commonJS({
 var require_add = __commonJS({
   "node_modules/before-after-hook/lib/add.js"(exports2, module2) {
     "use strict";
-    module2.exports = addHook;
-    function addHook(state, kind, name, hook2) {
-      var orig = hook2;
+    module2.exports = addHook2;
+    function addHook2(state, kind, name, hook4) {
+      var orig = hook4;
       if (!state.registry[name]) {
         state.registry[name] = [];
       }
       if (kind === "before") {
-        hook2 = function(method, options) {
+        hook4 = function(method, options) {
           return Promise.resolve().then(orig.bind(null, options)).then(method.bind(null, options));
         };
       }
       if (kind === "after") {
-        hook2 = function(method, options) {
+        hook4 = function(method, options) {
           var result;
           return Promise.resolve().then(method.bind(null, options)).then(function(result_) {
             result = result_;
@@ -34776,14 +34741,14 @@ var require_add = __commonJS({
         };
       }
       if (kind === "error") {
-        hook2 = function(method, options) {
+        hook4 = function(method, options) {
           return Promise.resolve().then(method.bind(null, options)).catch(function(error) {
             return orig(error, options);
           });
         };
       }
       state.registry[name].push({
-        hook: hook2,
+        hook: hook4,
         orig
       });
     }
@@ -34794,8 +34759,8 @@ var require_add = __commonJS({
 var require_remove = __commonJS({
   "node_modules/before-after-hook/lib/remove.js"(exports2, module2) {
     "use strict";
-    module2.exports = removeHook;
-    function removeHook(state, name, method) {
+    module2.exports = removeHook2;
+    function removeHook2(state, name, method) {
       if (!state.registry[name]) {
         return;
       }
@@ -34814,21 +34779,21 @@ var require_remove = __commonJS({
 var require_before_after_hook = __commonJS({
   "node_modules/before-after-hook/index.js"(exports2, module2) {
     "use strict";
-    var register = require_register();
-    var addHook = require_add();
-    var removeHook = require_remove();
-    var bind = Function.bind;
-    var bindable = bind.bind(bind);
-    function bindApi(hook2, state, name) {
-      var removeHookRef = bindable(removeHook, null).apply(
+    var register2 = require_register();
+    var addHook2 = require_add();
+    var removeHook2 = require_remove();
+    var bind2 = Function.bind;
+    var bindable2 = bind2.bind(bind2);
+    function bindApi2(hook4, state, name) {
+      var removeHookRef = bindable2(removeHook2, null).apply(
         null,
         name ? [state, name] : [state]
       );
-      hook2.api = { remove: removeHookRef };
-      hook2.remove = removeHookRef;
+      hook4.api = { remove: removeHookRef };
+      hook4.remove = removeHookRef;
       ["before", "error", "after", "wrap"].forEach(function(kind) {
         var args = name ? [state, kind, name] : [state, kind];
-        hook2[kind] = hook2.api[kind] = bindable(addHook, null).apply(null, args);
+        hook4[kind] = hook4.api[kind] = bindable2(addHook2, null).apply(null, args);
       });
     }
     function HookSingular() {
@@ -34836,17 +34801,17 @@ var require_before_after_hook = __commonJS({
       var singularHookState = {
         registry: {}
       };
-      var singularHook = register.bind(null, singularHookState, singularHookName);
-      bindApi(singularHook, singularHookState, singularHookName);
+      var singularHook = register2.bind(null, singularHookState, singularHookName);
+      bindApi2(singularHook, singularHookState, singularHookName);
       return singularHook;
     }
     function HookCollection() {
       var state = {
         registry: {}
       };
-      var hook2 = register.bind(null, state);
-      bindApi(hook2, state);
-      return hook2;
+      var hook4 = register2.bind(null, state);
+      bindApi2(hook4, state);
+      return hook4;
     }
     var collectionHookDeprecationMessageDisplayed = false;
     function Hook() {
@@ -34867,19 +34832,19 @@ var require_before_after_hook = __commonJS({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/version.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/version.js
 var VERSION;
 var init_version = __esm({
-  "node_modules/@octokit/endpoint/dist-src/version.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/version.js"() {
     "use strict";
     VERSION = "9.0.5";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/defaults.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/defaults.js
 var userAgent, DEFAULTS;
 var init_defaults = __esm({
-  "node_modules/@octokit/endpoint/dist-src/defaults.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/defaults.js"() {
     "use strict";
     init_dist_web();
     init_version();
@@ -34898,7 +34863,7 @@ var init_defaults = __esm({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/lowercase-keys.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/lowercase-keys.js
 function lowercaseKeys(object) {
   if (!object) {
     return {};
@@ -34909,12 +34874,12 @@ function lowercaseKeys(object) {
   }, {});
 }
 var init_lowercase_keys = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/lowercase-keys.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/lowercase-keys.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/is-plain-object.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/is-plain-object.js
 function isPlainObject(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -34927,12 +34892,12 @@ function isPlainObject(value) {
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
 var init_is_plain_object = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/is-plain-object.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/is-plain-object.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/merge-deep.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/merge-deep.js
 function mergeDeep(defaults2, options) {
   const result = Object.assign({}, defaults2);
   Object.keys(options).forEach((key) => {
@@ -34948,13 +34913,13 @@ function mergeDeep(defaults2, options) {
   return result;
 }
 var init_merge_deep = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/merge-deep.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/merge-deep.js"() {
     "use strict";
     init_is_plain_object();
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/remove-undefined-properties.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/remove-undefined-properties.js
 function removeUndefinedProperties(obj) {
   for (const key in obj) {
     if (obj[key] === void 0) {
@@ -34964,12 +34929,12 @@ function removeUndefinedProperties(obj) {
   return obj;
 }
 var init_remove_undefined_properties = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/remove-undefined-properties.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/remove-undefined-properties.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/merge.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/merge.js
 function merge(defaults2, route, options) {
   if (typeof route === "string") {
     let [method, url] = route.split(" ");
@@ -34992,7 +34957,7 @@ function merge(defaults2, route, options) {
   return mergedOptions;
 }
 var init_merge = __esm({
-  "node_modules/@octokit/endpoint/dist-src/merge.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/merge.js"() {
     "use strict";
     init_lowercase_keys();
     init_merge_deep();
@@ -35000,7 +34965,7 @@ var init_merge = __esm({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/add-query-parameters.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/add-query-parameters.js
 function addQueryParameters(url, parameters) {
   const separator = /\?/.test(url) ? "&" : "?";
   const names = Object.keys(parameters);
@@ -35015,12 +34980,12 @@ function addQueryParameters(url, parameters) {
   }).join("&");
 }
 var init_add_query_parameters = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/add-query-parameters.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/add-query-parameters.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/extract-url-variable-names.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/extract-url-variable-names.js
 function removeNonChars(variableName) {
   return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
 }
@@ -35033,13 +34998,13 @@ function extractUrlVariableNames(url) {
 }
 var urlVariableRegex;
 var init_extract_url_variable_names = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/extract-url-variable-names.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/extract-url-variable-names.js"() {
     "use strict";
     urlVariableRegex = /\{[^}]+\}/g;
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/omit.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/omit.js
 function omit(object, keysToOmit) {
   const result = { __proto__: null };
   for (const key of Object.keys(object)) {
@@ -35050,12 +35015,12 @@ function omit(object, keysToOmit) {
   return result;
 }
 var init_omit = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/omit.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/omit.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/util/url-template.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/url-template.js
 function encodeReserved(str) {
   return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
     if (!/%[0-9A-Fa-f]/.test(part)) {
@@ -35187,12 +35152,12 @@ function expand(template, context2) {
   }
 }
 var init_url_template = __esm({
-  "node_modules/@octokit/endpoint/dist-src/util/url-template.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/util/url-template.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/parse.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/parse.js
 function parse(options) {
   let method = options.method.toUpperCase();
   let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
@@ -35257,7 +35222,7 @@ function parse(options) {
   );
 }
 var init_parse = __esm({
-  "node_modules/@octokit/endpoint/dist-src/parse.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/parse.js"() {
     "use strict";
     init_add_query_parameters();
     init_extract_url_variable_names();
@@ -35266,31 +35231,31 @@ var init_parse = __esm({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/endpoint-with-defaults.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/endpoint-with-defaults.js
 function endpointWithDefaults(defaults2, route, options) {
   return parse(merge(defaults2, route, options));
 }
 var init_endpoint_with_defaults = __esm({
-  "node_modules/@octokit/endpoint/dist-src/endpoint-with-defaults.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/endpoint-with-defaults.js"() {
     "use strict";
     init_merge();
     init_parse();
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/with-defaults.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/with-defaults.js
 function withDefaults(oldDefaults, newDefaults) {
-  const DEFAULTS3 = merge(oldDefaults, newDefaults);
-  const endpoint2 = endpointWithDefaults.bind(null, DEFAULTS3);
-  return Object.assign(endpoint2, {
-    DEFAULTS: DEFAULTS3,
-    defaults: withDefaults.bind(null, DEFAULTS3),
-    merge: merge.bind(null, DEFAULTS3),
+  const DEFAULTS4 = merge(oldDefaults, newDefaults);
+  const endpoint3 = endpointWithDefaults.bind(null, DEFAULTS4);
+  return Object.assign(endpoint3, {
+    DEFAULTS: DEFAULTS4,
+    defaults: withDefaults.bind(null, DEFAULTS4),
+    merge: merge.bind(null, DEFAULTS4),
     parse
   });
 }
 var init_with_defaults = __esm({
-  "node_modules/@octokit/endpoint/dist-src/with-defaults.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/with-defaults.js"() {
     "use strict";
     init_endpoint_with_defaults();
     init_merge();
@@ -35298,10 +35263,10 @@ var init_with_defaults = __esm({
   }
 });
 
-// node_modules/@octokit/endpoint/dist-src/index.js
+// node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/index.js
 var endpoint;
 var init_dist_src = __esm({
-  "node_modules/@octokit/endpoint/dist-src/index.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/node_modules/@octokit/endpoint/dist-src/index.js"() {
     "use strict";
     init_with_defaults();
     init_defaults();
@@ -35309,16 +35274,16 @@ var init_dist_src = __esm({
   }
 });
 
-// node_modules/@octokit/request/dist-src/version.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/version.js
 var VERSION2;
 var init_version2 = __esm({
-  "node_modules/@octokit/request/dist-src/version.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/version.js"() {
     "use strict";
     VERSION2 = "8.3.1";
   }
 });
 
-// node_modules/@octokit/request/dist-src/is-plain-object.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/is-plain-object.js
 function isPlainObject2(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -35331,7 +35296,7 @@ function isPlainObject2(value) {
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
 var init_is_plain_object2 = __esm({
-  "node_modules/@octokit/request/dist-src/is-plain-object.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/is-plain-object.js"() {
     "use strict";
   }
 });
@@ -35359,8 +35324,7 @@ var require_wrappy = __commonJS({
     "use strict";
     module2.exports = wrappy;
     function wrappy(fn, cb) {
-      if (fn && cb)
-        return wrappy(fn)(cb);
+      if (fn && cb) return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
       Object.keys(fn).forEach(function(k) {
@@ -35408,8 +35372,7 @@ var require_once = __commonJS({
     });
     function once2(fn) {
       var f3 = function() {
-        if (f3.called)
-          return f3.value;
+        if (f3.called) return f3.value;
         f3.called = true;
         return f3.value = fn.apply(this, arguments);
       };
@@ -35492,17 +35455,17 @@ var init_dist_src2 = __esm({
   }
 });
 
-// node_modules/@octokit/request/dist-src/get-buffer-response.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/get-buffer-response.js
 function getBufferResponse(response) {
   return response.arrayBuffer();
 }
 var init_get_buffer_response = __esm({
-  "node_modules/@octokit/request/dist-src/get-buffer-response.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/get-buffer-response.js"() {
     "use strict";
   }
 });
 
-// node_modules/@octokit/request/dist-src/fetch-wrapper.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/fetch-wrapper.js
 function fetchWrapper(requestOptions) {
   const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
   const parseSuccessResponseBody = requestOptions.request?.parseSuccessResponseBody !== false;
@@ -35637,7 +35600,7 @@ function toErrorMessage(data) {
   return `Unknown error: ${JSON.stringify(data)}`;
 }
 var init_fetch_wrapper = __esm({
-  "node_modules/@octokit/request/dist-src/fetch-wrapper.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/fetch-wrapper.js"() {
     "use strict";
     init_is_plain_object2();
     init_dist_src2();
@@ -35645,41 +35608,41 @@ var init_fetch_wrapper = __esm({
   }
 });
 
-// node_modules/@octokit/request/dist-src/with-defaults.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/with-defaults.js
 function withDefaults2(oldEndpoint, newDefaults) {
-  const endpoint2 = oldEndpoint.defaults(newDefaults);
+  const endpoint3 = oldEndpoint.defaults(newDefaults);
   const newApi = function(route, parameters) {
-    const endpointOptions = endpoint2.merge(route, parameters);
+    const endpointOptions = endpoint3.merge(route, parameters);
     if (!endpointOptions.request || !endpointOptions.request.hook) {
-      return fetchWrapper(endpoint2.parse(endpointOptions));
+      return fetchWrapper(endpoint3.parse(endpointOptions));
     }
-    const request2 = (route2, parameters2) => {
+    const request3 = (route2, parameters2) => {
       return fetchWrapper(
-        endpoint2.parse(endpoint2.merge(route2, parameters2))
+        endpoint3.parse(endpoint3.merge(route2, parameters2))
       );
     };
-    Object.assign(request2, {
-      endpoint: endpoint2,
-      defaults: withDefaults2.bind(null, endpoint2)
+    Object.assign(request3, {
+      endpoint: endpoint3,
+      defaults: withDefaults2.bind(null, endpoint3)
     });
-    return endpointOptions.request.hook(request2, endpointOptions);
+    return endpointOptions.request.hook(request3, endpointOptions);
   };
   return Object.assign(newApi, {
-    endpoint: endpoint2,
-    defaults: withDefaults2.bind(null, endpoint2)
+    endpoint: endpoint3,
+    defaults: withDefaults2.bind(null, endpoint3)
   });
 }
 var init_with_defaults2 = __esm({
-  "node_modules/@octokit/request/dist-src/with-defaults.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/with-defaults.js"() {
     "use strict";
     init_fetch_wrapper();
   }
 });
 
-// node_modules/@octokit/request/dist-src/index.js
+// node_modules/@octokit/core/node_modules/@octokit/request/dist-src/index.js
 var request;
 var init_dist_src3 = __esm({
-  "node_modules/@octokit/request/dist-src/index.js"() {
+  "node_modules/@octokit/core/node_modules/@octokit/request/dist-src/index.js"() {
     "use strict";
     init_dist_src();
     init_dist_web();
@@ -35698,7 +35661,7 @@ function _buildMessageForResponseErrors(data) {
   return `Request failed due to following response errors:
 ` + data.errors.map((e2) => ` - ${e2.message}`).join("\n");
 }
-function graphql(request2, query, options) {
+function graphql(request22, query, options) {
   if (options) {
     if (typeof query === "string" && "query" in options) {
       return Promise.reject(
@@ -35729,11 +35692,11 @@ function graphql(request2, query, options) {
     result.variables[key] = parsedOptions[key];
     return result;
   }, {});
-  const baseUrl = parsedOptions.baseUrl || request2.endpoint.DEFAULTS.baseUrl;
+  const baseUrl = parsedOptions.baseUrl || request22.endpoint.DEFAULTS.baseUrl;
   if (GHES_V3_SUFFIX_REGEX.test(baseUrl)) {
     requestOptions.url = baseUrl.replace(GHES_V3_SUFFIX_REGEX, "/api/graphql");
   }
-  return request2(requestOptions).then((response) => {
+  return request22(requestOptions).then((response) => {
     if (response.data.errors) {
       const headers = {};
       for (const key of Object.keys(response.headers)) {
@@ -35748,8 +35711,8 @@ function graphql(request2, query, options) {
     return response.data.data;
   });
 }
-function withDefaults3(request2, newDefaults) {
-  const newRequest = request2.defaults(newDefaults);
+function withDefaults3(request22, newDefaults) {
+  const newRequest = request22.defaults(newDefaults);
   const newApi = (query, options) => {
     return graphql(newRequest, query, options);
   };
@@ -35772,9 +35735,9 @@ var init_dist_web3 = __esm({
     init_dist_web();
     VERSION3 = "7.1.0";
     GraphqlResponseError = class extends Error {
-      constructor(request2, headers, response) {
+      constructor(request22, headers, response) {
         super(_buildMessageForResponseErrors(response));
-        this.request = request2;
+        this.request = request22;
         this.headers = headers;
         this.response = response;
         this.name = "GraphqlResponseError";
@@ -35842,13 +35805,13 @@ var init_with_authorization_prefix = __esm({
 });
 
 // node_modules/@octokit/auth-token/dist-src/hook.js
-async function hook(token, request2, route, parameters) {
-  const endpoint2 = request2.endpoint.merge(
+async function hook(token, request3, route, parameters) {
+  const endpoint3 = request3.endpoint.merge(
     route,
     parameters
   );
-  endpoint2.headers.authorization = withAuthorizationPrefix(token);
-  return request2(endpoint2);
+  endpoint3.headers.authorization = withAuthorizationPrefix(token);
+  return request3(endpoint3);
 }
 var init_hook = __esm({
   "node_modules/@octokit/auth-token/dist-src/hook.js"() {
@@ -35858,10 +35821,6 @@ var init_hook = __esm({
 });
 
 // node_modules/@octokit/auth-token/dist-src/index.js
-var dist_src_exports = {};
-__export(dist_src_exports, {
-  createTokenAuth: () => createTokenAuth
-});
 var createTokenAuth;
 var init_dist_src4 = __esm({
   "node_modules/@octokit/auth-token/dist-src/index.js"() {
@@ -35952,13 +35911,13 @@ var init_dist_web4 = __esm({
         return NewOctokit;
       }
       constructor(options = {}) {
-        const hook2 = new import_before_after_hook.Collection();
+        const hook4 = new import_before_after_hook.Collection();
         const requestDefaults = {
           baseUrl: request.endpoint.DEFAULTS.baseUrl,
           headers: {},
           request: Object.assign({}, options.request, {
             // @ts-ignore internal usage only, no need to type
-            hook: hook2.bind(null, "request")
+            hook: hook4.bind(null, "request")
           }),
           mediaType: {
             previews: [],
@@ -35986,20 +35945,20 @@ var init_dist_web4 = __esm({
           },
           options.log
         );
-        this.hook = hook2;
+        this.hook = hook4;
         if (!options.authStrategy) {
           if (!options.auth) {
             this.auth = async () => ({
               type: "unauthenticated"
             });
           } else {
-            const auth2 = createTokenAuth(options.auth);
-            hook2.wrap("request", auth2.hook);
-            this.auth = auth2;
+            const auth4 = createTokenAuth(options.auth);
+            hook4.wrap("request", auth4.hook);
+            this.auth = auth4;
           }
         } else {
           const { authStrategy, ...otherOptions } = options;
-          const auth2 = authStrategy(
+          const auth4 = authStrategy(
             Object.assign(
               {
                 request: this.request,
@@ -36015,8 +35974,8 @@ var init_dist_web4 = __esm({
               options.auth
             )
           );
-          hook2.wrap("request", auth2.hook);
-          this.auth = auth2;
+          hook4.wrap("request", auth4.hook);
+          this.auth = auth4;
         }
         const classConstructor = this.constructor;
         for (let i2 = 0; i2 < classConstructor.plugins.length; ++i2) {
@@ -38089,8 +38048,8 @@ var init_endpoints_to_methods = __esm({
     init_endpoints();
     endpointMethodsMap = /* @__PURE__ */ new Map();
     for (const [scope, endpoints] of Object.entries(endpoints_default)) {
-      for (const [methodName, endpoint2] of Object.entries(endpoints)) {
-        const [route, defaults2, decorations] = endpoint2;
+      for (const [methodName, endpoint3] of Object.entries(endpoints)) {
+        const [route, defaults2, decorations] = endpoint3;
         const [method, url] = route.split(/ /);
         const endpointDefaults = Object.assign(
           {
@@ -38164,8 +38123,8 @@ var init_endpoints_to_methods = __esm({
 });
 
 // node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
-var dist_src_exports2 = {};
-__export(dist_src_exports2, {
+var dist_src_exports = {};
+__export(dist_src_exports, {
   legacyRestEndpointMethods: () => legacyRestEndpointMethods,
   restEndpointMethods: () => restEndpointMethods
 });
@@ -38274,8 +38233,8 @@ function paginate(octokit, route, parameters, mapFn) {
     mapFn
   );
 }
-function gather(octokit, results, iterator2, mapFn) {
-  return iterator2.next().then((result) => {
+function gather(octokit, results, iterator22, mapFn) {
+  return iterator22.next().then((result) => {
     if (result.done) {
       return results;
     }
@@ -38289,7 +38248,7 @@ function gather(octokit, results, iterator2, mapFn) {
     if (earlyExit) {
       return results;
     }
-    return gather(octokit, results, iterator2, mapFn);
+    return gather(octokit, results, iterator22, mapFn);
   });
 }
 function isPaginatingEndpoint(arg) {
@@ -38559,8 +38518,7 @@ var require_utils4 = __commonJS({
   "node_modules/@actions/github/lib/utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m2, k);
       if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -38569,8 +38527,7 @@ var require_utils4 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -38579,13 +38536,10 @@ var require_utils4 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -38595,7 +38549,7 @@ var require_utils4 = __commonJS({
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils3());
     var core_1 = (init_dist_web4(), __toCommonJS(dist_web_exports));
-    var plugin_rest_endpoint_methods_1 = (init_dist_src5(), __toCommonJS(dist_src_exports2));
+    var plugin_rest_endpoint_methods_1 = (init_dist_src5(), __toCommonJS(dist_src_exports));
     var plugin_paginate_rest_1 = (init_dist_web5(), __toCommonJS(dist_web_exports2));
     exports2.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
@@ -38609,9 +38563,9 @@ var require_utils4 = __commonJS({
     exports2.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports2.defaults);
     function getOctokitOptions(token, options) {
       const opts = Object.assign({}, options || {});
-      const auth2 = Utils.getAuthString(token, opts);
-      if (auth2) {
-        opts.auth = auth2;
+      const auth4 = Utils.getAuthString(token, opts);
+      if (auth4) {
+        opts.auth = auth4;
       }
       return opts;
     }
@@ -38624,8 +38578,7 @@ var require_github = __commonJS({
   "node_modules/@actions/github/lib/github.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m2, k);
       if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -38634,8 +38587,7 @@ var require_github = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -38644,13 +38596,10 @@ var require_github = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -38705,14 +38654,16 @@ var require_command = __commonJS({
   "node_modules/@actions/core/lib/command.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m2[k];
-      } });
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -38721,13 +38672,10 @@ var require_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -38779,359 +38727,11 @@ var require_command = __commonJS({
       }
     };
     function escapeData(s2) {
-      return utils_1.toCommandValue(s2).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+      return (0, utils_1.toCommandValue)(s2).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
     }
     function escapeProperty(s2) {
-      return utils_1.toCommandValue(s2).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
+      return (0, utils_1.toCommandValue)(s2).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
     }
-  }
-});
-
-// node_modules/uuid/dist/esm-node/rng.js
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    import_crypto.default.randomFillSync(rnds8Pool);
-    poolPtr = 0;
-  }
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}
-var import_crypto, rnds8Pool, poolPtr;
-var init_rng = __esm({
-  "node_modules/uuid/dist/esm-node/rng.js"() {
-    "use strict";
-    import_crypto = __toESM(require("crypto"));
-    rnds8Pool = new Uint8Array(256);
-    poolPtr = rnds8Pool.length;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/regex.js
-var regex_default;
-var init_regex = __esm({
-  "node_modules/uuid/dist/esm-node/regex.js"() {
-    "use strict";
-    regex_default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/validate.js
-function validate(uuid) {
-  return typeof uuid === "string" && regex_default.test(uuid);
-}
-var validate_default;
-var init_validate = __esm({
-  "node_modules/uuid/dist/esm-node/validate.js"() {
-    "use strict";
-    init_regex();
-    validate_default = validate;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/stringify.js
-function stringify(arr, offset = 0) {
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
-  if (!validate_default(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
-  return uuid;
-}
-var byteToHex, stringify_default;
-var init_stringify = __esm({
-  "node_modules/uuid/dist/esm-node/stringify.js"() {
-    "use strict";
-    init_validate();
-    byteToHex = [];
-    for (let i2 = 0; i2 < 256; ++i2) {
-      byteToHex.push((i2 + 256).toString(16).substr(1));
-    }
-    stringify_default = stringify;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/v1.js
-function v1(options, buf, offset) {
-  let i2 = buf && offset || 0;
-  const b = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId;
-  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || rng)();
-    if (node == null) {
-      node = _nodeId = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-    if (clockseq == null) {
-      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-    }
-  }
-  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
-  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
-  if (dt < 0 && options.clockseq === void 0) {
-    clockseq = clockseq + 1 & 16383;
-  }
-  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
-    nsecs = 0;
-  }
-  if (nsecs >= 1e4) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-  _lastMSecs = msecs;
-  _lastNSecs = nsecs;
-  _clockseq = clockseq;
-  msecs += 122192928e5;
-  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-  b[i2++] = tl >>> 24 & 255;
-  b[i2++] = tl >>> 16 & 255;
-  b[i2++] = tl >>> 8 & 255;
-  b[i2++] = tl & 255;
-  const tmh = msecs / 4294967296 * 1e4 & 268435455;
-  b[i2++] = tmh >>> 8 & 255;
-  b[i2++] = tmh & 255;
-  b[i2++] = tmh >>> 24 & 15 | 16;
-  b[i2++] = tmh >>> 16 & 255;
-  b[i2++] = clockseq >>> 8 | 128;
-  b[i2++] = clockseq & 255;
-  for (let n = 0; n < 6; ++n) {
-    b[i2 + n] = node[n];
-  }
-  return buf || stringify_default(b);
-}
-var _nodeId, _clockseq, _lastMSecs, _lastNSecs, v1_default;
-var init_v1 = __esm({
-  "node_modules/uuid/dist/esm-node/v1.js"() {
-    "use strict";
-    init_rng();
-    init_stringify();
-    _lastMSecs = 0;
-    _lastNSecs = 0;
-    v1_default = v1;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/parse.js
-function parse2(uuid) {
-  if (!validate_default(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  let v;
-  const arr = new Uint8Array(16);
-  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v >>> 16 & 255;
-  arr[2] = v >>> 8 & 255;
-  arr[3] = v & 255;
-  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v & 255;
-  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v & 255;
-  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v & 255;
-  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-  arr[11] = v / 4294967296 & 255;
-  arr[12] = v >>> 24 & 255;
-  arr[13] = v >>> 16 & 255;
-  arr[14] = v >>> 8 & 255;
-  arr[15] = v & 255;
-  return arr;
-}
-var parse_default;
-var init_parse2 = __esm({
-  "node_modules/uuid/dist/esm-node/parse.js"() {
-    "use strict";
-    init_validate();
-    parse_default = parse2;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/v35.js
-function stringToBytes(str) {
-  str = unescape(encodeURIComponent(str));
-  const bytes = [];
-  for (let i2 = 0; i2 < str.length; ++i2) {
-    bytes.push(str.charCodeAt(i2));
-  }
-  return bytes;
-}
-function v35_default(name, version2, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    if (typeof value === "string") {
-      value = stringToBytes(value);
-    }
-    if (typeof namespace === "string") {
-      namespace = parse_default(namespace);
-    }
-    if (namespace.length !== 16) {
-      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-    }
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version2;
-    bytes[8] = bytes[8] & 63 | 128;
-    if (buf) {
-      offset = offset || 0;
-      for (let i2 = 0; i2 < 16; ++i2) {
-        buf[offset + i2] = bytes[i2];
-      }
-      return buf;
-    }
-    return stringify_default(bytes);
-  }
-  try {
-    generateUUID.name = name;
-  } catch (err) {
-  }
-  generateUUID.DNS = DNS;
-  generateUUID.URL = URL2;
-  return generateUUID;
-}
-var DNS, URL2;
-var init_v35 = __esm({
-  "node_modules/uuid/dist/esm-node/v35.js"() {
-    "use strict";
-    init_stringify();
-    init_parse2();
-    DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    URL2 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-  }
-});
-
-// node_modules/uuid/dist/esm-node/md5.js
-function md5(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto2.default.createHash("md5").update(bytes).digest();
-}
-var import_crypto2, md5_default;
-var init_md5 = __esm({
-  "node_modules/uuid/dist/esm-node/md5.js"() {
-    "use strict";
-    import_crypto2 = __toESM(require("crypto"));
-    md5_default = md5;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/v3.js
-var v3, v3_default;
-var init_v3 = __esm({
-  "node_modules/uuid/dist/esm-node/v3.js"() {
-    "use strict";
-    init_v35();
-    init_md5();
-    v3 = v35_default("v3", 48, md5_default);
-    v3_default = v3;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/v4.js
-function v4(options, buf, offset) {
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i2 = 0; i2 < 16; ++i2) {
-      buf[offset + i2] = rnds[i2];
-    }
-    return buf;
-  }
-  return stringify_default(rnds);
-}
-var v4_default;
-var init_v4 = __esm({
-  "node_modules/uuid/dist/esm-node/v4.js"() {
-    "use strict";
-    init_rng();
-    init_stringify();
-    v4_default = v4;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/sha1.js
-function sha1(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto3.default.createHash("sha1").update(bytes).digest();
-}
-var import_crypto3, sha1_default;
-var init_sha1 = __esm({
-  "node_modules/uuid/dist/esm-node/sha1.js"() {
-    "use strict";
-    import_crypto3 = __toESM(require("crypto"));
-    sha1_default = sha1;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/v5.js
-var v5, v5_default;
-var init_v5 = __esm({
-  "node_modules/uuid/dist/esm-node/v5.js"() {
-    "use strict";
-    init_v35();
-    init_sha1();
-    v5 = v35_default("v5", 80, sha1_default);
-    v5_default = v5;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/nil.js
-var nil_default;
-var init_nil = __esm({
-  "node_modules/uuid/dist/esm-node/nil.js"() {
-    "use strict";
-    nil_default = "00000000-0000-0000-0000-000000000000";
-  }
-});
-
-// node_modules/uuid/dist/esm-node/version.js
-function version(uuid) {
-  if (!validate_default(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  return parseInt(uuid.substr(14, 1), 16);
-}
-var version_default;
-var init_version4 = __esm({
-  "node_modules/uuid/dist/esm-node/version.js"() {
-    "use strict";
-    init_validate();
-    version_default = version;
-  }
-});
-
-// node_modules/uuid/dist/esm-node/index.js
-var esm_node_exports = {};
-__export(esm_node_exports, {
-  NIL: () => nil_default,
-  parse: () => parse_default,
-  stringify: () => stringify_default,
-  v1: () => v1_default,
-  v3: () => v3_default,
-  v4: () => v4_default,
-  v5: () => v5_default,
-  validate: () => validate_default,
-  version: () => version_default
-});
-var init_esm_node = __esm({
-  "node_modules/uuid/dist/esm-node/index.js"() {
-    "use strict";
-    init_v1();
-    init_v3();
-    init_v4();
-    init_v5();
-    init_nil();
-    init_version4();
-    init_validate();
-    init_stringify();
-    init_parse2();
   }
 });
 
@@ -39140,14 +38740,16 @@ var require_file_command = __commonJS({
   "node_modules/@actions/core/lib/file-command.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m2[k];
-      } });
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -39156,22 +38758,19 @@ var require_file_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.prepareKeyValueMessage = exports2.issueFileCommand = void 0;
+    var crypto = __importStar(require("crypto"));
     var fs2 = __importStar(require("fs"));
     var os2 = __importStar(require("os"));
-    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
     var utils_1 = require_utils5();
     function issueFileCommand(command, message) {
       const filePath = process.env[`GITHUB_${command}`];
@@ -39181,14 +38780,14 @@ var require_file_command = __commonJS({
       if (!fs2.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os2.EOL}`, {
+      fs2.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os2.EOL}`, {
         encoding: "utf8"
       });
     }
     exports2.issueFileCommand = issueFileCommand;
     function prepareKeyValueMessage(key, value) {
-      const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-      const convertedValue = utils_1.toCommandValue(value);
+      const delimiter = `ghadelimiter_${crypto.randomUUID()}`;
+      const convertedValue = (0, utils_1.toCommandValue)(value);
       if (key.includes(delimiter)) {
         throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
       }
@@ -39389,9 +38988,9 @@ var require_oidc_utils = __commonJS({
               const encodedAudience = encodeURIComponent(audience);
               id_token_url = `${id_token_url}&audience=${encodedAudience}`;
             }
-            core_1.debug(`ID token url is ${id_token_url}`);
+            (0, core_1.debug)(`ID token url is ${id_token_url}`);
             const id_token = yield _OidcClient.getCall(id_token_url);
-            core_1.setSecret(id_token);
+            (0, core_1.setSecret)(id_token);
             return id_token;
           } catch (error) {
             throw new Error(`Error message: ${error.message}`);
@@ -39702,14 +39301,16 @@ var require_path_utils = __commonJS({
   "node_modules/@actions/core/lib/path-utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m2[k];
-      } });
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -39718,13 +39319,10 @@ var require_path_utils = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -39747,19 +39345,17 @@ var require_path_utils = __commonJS({
   }
 });
 
-// node_modules/@actions/core/lib/core.js
-var require_core = __commonJS({
-  "node_modules/@actions/core/lib/core.js"(exports2) {
+// node_modules/@actions/io/lib/io-util.js
+var require_io_util = __commonJS({
+  "node_modules/@actions/io/lib/io-util.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m2[k];
       } });
     } : function(o, m2, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m2[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -39768,13 +39364,183 @@ var require_core = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    var _a2;
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
+    var fs2 = __importStar(require("fs"));
+    var path2 = __importStar(require("path"));
+    _a2 = fs2.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
+    exports2.IS_WINDOWS = process.platform === "win32";
+    exports2.UV_FS_O_EXLOCK = 268435456;
+    exports2.READONLY = fs2.constants.O_RDONLY;
+    function exists2(fsPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        try {
+          yield exports2.stat(fsPath);
+        } catch (err) {
+          if (err.code === "ENOENT") {
+            return false;
+          }
+          throw err;
+        }
+        return true;
+      });
+    }
+    exports2.exists = exists2;
+    function isDirectory(fsPath, useStat = false) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const stats = useStat ? yield exports2.stat(fsPath) : yield exports2.lstat(fsPath);
+        return stats.isDirectory();
+      });
+    }
+    exports2.isDirectory = isDirectory;
+    function isRooted(p) {
+      p = normalizeSeparators(p);
+      if (!p) {
+        throw new Error('isRooted() parameter "p" cannot be empty');
+      }
+      if (exports2.IS_WINDOWS) {
+        return p.startsWith("\\") || /^[A-Z]:/i.test(p);
+      }
+      return p.startsWith("/");
+    }
+    exports2.isRooted = isRooted;
+    function tryGetExecutablePath(filePath, extensions) {
+      return __awaiter(this, void 0, void 0, function* () {
+        let stats = void 0;
+        try {
+          stats = yield exports2.stat(filePath);
+        } catch (err) {
+          if (err.code !== "ENOENT") {
+            console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+          }
+        }
+        if (stats && stats.isFile()) {
+          if (exports2.IS_WINDOWS) {
+            const upperExt = path2.extname(filePath).toUpperCase();
+            if (extensions.some((validExt) => validExt.toUpperCase() === upperExt)) {
+              return filePath;
+            }
+          } else {
+            if (isUnixExecutable(stats)) {
+              return filePath;
+            }
+          }
+        }
+        const originalFilePath = filePath;
+        for (const extension of extensions) {
+          filePath = originalFilePath + extension;
+          stats = void 0;
+          try {
+            stats = yield exports2.stat(filePath);
+          } catch (err) {
+            if (err.code !== "ENOENT") {
+              console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+            }
+          }
+          if (stats && stats.isFile()) {
+            if (exports2.IS_WINDOWS) {
+              try {
+                const directory = path2.dirname(filePath);
+                const upperName = path2.basename(filePath).toUpperCase();
+                for (const actualName of yield exports2.readdir(directory)) {
+                  if (upperName === actualName.toUpperCase()) {
+                    filePath = path2.join(directory, actualName);
+                    break;
+                  }
+                }
+              } catch (err) {
+                console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
+              }
+              return filePath;
+            } else {
+              if (isUnixExecutable(stats)) {
+                return filePath;
+              }
+            }
+          }
+        }
+        return "";
+      });
+    }
+    exports2.tryGetExecutablePath = tryGetExecutablePath;
+    function normalizeSeparators(p) {
+      p = p || "";
+      if (exports2.IS_WINDOWS) {
+        p = p.replace(/\//g, "\\");
+        return p.replace(/\\\\+/g, "\\");
+      }
+      return p.replace(/\/\/+/g, "/");
+    }
+    function isUnixExecutable(stats) {
+      return (stats.mode & 1) > 0 || (stats.mode & 8) > 0 && stats.gid === process.getgid() || (stats.mode & 64) > 0 && stats.uid === process.getuid();
+    }
+    function getCmdPath() {
+      var _a3;
+      return (_a3 = process.env["COMSPEC"]) !== null && _a3 !== void 0 ? _a3 : `cmd.exe`;
+    }
+    exports2.getCmdPath = getCmdPath;
+  }
+});
+
+// node_modules/@actions/io/lib/io.js
+var require_io = __commonJS({
+  "node_modules/@actions/io/lib/io.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m2[k];
+      } });
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule) return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -39807,7 +39573,969 @@ var require_core = __commonJS({
       });
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getIDToken = exports2.getState = exports2.saveState = exports2.group = exports2.endGroup = exports2.startGroup = exports2.info = exports2.notice = exports2.warning = exports2.error = exports2.debug = exports2.isDebug = exports2.setFailed = exports2.setCommandEcho = exports2.setOutput = exports2.getBooleanInput = exports2.getMultilineInput = exports2.getInput = exports2.addPath = exports2.setSecret = exports2.exportVariable = exports2.ExitCode = void 0;
+    exports2.findInPath = exports2.which = exports2.mkdirP = exports2.rmRF = exports2.mv = exports2.cp = void 0;
+    var assert_1 = require("assert");
+    var path2 = __importStar(require("path"));
+    var ioUtil = __importStar(require_io_util());
+    function cp(source, dest, options = {}) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
+        const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
+        if (destStat && destStat.isFile() && !force) {
+          return;
+        }
+        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path2.join(dest, path2.basename(source)) : dest;
+        if (!(yield ioUtil.exists(source))) {
+          throw new Error(`no such file or directory: ${source}`);
+        }
+        const sourceStat = yield ioUtil.stat(source);
+        if (sourceStat.isDirectory()) {
+          if (!recursive) {
+            throw new Error(`Failed to copy. ${source} is a directory, but tried to copy without recursive flag.`);
+          } else {
+            yield cpDirRecursive(source, newDest, 0, force);
+          }
+        } else {
+          if (path2.relative(source, newDest) === "") {
+            throw new Error(`'${newDest}' and '${source}' are the same file`);
+          }
+          yield copyFile(source, newDest, force);
+        }
+      });
+    }
+    exports2.cp = cp;
+    function mv(source, dest, options = {}) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (yield ioUtil.exists(dest)) {
+          let destExists = true;
+          if (yield ioUtil.isDirectory(dest)) {
+            dest = path2.join(dest, path2.basename(source));
+            destExists = yield ioUtil.exists(dest);
+          }
+          if (destExists) {
+            if (options.force == null || options.force) {
+              yield rmRF(dest);
+            } else {
+              throw new Error("Destination already exists");
+            }
+          }
+        }
+        yield mkdirP(path2.dirname(dest));
+        yield ioUtil.rename(source, dest);
+      });
+    }
+    exports2.mv = mv;
+    function rmRF(inputPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (ioUtil.IS_WINDOWS) {
+          if (/[*"<>|]/.test(inputPath)) {
+            throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
+          }
+        }
+        try {
+          yield ioUtil.rm(inputPath, {
+            force: true,
+            maxRetries: 3,
+            recursive: true,
+            retryDelay: 300
+          });
+        } catch (err) {
+          throw new Error(`File was unable to be removed ${err}`);
+        }
+      });
+    }
+    exports2.rmRF = rmRF;
+    function mkdirP(fsPath) {
+      return __awaiter(this, void 0, void 0, function* () {
+        assert_1.ok(fsPath, "a path argument must be provided");
+        yield ioUtil.mkdir(fsPath, { recursive: true });
+      });
+    }
+    exports2.mkdirP = mkdirP;
+    function which(tool, check) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+          throw new Error("parameter 'tool' is required");
+        }
+        if (check) {
+          const result = yield which(tool, false);
+          if (!result) {
+            if (ioUtil.IS_WINDOWS) {
+              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
+            } else {
+              throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.`);
+            }
+          }
+          return result;
+        }
+        const matches = yield findInPath(tool);
+        if (matches && matches.length > 0) {
+          return matches[0];
+        }
+        return "";
+      });
+    }
+    exports2.which = which;
+    function findInPath(tool) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+          throw new Error("parameter 'tool' is required");
+        }
+        const extensions = [];
+        if (ioUtil.IS_WINDOWS && process.env["PATHEXT"]) {
+          for (const extension of process.env["PATHEXT"].split(path2.delimiter)) {
+            if (extension) {
+              extensions.push(extension);
+            }
+          }
+        }
+        if (ioUtil.isRooted(tool)) {
+          const filePath = yield ioUtil.tryGetExecutablePath(tool, extensions);
+          if (filePath) {
+            return [filePath];
+          }
+          return [];
+        }
+        if (tool.includes(path2.sep)) {
+          return [];
+        }
+        const directories = [];
+        if (process.env.PATH) {
+          for (const p of process.env.PATH.split(path2.delimiter)) {
+            if (p) {
+              directories.push(p);
+            }
+          }
+        }
+        const matches = [];
+        for (const directory of directories) {
+          const filePath = yield ioUtil.tryGetExecutablePath(path2.join(directory, tool), extensions);
+          if (filePath) {
+            matches.push(filePath);
+          }
+        }
+        return matches;
+      });
+    }
+    exports2.findInPath = findInPath;
+    function readCopyOptions(options) {
+      const force = options.force == null ? true : options.force;
+      const recursive = Boolean(options.recursive);
+      const copySourceDirectory = options.copySourceDirectory == null ? true : Boolean(options.copySourceDirectory);
+      return { force, recursive, copySourceDirectory };
+    }
+    function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if (currentDepth >= 255)
+          return;
+        currentDepth++;
+        yield mkdirP(destDir);
+        const files = yield ioUtil.readdir(sourceDir);
+        for (const fileName of files) {
+          const srcFile = `${sourceDir}/${fileName}`;
+          const destFile = `${destDir}/${fileName}`;
+          const srcFileStat = yield ioUtil.lstat(srcFile);
+          if (srcFileStat.isDirectory()) {
+            yield cpDirRecursive(srcFile, destFile, currentDepth, force);
+          } else {
+            yield copyFile(srcFile, destFile, force);
+          }
+        }
+        yield ioUtil.chmod(destDir, (yield ioUtil.stat(sourceDir)).mode);
+      });
+    }
+    function copyFile(srcFile, destFile, force) {
+      return __awaiter(this, void 0, void 0, function* () {
+        if ((yield ioUtil.lstat(srcFile)).isSymbolicLink()) {
+          try {
+            yield ioUtil.lstat(destFile);
+            yield ioUtil.unlink(destFile);
+          } catch (e2) {
+            if (e2.code === "EPERM") {
+              yield ioUtil.chmod(destFile, "0666");
+              yield ioUtil.unlink(destFile);
+            }
+          }
+          const symlinkFull = yield ioUtil.readlink(srcFile);
+          yield ioUtil.symlink(symlinkFull, destFile, ioUtil.IS_WINDOWS ? "junction" : null);
+        } else if (!(yield ioUtil.exists(destFile)) || force) {
+          yield ioUtil.copyFile(srcFile, destFile);
+        }
+      });
+    }
+  }
+});
+
+// node_modules/@actions/exec/lib/toolrunner.js
+var require_toolrunner = __commonJS({
+  "node_modules/@actions/exec/lib/toolrunner.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m2[k];
+      } });
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule) return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.argStringToArray = exports2.ToolRunner = void 0;
+    var os2 = __importStar(require("os"));
+    var events = __importStar(require("events"));
+    var child = __importStar(require("child_process"));
+    var path2 = __importStar(require("path"));
+    var io = __importStar(require_io());
+    var ioUtil = __importStar(require_io_util());
+    var timers_1 = require("timers");
+    var IS_WINDOWS = process.platform === "win32";
+    var ToolRunner = class extends events.EventEmitter {
+      constructor(toolPath, args, options) {
+        super();
+        if (!toolPath) {
+          throw new Error("Parameter 'toolPath' cannot be null or empty.");
+        }
+        this.toolPath = toolPath;
+        this.args = args || [];
+        this.options = options || {};
+      }
+      _debug(message) {
+        if (this.options.listeners && this.options.listeners.debug) {
+          this.options.listeners.debug(message);
+        }
+      }
+      _getCommandString(options, noPrefix) {
+        const toolPath = this._getSpawnFileName();
+        const args = this._getSpawnArgs(options);
+        let cmd = noPrefix ? "" : "[command]";
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            cmd += toolPath;
+            for (const a of args) {
+              cmd += ` ${a}`;
+            }
+          } else if (options.windowsVerbatimArguments) {
+            cmd += `"${toolPath}"`;
+            for (const a of args) {
+              cmd += ` ${a}`;
+            }
+          } else {
+            cmd += this._windowsQuoteCmdArg(toolPath);
+            for (const a of args) {
+              cmd += ` ${this._windowsQuoteCmdArg(a)}`;
+            }
+          }
+        } else {
+          cmd += toolPath;
+          for (const a of args) {
+            cmd += ` ${a}`;
+          }
+        }
+        return cmd;
+      }
+      _processLineBuffer(data, strBuffer, onLine) {
+        try {
+          let s2 = strBuffer + data.toString();
+          let n = s2.indexOf(os2.EOL);
+          while (n > -1) {
+            const line = s2.substring(0, n);
+            onLine(line);
+            s2 = s2.substring(n + os2.EOL.length);
+            n = s2.indexOf(os2.EOL);
+          }
+          return s2;
+        } catch (err) {
+          this._debug(`error processing line. Failed with error ${err}`);
+          return "";
+        }
+      }
+      _getSpawnFileName() {
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            return process.env["COMSPEC"] || "cmd.exe";
+          }
+        }
+        return this.toolPath;
+      }
+      _getSpawnArgs(options) {
+        if (IS_WINDOWS) {
+          if (this._isCmdFile()) {
+            let argline = `/D /S /C "${this._windowsQuoteCmdArg(this.toolPath)}`;
+            for (const a of this.args) {
+              argline += " ";
+              argline += options.windowsVerbatimArguments ? a : this._windowsQuoteCmdArg(a);
+            }
+            argline += '"';
+            return [argline];
+          }
+        }
+        return this.args;
+      }
+      _endsWith(str, end) {
+        return str.endsWith(end);
+      }
+      _isCmdFile() {
+        const upperToolPath = this.toolPath.toUpperCase();
+        return this._endsWith(upperToolPath, ".CMD") || this._endsWith(upperToolPath, ".BAT");
+      }
+      _windowsQuoteCmdArg(arg) {
+        if (!this._isCmdFile()) {
+          return this._uvQuoteCmdArg(arg);
+        }
+        if (!arg) {
+          return '""';
+        }
+        const cmdSpecialChars = [
+          " ",
+          "	",
+          "&",
+          "(",
+          ")",
+          "[",
+          "]",
+          "{",
+          "}",
+          "^",
+          "=",
+          ";",
+          "!",
+          "'",
+          "+",
+          ",",
+          "`",
+          "~",
+          "|",
+          "<",
+          ">",
+          '"'
+        ];
+        let needsQuotes = false;
+        for (const char of arg) {
+          if (cmdSpecialChars.some((x2) => x2 === char)) {
+            needsQuotes = true;
+            break;
+          }
+        }
+        if (!needsQuotes) {
+          return arg;
+        }
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i2 = arg.length; i2 > 0; i2--) {
+          reverse += arg[i2 - 1];
+          if (quoteHit && arg[i2 - 1] === "\\") {
+            reverse += "\\";
+          } else if (arg[i2 - 1] === '"') {
+            quoteHit = true;
+            reverse += '"';
+          } else {
+            quoteHit = false;
+          }
+        }
+        reverse += '"';
+        return reverse.split("").reverse().join("");
+      }
+      _uvQuoteCmdArg(arg) {
+        if (!arg) {
+          return '""';
+        }
+        if (!arg.includes(" ") && !arg.includes("	") && !arg.includes('"')) {
+          return arg;
+        }
+        if (!arg.includes('"') && !arg.includes("\\")) {
+          return `"${arg}"`;
+        }
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i2 = arg.length; i2 > 0; i2--) {
+          reverse += arg[i2 - 1];
+          if (quoteHit && arg[i2 - 1] === "\\") {
+            reverse += "\\";
+          } else if (arg[i2 - 1] === '"') {
+            quoteHit = true;
+            reverse += "\\";
+          } else {
+            quoteHit = false;
+          }
+        }
+        reverse += '"';
+        return reverse.split("").reverse().join("");
+      }
+      _cloneExecOptions(options) {
+        options = options || {};
+        const result = {
+          cwd: options.cwd || process.cwd(),
+          env: options.env || process.env,
+          silent: options.silent || false,
+          windowsVerbatimArguments: options.windowsVerbatimArguments || false,
+          failOnStdErr: options.failOnStdErr || false,
+          ignoreReturnCode: options.ignoreReturnCode || false,
+          delay: options.delay || 1e4
+        };
+        result.outStream = options.outStream || process.stdout;
+        result.errStream = options.errStream || process.stderr;
+        return result;
+      }
+      _getSpawnOptions(options, toolPath) {
+        options = options || {};
+        const result = {};
+        result.cwd = options.cwd;
+        result.env = options.env;
+        result["windowsVerbatimArguments"] = options.windowsVerbatimArguments || this._isCmdFile();
+        if (options.windowsVerbatimArguments) {
+          result.argv0 = `"${toolPath}"`;
+        }
+        return result;
+      }
+      /**
+       * Exec a tool.
+       * Output will be streamed to the live console.
+       * Returns promise with return code
+       *
+       * @param     tool     path to tool to exec
+       * @param     options  optional exec options.  See ExecOptions
+       * @returns   number
+       */
+      exec() {
+        return __awaiter(this, void 0, void 0, function* () {
+          if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
+            this.toolPath = path2.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
+          }
+          this.toolPath = yield io.which(this.toolPath, true);
+          return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            this._debug(`exec tool: ${this.toolPath}`);
+            this._debug("arguments:");
+            for (const arg of this.args) {
+              this._debug(`   ${arg}`);
+            }
+            const optionsNonNull = this._cloneExecOptions(this.options);
+            if (!optionsNonNull.silent && optionsNonNull.outStream) {
+              optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os2.EOL);
+            }
+            const state = new ExecState(optionsNonNull, this.toolPath);
+            state.on("debug", (message) => {
+              this._debug(message);
+            });
+            if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
+              return reject(new Error(`The cwd: ${this.options.cwd} does not exist!`));
+            }
+            const fileName = this._getSpawnFileName();
+            const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
+            let stdbuffer = "";
+            if (cp.stdout) {
+              cp.stdout.on("data", (data) => {
+                if (this.options.listeners && this.options.listeners.stdout) {
+                  this.options.listeners.stdout(data);
+                }
+                if (!optionsNonNull.silent && optionsNonNull.outStream) {
+                  optionsNonNull.outStream.write(data);
+                }
+                stdbuffer = this._processLineBuffer(data, stdbuffer, (line) => {
+                  if (this.options.listeners && this.options.listeners.stdline) {
+                    this.options.listeners.stdline(line);
+                  }
+                });
+              });
+            }
+            let errbuffer = "";
+            if (cp.stderr) {
+              cp.stderr.on("data", (data) => {
+                state.processStderr = true;
+                if (this.options.listeners && this.options.listeners.stderr) {
+                  this.options.listeners.stderr(data);
+                }
+                if (!optionsNonNull.silent && optionsNonNull.errStream && optionsNonNull.outStream) {
+                  const s2 = optionsNonNull.failOnStdErr ? optionsNonNull.errStream : optionsNonNull.outStream;
+                  s2.write(data);
+                }
+                errbuffer = this._processLineBuffer(data, errbuffer, (line) => {
+                  if (this.options.listeners && this.options.listeners.errline) {
+                    this.options.listeners.errline(line);
+                  }
+                });
+              });
+            }
+            cp.on("error", (err) => {
+              state.processError = err.message;
+              state.processExited = true;
+              state.processClosed = true;
+              state.CheckComplete();
+            });
+            cp.on("exit", (code) => {
+              state.processExitCode = code;
+              state.processExited = true;
+              this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
+              state.CheckComplete();
+            });
+            cp.on("close", (code) => {
+              state.processExitCode = code;
+              state.processExited = true;
+              state.processClosed = true;
+              this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
+              state.CheckComplete();
+            });
+            state.on("done", (error, exitCode) => {
+              if (stdbuffer.length > 0) {
+                this.emit("stdline", stdbuffer);
+              }
+              if (errbuffer.length > 0) {
+                this.emit("errline", errbuffer);
+              }
+              cp.removeAllListeners();
+              if (error) {
+                reject(error);
+              } else {
+                resolve(exitCode);
+              }
+            });
+            if (this.options.input) {
+              if (!cp.stdin) {
+                throw new Error("child process missing stdin");
+              }
+              cp.stdin.end(this.options.input);
+            }
+          }));
+        });
+      }
+    };
+    exports2.ToolRunner = ToolRunner;
+    function argStringToArray(argString) {
+      const args = [];
+      let inQuotes = false;
+      let escaped = false;
+      let arg = "";
+      function append2(c) {
+        if (escaped && c !== '"') {
+          arg += "\\";
+        }
+        arg += c;
+        escaped = false;
+      }
+      for (let i2 = 0; i2 < argString.length; i2++) {
+        const c = argString.charAt(i2);
+        if (c === '"') {
+          if (!escaped) {
+            inQuotes = !inQuotes;
+          } else {
+            append2(c);
+          }
+          continue;
+        }
+        if (c === "\\" && escaped) {
+          append2(c);
+          continue;
+        }
+        if (c === "\\" && inQuotes) {
+          escaped = true;
+          continue;
+        }
+        if (c === " " && !inQuotes) {
+          if (arg.length > 0) {
+            args.push(arg);
+            arg = "";
+          }
+          continue;
+        }
+        append2(c);
+      }
+      if (arg.length > 0) {
+        args.push(arg.trim());
+      }
+      return args;
+    }
+    exports2.argStringToArray = argStringToArray;
+    var ExecState = class _ExecState extends events.EventEmitter {
+      constructor(options, toolPath) {
+        super();
+        this.processClosed = false;
+        this.processError = "";
+        this.processExitCode = 0;
+        this.processExited = false;
+        this.processStderr = false;
+        this.delay = 1e4;
+        this.done = false;
+        this.timeout = null;
+        if (!toolPath) {
+          throw new Error("toolPath must not be empty");
+        }
+        this.options = options;
+        this.toolPath = toolPath;
+        if (options.delay) {
+          this.delay = options.delay;
+        }
+      }
+      CheckComplete() {
+        if (this.done) {
+          return;
+        }
+        if (this.processClosed) {
+          this._setResult();
+        } else if (this.processExited) {
+          this.timeout = timers_1.setTimeout(_ExecState.HandleTimeout, this.delay, this);
+        }
+      }
+      _debug(message) {
+        this.emit("debug", message);
+      }
+      _setResult() {
+        let error;
+        if (this.processExited) {
+          if (this.processError) {
+            error = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
+          } else if (this.processExitCode !== 0 && !this.options.ignoreReturnCode) {
+            error = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
+          } else if (this.processStderr && this.options.failOnStdErr) {
+            error = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
+          }
+        }
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+          this.timeout = null;
+        }
+        this.done = true;
+        this.emit("done", error, this.processExitCode);
+      }
+      static HandleTimeout(state) {
+        if (state.done) {
+          return;
+        }
+        if (!state.processClosed && state.processExited) {
+          const message = `The STDIO streams did not close within ${state.delay / 1e3} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
+          state._debug(message);
+        }
+        state._setResult();
+      }
+    };
+  }
+});
+
+// node_modules/@actions/exec/lib/exec.js
+var require_exec = __commonJS({
+  "node_modules/@actions/exec/lib/exec.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      Object.defineProperty(o, k2, { enumerable: true, get: function() {
+        return m2[k];
+      } });
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule) return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getExecOutput = exports2.exec = void 0;
+    var string_decoder_1 = require("string_decoder");
+    var tr = __importStar(require_toolrunner());
+    function exec(commandLine, args, options) {
+      return __awaiter(this, void 0, void 0, function* () {
+        const commandArgs = tr.argStringToArray(commandLine);
+        if (commandArgs.length === 0) {
+          throw new Error(`Parameter 'commandLine' cannot be null or empty.`);
+        }
+        const toolPath = commandArgs[0];
+        args = commandArgs.slice(1).concat(args || []);
+        const runner = new tr.ToolRunner(toolPath, args, options);
+        return runner.exec();
+      });
+    }
+    exports2.exec = exec;
+    function getExecOutput(commandLine, args, options) {
+      var _a2, _b;
+      return __awaiter(this, void 0, void 0, function* () {
+        let stdout = "";
+        let stderr = "";
+        const stdoutDecoder = new string_decoder_1.StringDecoder("utf8");
+        const stderrDecoder = new string_decoder_1.StringDecoder("utf8");
+        const originalStdoutListener = (_a2 = options === null || options === void 0 ? void 0 : options.listeners) === null || _a2 === void 0 ? void 0 : _a2.stdout;
+        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
+        const stdErrListener = (data) => {
+          stderr += stderrDecoder.write(data);
+          if (originalStdErrListener) {
+            originalStdErrListener(data);
+          }
+        };
+        const stdOutListener = (data) => {
+          stdout += stdoutDecoder.write(data);
+          if (originalStdoutListener) {
+            originalStdoutListener(data);
+          }
+        };
+        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
+        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        stdout += stdoutDecoder.end();
+        stderr += stderrDecoder.end();
+        return {
+          exitCode,
+          stdout,
+          stderr
+        };
+      });
+    }
+    exports2.getExecOutput = getExecOutput;
+  }
+});
+
+// node_modules/@actions/core/lib/platform.js
+var require_platform = __commonJS({
+  "node_modules/@actions/core/lib/platform.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule) return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getDetails = exports2.isLinux = exports2.isMacOS = exports2.isWindows = exports2.arch = exports2.platform = void 0;
+    var os_1 = __importDefault(require("os"));
+    var exec = __importStar(require_exec());
+    var getWindowsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+      const { stdout: version } = yield exec.getExecOutput('powershell -command "(Get-CimInstance -ClassName Win32_OperatingSystem).Version"', void 0, {
+        silent: true
+      });
+      const { stdout: name } = yield exec.getExecOutput('powershell -command "(Get-CimInstance -ClassName Win32_OperatingSystem).Caption"', void 0, {
+        silent: true
+      });
+      return {
+        name: name.trim(),
+        version: version.trim()
+      };
+    });
+    var getMacOsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+      var _a2, _b, _c, _d;
+      const { stdout } = yield exec.getExecOutput("sw_vers", void 0, {
+        silent: true
+      });
+      const version = (_b = (_a2 = stdout.match(/ProductVersion:\s*(.+)/)) === null || _a2 === void 0 ? void 0 : _a2[1]) !== null && _b !== void 0 ? _b : "";
+      const name = (_d = (_c = stdout.match(/ProductName:\s*(.+)/)) === null || _c === void 0 ? void 0 : _c[1]) !== null && _d !== void 0 ? _d : "";
+      return {
+        name,
+        version
+      };
+    });
+    var getLinuxInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+      const { stdout } = yield exec.getExecOutput("lsb_release", ["-i", "-r", "-s"], {
+        silent: true
+      });
+      const [name, version] = stdout.trim().split("\n");
+      return {
+        name,
+        version
+      };
+    });
+    exports2.platform = os_1.default.platform();
+    exports2.arch = os_1.default.arch();
+    exports2.isWindows = exports2.platform === "win32";
+    exports2.isMacOS = exports2.platform === "darwin";
+    exports2.isLinux = exports2.platform === "linux";
+    function getDetails() {
+      return __awaiter(this, void 0, void 0, function* () {
+        return Object.assign(Object.assign({}, yield exports2.isWindows ? getWindowsInfo() : exports2.isMacOS ? getMacOsInfo() : getLinuxInfo()), {
+          platform: exports2.platform,
+          arch: exports2.arch,
+          isWindows: exports2.isWindows,
+          isMacOS: exports2.isMacOS,
+          isLinux: exports2.isLinux
+        });
+      });
+    }
+    exports2.getDetails = getDetails;
+  }
+});
+
+// node_modules/@actions/core/lib/core.js
+var require_core = __commonJS({
+  "node_modules/@actions/core/lib/core.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m2[k];
+    });
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    } : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar = exports2 && exports2.__importStar || function(mod) {
+      if (mod && mod.__esModule) return mod;
+      var result = {};
+      if (mod != null) {
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+      }
+      __setModuleDefault(result, mod);
+      return result;
+    };
+    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+      function adopt(value) {
+        return value instanceof P ? value : new P(function(resolve) {
+          resolve(value);
+        });
+      }
+      return new (P || (P = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator["throw"](value));
+          } catch (e2) {
+            reject(e2);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.platform = exports2.toPlatformPath = exports2.toWin32Path = exports2.toPosixPath = exports2.markdownSummary = exports2.summary = exports2.getIDToken = exports2.getState = exports2.saveState = exports2.group = exports2.endGroup = exports2.startGroup = exports2.info = exports2.notice = exports2.warning = exports2.error = exports2.debug = exports2.isDebug = exports2.setFailed = exports2.setCommandEcho = exports2.setOutput = exports2.getBooleanInput = exports2.getMultilineInput = exports2.getInput = exports2.addPath = exports2.setSecret = exports2.exportVariable = exports2.ExitCode = void 0;
     var command_1 = require_command();
     var file_command_1 = require_file_command();
     var utils_1 = require_utils5();
@@ -39818,27 +40546,27 @@ var require_core = __commonJS({
     (function(ExitCode2) {
       ExitCode2[ExitCode2["Success"] = 0] = "Success";
       ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
-    })(ExitCode = exports2.ExitCode || (exports2.ExitCode = {}));
+    })(ExitCode || (exports2.ExitCode = ExitCode = {}));
     function exportVariable(name, val) {
-      const convertedVal = utils_1.toCommandValue(val);
+      const convertedVal = (0, utils_1.toCommandValue)(val);
       process.env[name] = convertedVal;
       const filePath = process.env["GITHUB_ENV"] || "";
       if (filePath) {
-        return file_command_1.issueFileCommand("ENV", file_command_1.prepareKeyValueMessage(name, val));
+        return (0, file_command_1.issueFileCommand)("ENV", (0, file_command_1.prepareKeyValueMessage)(name, val));
       }
-      command_1.issueCommand("set-env", { name }, convertedVal);
+      (0, command_1.issueCommand)("set-env", { name }, convertedVal);
     }
     exports2.exportVariable = exportVariable;
     function setSecret(secret) {
-      command_1.issueCommand("add-mask", {}, secret);
+      (0, command_1.issueCommand)("add-mask", {}, secret);
     }
     exports2.setSecret = setSecret;
     function addPath(inputPath) {
       const filePath = process.env["GITHUB_PATH"] || "";
       if (filePath) {
-        file_command_1.issueFileCommand("PATH", inputPath);
+        (0, file_command_1.issueFileCommand)("PATH", inputPath);
       } else {
-        command_1.issueCommand("add-path", {}, inputPath);
+        (0, command_1.issueCommand)("add-path", {}, inputPath);
       }
       process.env["PATH"] = `${inputPath}${path2.delimiter}${process.env["PATH"]}`;
     }
@@ -39877,14 +40605,14 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
-        return file_command_1.issueFileCommand("OUTPUT", file_command_1.prepareKeyValueMessage(name, value));
+        return (0, file_command_1.issueFileCommand)("OUTPUT", (0, file_command_1.prepareKeyValueMessage)(name, value));
       }
       process.stdout.write(os2.EOL);
-      command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
+      (0, command_1.issueCommand)("set-output", { name }, (0, utils_1.toCommandValue)(value));
     }
     exports2.setOutput = setOutput;
     function setCommandEcho(enabled) {
-      command_1.issue("echo", enabled ? "on" : "off");
+      (0, command_1.issue)("echo", enabled ? "on" : "off");
     }
     exports2.setCommandEcho = setCommandEcho;
     function setFailed(message) {
@@ -39897,19 +40625,19 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports2.isDebug = isDebug;
     function debug5(message) {
-      command_1.issueCommand("debug", {}, message);
+      (0, command_1.issueCommand)("debug", {}, message);
     }
     exports2.debug = debug5;
     function error(message, properties = {}) {
-      command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+      (0, command_1.issueCommand)("error", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.error = error;
     function warning(message, properties = {}) {
-      command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+      (0, command_1.issueCommand)("warning", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.warning = warning;
     function notice(message, properties = {}) {
-      command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+      (0, command_1.issueCommand)("notice", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.notice = notice;
     function info(message) {
@@ -39917,11 +40645,11 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports2.info = info;
     function startGroup(name) {
-      command_1.issue("group", name);
+      (0, command_1.issue)("group", name);
     }
     exports2.startGroup = startGroup;
     function endGroup() {
-      command_1.issue("endgroup");
+      (0, command_1.issue)("endgroup");
     }
     exports2.endGroup = endGroup;
     function group(name, fn) {
@@ -39940,9 +40668,9 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     function saveState(name, value) {
       const filePath = process.env["GITHUB_STATE"] || "";
       if (filePath) {
-        return file_command_1.issueFileCommand("STATE", file_command_1.prepareKeyValueMessage(name, value));
+        return (0, file_command_1.issueFileCommand)("STATE", (0, file_command_1.prepareKeyValueMessage)(name, value));
       }
-      command_1.issueCommand("save-state", { name }, utils_1.toCommandValue(value));
+      (0, command_1.issueCommand)("save-state", { name }, (0, utils_1.toCommandValue)(value));
     }
     exports2.saveState = saveState;
     function getState(name) {
@@ -39973,6 +40701,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     Object.defineProperty(exports2, "toPlatformPath", { enumerable: true, get: function() {
       return path_utils_1.toPlatformPath;
     } });
+    exports2.platform = __importStar(require_platform());
   }
 });
 
@@ -40511,10 +41240,10 @@ var require_supports_color = __commonJS({
         return 3;
       }
       if ("TERM_PROGRAM" in env2) {
-        const version2 = parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+        const version = parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
         switch (env2.TERM_PROGRAM) {
           case "iTerm.app":
-            return version2 >= 3 ? 3 : 2;
+            return version >= 3 ? 3 : 2;
           case "Apple_Terminal":
             return 2;
         }
@@ -40778,12 +41507,649 @@ var require_dist = __commonJS({
   "node_modules/@kwsites/file-exists/dist/index.js"(exports2) {
     "use strict";
     function __export3(m2) {
-      for (var p in m2)
-        if (!exports2.hasOwnProperty(p))
-          exports2[p] = m2[p];
+      for (var p in m2) if (!exports2.hasOwnProperty(p)) exports2[p] = m2[p];
     }
     Object.defineProperty(exports2, "__esModule", { value: true });
     __export3(require_src2());
+  }
+});
+
+// node_modules/simple-git/node_modules/debug/node_modules/ms/index.js
+var require_ms2 = __commonJS({
+  "node_modules/simple-git/node_modules/debug/node_modules/ms/index.js"(exports2, module2) {
+    "use strict";
+    var s2 = 1e3;
+    var m2 = s2 * 60;
+    var h2 = m2 * 60;
+    var d = h2 * 24;
+    var w = d * 7;
+    var y = d * 365.25;
+    module2.exports = function(val, options) {
+      options = options || {};
+      var type = typeof val;
+      if (type === "string" && val.length > 0) {
+        return parse3(val);
+      } else if (type === "number" && isFinite(val)) {
+        return options.long ? fmtLong(val) : fmtShort(val);
+      }
+      throw new Error(
+        "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
+      );
+    };
+    function parse3(str) {
+      str = String(str);
+      if (str.length > 100) {
+        return;
+      }
+      var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+        str
+      );
+      if (!match2) {
+        return;
+      }
+      var n = parseFloat(match2[1]);
+      var type = (match2[2] || "ms").toLowerCase();
+      switch (type) {
+        case "years":
+        case "year":
+        case "yrs":
+        case "yr":
+        case "y":
+          return n * y;
+        case "weeks":
+        case "week":
+        case "w":
+          return n * w;
+        case "days":
+        case "day":
+        case "d":
+          return n * d;
+        case "hours":
+        case "hour":
+        case "hrs":
+        case "hr":
+        case "h":
+          return n * h2;
+        case "minutes":
+        case "minute":
+        case "mins":
+        case "min":
+        case "m":
+          return n * m2;
+        case "seconds":
+        case "second":
+        case "secs":
+        case "sec":
+        case "s":
+          return n * s2;
+        case "milliseconds":
+        case "millisecond":
+        case "msecs":
+        case "msec":
+        case "ms":
+          return n;
+        default:
+          return void 0;
+      }
+    }
+    function fmtShort(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return Math.round(ms / d) + "d";
+      }
+      if (msAbs >= h2) {
+        return Math.round(ms / h2) + "h";
+      }
+      if (msAbs >= m2) {
+        return Math.round(ms / m2) + "m";
+      }
+      if (msAbs >= s2) {
+        return Math.round(ms / s2) + "s";
+      }
+      return ms + "ms";
+    }
+    function fmtLong(ms) {
+      var msAbs = Math.abs(ms);
+      if (msAbs >= d) {
+        return plural(ms, msAbs, d, "day");
+      }
+      if (msAbs >= h2) {
+        return plural(ms, msAbs, h2, "hour");
+      }
+      if (msAbs >= m2) {
+        return plural(ms, msAbs, m2, "minute");
+      }
+      if (msAbs >= s2) {
+        return plural(ms, msAbs, s2, "second");
+      }
+      return ms + " ms";
+    }
+    function plural(ms, msAbs, n, name) {
+      var isPlural = msAbs >= n * 1.5;
+      return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
+    }
+  }
+});
+
+// node_modules/simple-git/node_modules/debug/src/common.js
+var require_common2 = __commonJS({
+  "node_modules/simple-git/node_modules/debug/src/common.js"(exports2, module2) {
+    "use strict";
+    function setup(env2) {
+      createDebug.debug = createDebug;
+      createDebug.default = createDebug;
+      createDebug.coerce = coerce;
+      createDebug.disable = disable;
+      createDebug.enable = enable;
+      createDebug.enabled = enabled;
+      createDebug.humanize = require_ms2();
+      createDebug.destroy = destroy;
+      Object.keys(env2).forEach((key) => {
+        createDebug[key] = env2[key];
+      });
+      createDebug.names = [];
+      createDebug.skips = [];
+      createDebug.formatters = {};
+      function selectColor(namespace) {
+        let hash = 0;
+        for (let i2 = 0; i2 < namespace.length; i2++) {
+          hash = (hash << 5) - hash + namespace.charCodeAt(i2);
+          hash |= 0;
+        }
+        return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+      }
+      createDebug.selectColor = selectColor;
+      function createDebug(namespace) {
+        let prevTime;
+        let enableOverride = null;
+        let namespacesCache;
+        let enabledCache;
+        function debug5(...args) {
+          if (!debug5.enabled) {
+            return;
+          }
+          const self2 = debug5;
+          const curr = Number(/* @__PURE__ */ new Date());
+          const ms = curr - (prevTime || curr);
+          self2.diff = ms;
+          self2.prev = prevTime;
+          self2.curr = curr;
+          prevTime = curr;
+          args[0] = createDebug.coerce(args[0]);
+          if (typeof args[0] !== "string") {
+            args.unshift("%O");
+          }
+          let index = 0;
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
+            if (match2 === "%%") {
+              return "%";
+            }
+            index++;
+            const formatter = createDebug.formatters[format];
+            if (typeof formatter === "function") {
+              const val = args[index];
+              match2 = formatter.call(self2, val);
+              args.splice(index, 1);
+              index--;
+            }
+            return match2;
+          });
+          createDebug.formatArgs.call(self2, args);
+          const logFn = self2.log || createDebug.log;
+          logFn.apply(self2, args);
+        }
+        debug5.namespace = namespace;
+        debug5.useColors = createDebug.useColors();
+        debug5.color = createDebug.selectColor(namespace);
+        debug5.extend = extend;
+        debug5.destroy = createDebug.destroy;
+        Object.defineProperty(debug5, "enabled", {
+          enumerable: true,
+          configurable: false,
+          get: () => {
+            if (enableOverride !== null) {
+              return enableOverride;
+            }
+            if (namespacesCache !== createDebug.namespaces) {
+              namespacesCache = createDebug.namespaces;
+              enabledCache = createDebug.enabled(namespace);
+            }
+            return enabledCache;
+          },
+          set: (v) => {
+            enableOverride = v;
+          }
+        });
+        if (typeof createDebug.init === "function") {
+          createDebug.init(debug5);
+        }
+        return debug5;
+      }
+      function extend(namespace, delimiter) {
+        const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
+        newDebug.log = this.log;
+        return newDebug;
+      }
+      function enable(namespaces) {
+        createDebug.save(namespaces);
+        createDebug.namespaces = namespaces;
+        createDebug.names = [];
+        createDebug.skips = [];
+        let i2;
+        const split = (typeof namespaces === "string" ? namespaces : "").split(/[\s,]+/);
+        const len = split.length;
+        for (i2 = 0; i2 < len; i2++) {
+          if (!split[i2]) {
+            continue;
+          }
+          namespaces = split[i2].replace(/\*/g, ".*?");
+          if (namespaces[0] === "-") {
+            createDebug.skips.push(new RegExp("^" + namespaces.slice(1) + "$"));
+          } else {
+            createDebug.names.push(new RegExp("^" + namespaces + "$"));
+          }
+        }
+      }
+      function disable() {
+        const namespaces = [
+          ...createDebug.names.map(toNamespace),
+          ...createDebug.skips.map(toNamespace).map((namespace) => "-" + namespace)
+        ].join(",");
+        createDebug.enable("");
+        return namespaces;
+      }
+      function enabled(name) {
+        if (name[name.length - 1] === "*") {
+          return true;
+        }
+        let i2;
+        let len;
+        for (i2 = 0, len = createDebug.skips.length; i2 < len; i2++) {
+          if (createDebug.skips[i2].test(name)) {
+            return false;
+          }
+        }
+        for (i2 = 0, len = createDebug.names.length; i2 < len; i2++) {
+          if (createDebug.names[i2].test(name)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      function toNamespace(regexp) {
+        return regexp.toString().substring(2, regexp.toString().length - 2).replace(/\.\*\?$/, "*");
+      }
+      function coerce(val) {
+        if (val instanceof Error) {
+          return val.stack || val.message;
+        }
+        return val;
+      }
+      function destroy() {
+        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+      }
+      createDebug.enable(createDebug.load());
+      return createDebug;
+    }
+    module2.exports = setup;
+  }
+});
+
+// node_modules/simple-git/node_modules/debug/src/browser.js
+var require_browser2 = __commonJS({
+  "node_modules/simple-git/node_modules/debug/src/browser.js"(exports2, module2) {
+    "use strict";
+    exports2.formatArgs = formatArgs;
+    exports2.save = save;
+    exports2.load = load;
+    exports2.useColors = useColors;
+    exports2.storage = localstorage();
+    exports2.destroy = /* @__PURE__ */ (() => {
+      let warned = false;
+      return () => {
+        if (!warned) {
+          warned = true;
+          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        }
+      };
+    })();
+    exports2.colors = [
+      "#0000CC",
+      "#0000FF",
+      "#0033CC",
+      "#0033FF",
+      "#0066CC",
+      "#0066FF",
+      "#0099CC",
+      "#0099FF",
+      "#00CC00",
+      "#00CC33",
+      "#00CC66",
+      "#00CC99",
+      "#00CCCC",
+      "#00CCFF",
+      "#3300CC",
+      "#3300FF",
+      "#3333CC",
+      "#3333FF",
+      "#3366CC",
+      "#3366FF",
+      "#3399CC",
+      "#3399FF",
+      "#33CC00",
+      "#33CC33",
+      "#33CC66",
+      "#33CC99",
+      "#33CCCC",
+      "#33CCFF",
+      "#6600CC",
+      "#6600FF",
+      "#6633CC",
+      "#6633FF",
+      "#66CC00",
+      "#66CC33",
+      "#9900CC",
+      "#9900FF",
+      "#9933CC",
+      "#9933FF",
+      "#99CC00",
+      "#99CC33",
+      "#CC0000",
+      "#CC0033",
+      "#CC0066",
+      "#CC0099",
+      "#CC00CC",
+      "#CC00FF",
+      "#CC3300",
+      "#CC3333",
+      "#CC3366",
+      "#CC3399",
+      "#CC33CC",
+      "#CC33FF",
+      "#CC6600",
+      "#CC6633",
+      "#CC9900",
+      "#CC9933",
+      "#CCCC00",
+      "#CCCC33",
+      "#FF0000",
+      "#FF0033",
+      "#FF0066",
+      "#FF0099",
+      "#FF00CC",
+      "#FF00FF",
+      "#FF3300",
+      "#FF3333",
+      "#FF3366",
+      "#FF3399",
+      "#FF33CC",
+      "#FF33FF",
+      "#FF6600",
+      "#FF6633",
+      "#FF9900",
+      "#FF9933",
+      "#FFCC00",
+      "#FFCC33"
+    ];
+    function useColors() {
+      if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+        return true;
+      }
+      if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+        return false;
+      }
+      let m2;
+      return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
+      typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
+      // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+      typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+      typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+    }
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+      if (!this.useColors) {
+        return;
+      }
+      const c = "color: " + this.color;
+      args.splice(1, 0, c, "color: inherit");
+      let index = 0;
+      let lastC = 0;
+      args[0].replace(/%[a-zA-Z%]/g, (match2) => {
+        if (match2 === "%%") {
+          return;
+        }
+        index++;
+        if (match2 === "%c") {
+          lastC = index;
+        }
+      });
+      args.splice(lastC, 0, c);
+    }
+    exports2.log = console.debug || console.log || (() => {
+    });
+    function save(namespaces) {
+      try {
+        if (namespaces) {
+          exports2.storage.setItem("debug", namespaces);
+        } else {
+          exports2.storage.removeItem("debug");
+        }
+      } catch (error) {
+      }
+    }
+    function load() {
+      let r2;
+      try {
+        r2 = exports2.storage.getItem("debug");
+      } catch (error) {
+      }
+      if (!r2 && typeof process !== "undefined" && "env" in process) {
+        r2 = process.env.DEBUG;
+      }
+      return r2;
+    }
+    function localstorage() {
+      try {
+        return localStorage;
+      } catch (error) {
+      }
+    }
+    module2.exports = require_common2()(exports2);
+    var { formatters } = module2.exports;
+    formatters.j = function(v) {
+      try {
+        return JSON.stringify(v);
+      } catch (error) {
+        return "[UnexpectedJSONParseError]: " + error.message;
+      }
+    };
+  }
+});
+
+// node_modules/simple-git/node_modules/debug/src/node.js
+var require_node2 = __commonJS({
+  "node_modules/simple-git/node_modules/debug/src/node.js"(exports2, module2) {
+    "use strict";
+    var tty2 = require("tty");
+    var util = require("util");
+    exports2.init = init;
+    exports2.log = log;
+    exports2.formatArgs = formatArgs;
+    exports2.save = save;
+    exports2.load = load;
+    exports2.useColors = useColors;
+    exports2.destroy = util.deprecate(
+      () => {
+      },
+      "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`."
+    );
+    exports2.colors = [6, 2, 3, 4, 5, 1];
+    try {
+      const supportsColor2 = require_supports_color();
+      if (supportsColor2 && (supportsColor2.stderr || supportsColor2).level >= 2) {
+        exports2.colors = [
+          20,
+          21,
+          26,
+          27,
+          32,
+          33,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          56,
+          57,
+          62,
+          63,
+          68,
+          69,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          92,
+          93,
+          98,
+          99,
+          112,
+          113,
+          128,
+          129,
+          134,
+          135,
+          148,
+          149,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          178,
+          179,
+          184,
+          185,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          214,
+          215,
+          220,
+          221
+        ];
+      }
+    } catch (error) {
+    }
+    exports2.inspectOpts = Object.keys(process.env).filter((key) => {
+      return /^debug_/i.test(key);
+    }).reduce((obj, key) => {
+      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_, k) => {
+        return k.toUpperCase();
+      });
+      let val = process.env[key];
+      if (/^(yes|on|true|enabled)$/i.test(val)) {
+        val = true;
+      } else if (/^(no|off|false|disabled)$/i.test(val)) {
+        val = false;
+      } else if (val === "null") {
+        val = null;
+      } else {
+        val = Number(val);
+      }
+      obj[prop] = val;
+      return obj;
+    }, {});
+    function useColors() {
+      return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty2.isatty(process.stderr.fd);
+    }
+    function formatArgs(args) {
+      const { namespace: name, useColors: useColors2 } = this;
+      if (useColors2) {
+        const c = this.color;
+        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+        args[0] = prefix + args[0].split("\n").join("\n" + prefix);
+        args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
+      } else {
+        args[0] = getDate() + name + " " + args[0];
+      }
+    }
+    function getDate() {
+      if (exports2.inspectOpts.hideDate) {
+        return "";
+      }
+      return (/* @__PURE__ */ new Date()).toISOString() + " ";
+    }
+    function log(...args) {
+      return process.stderr.write(util.formatWithOptions(exports2.inspectOpts, ...args) + "\n");
+    }
+    function save(namespaces) {
+      if (namespaces) {
+        process.env.DEBUG = namespaces;
+      } else {
+        delete process.env.DEBUG;
+      }
+    }
+    function load() {
+      return process.env.DEBUG;
+    }
+    function init(debug5) {
+      debug5.inspectOpts = {};
+      const keys = Object.keys(exports2.inspectOpts);
+      for (let i2 = 0; i2 < keys.length; i2++) {
+        debug5.inspectOpts[keys[i2]] = exports2.inspectOpts[keys[i2]];
+      }
+    }
+    module2.exports = require_common2()(exports2);
+    var { formatters } = module2.exports;
+    formatters.o = function(v) {
+      this.inspectOpts.colors = this.useColors;
+      return util.inspect(v, this.inspectOpts).split("\n").map((str) => str.trim()).join(" ");
+    };
+    formatters.O = function(v) {
+      this.inspectOpts.colors = this.useColors;
+      return util.inspect(v, this.inspectOpts);
+    };
+  }
+});
+
+// node_modules/simple-git/node_modules/debug/src/index.js
+var require_src3 = __commonJS({
+  "node_modules/simple-git/node_modules/debug/src/index.js"(exports2, module2) {
+    "use strict";
+    if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
+      module2.exports = require_browser2();
+    } else {
+      module2.exports = require_node2();
+    }
   }
 });
 
@@ -41006,16 +42372,13 @@ var require_ignore = __commonJS({
           var descriptor = props[i2];
           descriptor.enumerable = descriptor.enumerable || false;
           descriptor.configurable = true;
-          if ("value" in descriptor)
-            descriptor.writable = true;
+          if ("value" in descriptor) descriptor.writable = true;
           Object.defineProperty(target, descriptor.key, descriptor);
         }
       }
       return function(Constructor, protoProps, staticProps) {
-        if (protoProps)
-          defineProperties(Constructor.prototype, protoProps);
-        if (staticProps)
-          defineProperties(Constructor, staticProps);
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) defineProperties(Constructor, staticProps);
         return Constructor;
       };
     }();
@@ -41467,8 +42830,7 @@ var require_old = __commonJS({
           var stat2 = fs2.lstatSync(base);
           if (!stat2.isSymbolicLink()) {
             knownHard[base] = true;
-            if (cache2)
-              cache2[base] = base;
+            if (cache2) cache2[base] = base;
             continue;
           }
           var linkTarget = null;
@@ -41483,16 +42845,13 @@ var require_old = __commonJS({
             linkTarget = fs2.readlinkSync(base);
           }
           resolvedLink = pathModule.resolve(previous, linkTarget);
-          if (cache2)
-            cache2[base] = resolvedLink;
-          if (!isWindows)
-            seenLinks[id] = linkTarget;
+          if (cache2) cache2[base] = resolvedLink;
+          if (!isWindows) seenLinks[id] = linkTarget;
         }
         p = pathModule.resolve(resolvedLink, p.slice(pos));
         start();
       }
-      if (cache2)
-        cache2[original] = p;
+      if (cache2) cache2[original] = p;
       return p;
     };
     exports2.realpath = function realpath(p, cache2, cb) {
@@ -41518,8 +42877,7 @@ var require_old = __commonJS({
         previous = "";
         if (isWindows && !knownHard[base]) {
           fs2.lstat(base, function(err) {
-            if (err)
-              return cb(err);
+            if (err) return cb(err);
             knownHard[base] = true;
             LOOP();
           });
@@ -41529,8 +42887,7 @@ var require_old = __commonJS({
       }
       function LOOP() {
         if (pos >= p.length) {
-          if (cache2)
-            cache2[original] = p;
+          if (cache2) cache2[original] = p;
           return cb(null, p);
         }
         nextPartRe.lastIndex = pos;
@@ -41548,12 +42905,10 @@ var require_old = __commonJS({
         return fs2.lstat(base, gotStat);
       }
       function gotStat(err, stat2) {
-        if (err)
-          return cb(err);
+        if (err) return cb(err);
         if (!stat2.isSymbolicLink()) {
           knownHard[base] = true;
-          if (cache2)
-            cache2[base] = base;
+          if (cache2) cache2[base] = base;
           return process.nextTick(LOOP);
         }
         if (!isWindows) {
@@ -41563,21 +42918,17 @@ var require_old = __commonJS({
           }
         }
         fs2.stat(base, function(err2) {
-          if (err2)
-            return cb(err2);
+          if (err2) return cb(err2);
           fs2.readlink(base, function(err3, target) {
-            if (!isWindows)
-              seenLinks[id] = target;
+            if (!isWindows) seenLinks[id] = target;
             gotTarget(err3, target);
           });
         });
       }
       function gotTarget(err, target, base2) {
-        if (err)
-          return cb(err);
+        if (err) return cb(err);
         var resolvedLink = pathModule.resolve(previous, target);
-        if (cache2)
-          cache2[base2] = resolvedLink;
+        if (cache2) cache2[base2] = resolvedLink;
         gotResolvedLink(resolvedLink);
       }
       function gotResolvedLink(resolvedLink) {
@@ -41601,8 +42952,8 @@ var require_fs = __commonJS({
     var fs2 = require("fs");
     var origRealpath = fs2.realpath;
     var origRealpathSync = fs2.realpathSync;
-    var version2 = process.version;
-    var ok = /^v[0-5]\./.test(version2);
+    var version = process.version;
+    var ok = /^v[0-5]\./.test(version);
     var old = require_old();
     function newError(er) {
       return er && er.syscall === "realpath" && (er.code === "ELOOP" || er.code === "ENOMEM" || er.code === "ENAMETOOLONG");
@@ -41656,10 +43007,8 @@ var require_concat_map = __commonJS({
       var res = [];
       for (var i2 = 0; i2 < xs.length; i2++) {
         var x2 = fn(xs[i2], i2);
-        if (isArray(x2))
-          res.push.apply(res, x2);
-        else
-          res.push(x2);
+        if (isArray(x2)) res.push.apply(res, x2);
+        else res.push(x2);
       }
       return res;
     };
@@ -41675,10 +43024,8 @@ var require_balanced_match = __commonJS({
     "use strict";
     module2.exports = balanced;
     function balanced(a, b, str) {
-      if (a instanceof RegExp)
-        a = maybeMatch(a, str);
-      if (b instanceof RegExp)
-        b = maybeMatch(b, str);
+      if (a instanceof RegExp) a = maybeMatch(a, str);
+      if (b instanceof RegExp) b = maybeMatch(b, str);
       var r2 = range(a, b, str);
       return r2 && {
         start: r2[0],
@@ -41776,7 +43123,7 @@ var require_brace_expansion = __commonJS({
       if (str.substr(0, 2) === "{}") {
         str = "\\{\\}" + str.substr(2);
       }
-      return expand3(escapeBraces(str), true).map(unescapeBraces);
+      return expand4(escapeBraces(str), true).map(unescapeBraces);
     }
     function embrace(str) {
       return "{" + str + "}";
@@ -41790,11 +43137,10 @@ var require_brace_expansion = __commonJS({
     function gte(i2, y) {
       return i2 >= y;
     }
-    function expand3(str, isTop) {
+    function expand4(str, isTop) {
       var expansions = [];
       var m2 = balanced("{", "}", str);
-      if (!m2 || /\$$/.test(m2.pre))
-        return [str];
+      if (!m2 || /\$$/.test(m2.pre)) return [str];
       var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m2.body);
       var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m2.body);
       var isSequence = isNumericSequence || isAlphaSequence;
@@ -41802,7 +43148,7 @@ var require_brace_expansion = __commonJS({
       if (!isSequence && !isOptions) {
         if (m2.post.match(/,.*\}/)) {
           str = m2.pre + "{" + m2.body + escClose + m2.post;
-          return expand3(str);
+          return expand4(str);
         }
         return [str];
       }
@@ -41812,9 +43158,9 @@ var require_brace_expansion = __commonJS({
       } else {
         n = parseCommaParts(m2.body);
         if (n.length === 1) {
-          n = expand3(n[0], false).map(embrace);
+          n = expand4(n[0], false).map(embrace);
           if (n.length === 1) {
-            var post = m2.post.length ? expand3(m2.post, false) : [""];
+            var post = m2.post.length ? expand4(m2.post, false) : [""];
             return post.map(function(p) {
               return m2.pre + n[0] + p;
             });
@@ -41822,7 +43168,7 @@ var require_brace_expansion = __commonJS({
         }
       }
       var pre = m2.pre;
-      var post = m2.post.length ? expand3(m2.post, false) : [""];
+      var post = m2.post.length ? expand4(m2.post, false) : [""];
       var N;
       if (isSequence) {
         var x2 = numeric(n[0]);
@@ -41860,7 +43206,7 @@ var require_brace_expansion = __commonJS({
         }
       } else {
         N = concatMap(n, function(el) {
-          return expand3(el, false);
+          return expand4(el, false);
         });
       }
       for (var j = 0; j < N.length; j++) {
@@ -41891,7 +43237,7 @@ var require_minimatch = __commonJS({
     };
     minimatch2.sep = path2.sep;
     var GLOBSTAR2 = minimatch2.GLOBSTAR = Minimatch2.GLOBSTAR = {};
-    var expand3 = require_brace_expansion();
+    var expand4 = require_brace_expansion();
     var plTypes = {
       "!": { open: "(?:(?!(?:", close: "))[^/]*?)" },
       "?": { open: "(?:", close: ")?" },
@@ -41965,8 +43311,7 @@ var require_minimatch = __commonJS({
     };
     function minimatch2(p, pattern, options) {
       assertValidPattern2(pattern);
-      if (!options)
-        options = {};
+      if (!options) options = {};
       if (!options.nocomment && pattern.charAt(0) === "#") {
         return false;
       }
@@ -41977,8 +43322,7 @@ var require_minimatch = __commonJS({
         return new Minimatch2(pattern, options);
       }
       assertValidPattern2(pattern);
-      if (!options)
-        options = {};
+      if (!options) options = {};
       pattern = pattern.trim();
       if (!options.allowWindowsEscape && path2.sep !== "/") {
         pattern = pattern.split(path2.sep).join("/");
@@ -42009,10 +43353,9 @@ var require_minimatch = __commonJS({
       }
       this.parseNegate();
       var set2 = this.globSet = this.braceExpand();
-      if (options.debug)
-        this.debug = function debug5() {
-          console.error.apply(console, arguments);
-        };
+      if (options.debug) this.debug = function debug5() {
+        console.error.apply(console, arguments);
+      };
       this.debug(this.pattern, set2);
       set2 = this.globParts = set2.map(function(s2) {
         return s2.split(slashSplit);
@@ -42034,14 +43377,12 @@ var require_minimatch = __commonJS({
       var negate = false;
       var options = this.options;
       var negateOffset = 0;
-      if (options.nonegate)
-        return;
+      if (options.nonegate) return;
       for (var i2 = 0, l = pattern.length; i2 < l && pattern.charAt(i2) === "!"; i2++) {
         negate = !negate;
         negateOffset++;
       }
-      if (negateOffset)
-        this.pattern = pattern.substr(negateOffset);
+      if (negateOffset) this.pattern = pattern.substr(negateOffset);
       this.negate = negate;
     }
     minimatch2.braceExpand = function(pattern, options) {
@@ -42061,7 +43402,7 @@ var require_minimatch = __commonJS({
       if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
         return [pattern];
       }
-      return expand3(pattern);
+      return expand4(pattern);
     }
     var MAX_PATTERN_LENGTH2 = 1024 * 64;
     var assertValidPattern2 = function(pattern) {
@@ -42083,8 +43424,7 @@ var require_minimatch = __commonJS({
         else
           pattern = "*";
       }
-      if (pattern === "")
-        return "";
+      if (pattern === "") return "";
       var re = "";
       var hasMagic = !!options.nocase;
       var escaping = false;
@@ -42123,6 +43463,7 @@ var require_minimatch = __commonJS({
           continue;
         }
         switch (c) {
+          /* istanbul ignore next */
           case "/": {
             return false;
           }
@@ -42130,6 +43471,8 @@ var require_minimatch = __commonJS({
             clearStateChar();
             escaping = true;
             continue;
+          // the various stateChar values
+          // for the "extglob" stuff.
           case "?":
           case "*":
           case "+":
@@ -42138,16 +43481,14 @@ var require_minimatch = __commonJS({
             this.debug("%s	%s %s %j <-- stateChar", pattern, i2, re, c);
             if (inClass) {
               this.debug("  in class");
-              if (c === "!" && i2 === classStart + 1)
-                c = "^";
+              if (c === "!" && i2 === classStart + 1) c = "^";
               re += c;
               continue;
             }
             self2.debug("call clearStateChar %j", stateChar);
             clearStateChar();
             stateChar = c;
-            if (options.noext)
-              clearStateChar();
+            if (options.noext) clearStateChar();
             continue;
           case "(":
             if (inClass) {
@@ -42192,6 +43533,7 @@ var require_minimatch = __commonJS({
             clearStateChar();
             re += "|";
             continue;
+          // these are mostly the same in regexp and glob
           case "[":
             clearStateChar();
             if (inClass) {
@@ -42311,8 +43653,7 @@ var require_minimatch = __commonJS({
     };
     Minimatch2.prototype.makeRe = makeRe2;
     function makeRe2() {
-      if (this.regexp || this.regexp === false)
-        return this.regexp;
+      if (this.regexp || this.regexp === false) return this.regexp;
       var set2 = this.set;
       if (!set2.length) {
         this.regexp = false;
@@ -42327,8 +43668,7 @@ var require_minimatch = __commonJS({
         }).join("\\/");
       }).join("|");
       re = "^(?:" + re + ")$";
-      if (this.negate)
-        re = "^(?!" + re + ").*$";
+      if (this.negate) re = "^(?!" + re + ").*$";
       try {
         this.regexp = new RegExp(re, flags);
       } catch (ex) {
@@ -42348,15 +43688,11 @@ var require_minimatch = __commonJS({
       return list;
     };
     Minimatch2.prototype.match = function match2(f3, partial) {
-      if (typeof partial === "undefined")
-        partial = this.partial;
+      if (typeof partial === "undefined") partial = this.partial;
       this.debug("match", f3, this.pattern);
-      if (this.comment)
-        return false;
-      if (this.empty)
-        return f3 === "";
-      if (f3 === "/" && partial)
-        return true;
+      if (this.comment) return false;
+      if (this.empty) return f3 === "";
+      if (f3 === "/" && partial) return true;
       var options = this.options;
       if (path2.sep !== "/") {
         f3 = f3.split(path2.sep).join("/");
@@ -42369,8 +43705,7 @@ var require_minimatch = __commonJS({
       var i2;
       for (i2 = f3.length - 1; i2 >= 0; i2--) {
         filename = f3[i2];
-        if (filename)
-          break;
+        if (filename) break;
       }
       for (i2 = 0; i2 < set2.length; i2++) {
         var pattern = set2[i2];
@@ -42380,13 +43715,11 @@ var require_minimatch = __commonJS({
         }
         var hit = this.matchOne(file, pattern, partial);
         if (hit) {
-          if (options.flipNegate)
-            return true;
+          if (options.flipNegate) return true;
           return !this.negate;
         }
       }
-      if (options.flipNegate)
-        return false;
+      if (options.flipNegate) return false;
       return this.negate;
     };
     Minimatch2.prototype.matchOne = function(file, pattern, partial) {
@@ -42401,8 +43734,7 @@ var require_minimatch = __commonJS({
         var p = pattern[pi];
         var f3 = file[fi];
         this.debug(pattern, p, f3);
-        if (p === false)
-          return false;
+        if (p === false) return false;
         if (p === GLOBSTAR2) {
           this.debug("GLOBSTAR", [pattern, p, f3]);
           var fr = fi;
@@ -42410,8 +43742,7 @@ var require_minimatch = __commonJS({
           if (pr === pl) {
             this.debug("** at the end");
             for (; fi < fl; fi++) {
-              if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".")
-                return false;
+              if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".") return false;
             }
             return true;
           }
@@ -42432,8 +43763,7 @@ var require_minimatch = __commonJS({
           }
           if (partial) {
             this.debug("\n>>> no match, partial?", file, fr, pattern, pr);
-            if (fr === fl)
-              return true;
+            if (fr === fl) return true;
           }
           return false;
         }
@@ -42445,8 +43775,7 @@ var require_minimatch = __commonJS({
           hit = f3.match(p);
           this.debug("pattern match", p, f3, hit);
         }
-        if (!hit)
-          return false;
+        if (!hit) return false;
       }
       if (fi === fl && pi === pl) {
         return true;
@@ -42505,8 +43834,7 @@ var require_inherits = __commonJS({
     "use strict";
     try {
       util = require("util");
-      if (typeof util.inherits !== "function")
-        throw "";
+      if (typeof util.inherits !== "function") throw "";
       module2.exports = util.inherits;
     } catch (e2) {
       module2.exports = require_inherits_browser();
@@ -42536,7 +43864,7 @@ var require_path_is_absolute = __commonJS({
 });
 
 // node_modules/glob/common.js
-var require_common2 = __commonJS({
+var require_common3 = __commonJS({
   "node_modules/glob/common.js"(exports2) {
     "use strict";
     exports2.setopts = setopts;
@@ -42744,7 +44072,7 @@ var require_sync = __commonJS({
     var path2 = require("path");
     var assert = require("assert");
     var isAbsolute = require_path_is_absolute();
-    var common = require_common2();
+    var common = require_common3();
     var setopts = common.setopts;
     var ownProp = common.ownProp;
     var childrenIgnored = common.childrenIgnored;
@@ -42801,6 +44129,7 @@ var require_sync = __commonJS({
       }
       var prefix;
       switch (n) {
+        // if not, then this is rather simple
         case pattern.length:
           this._processSimple(pattern.join("/"), index);
           return;
@@ -42962,6 +44291,7 @@ var require_sync = __commonJS({
     GlobSync.prototype._readdirError = function(f3, er) {
       switch (er.code) {
         case "ENOTSUP":
+        // https://github.com/isaacs/node-glob/issues/205
         case "ENOTDIR":
           var abs = this._makeAbs(f3);
           this.cache[abs] = "FILE";
@@ -42973,6 +44303,7 @@ var require_sync = __commonJS({
           }
           break;
         case "ENOENT":
+        // not terribly unusual
         case "ELOOP":
         case "ENAMETOOLONG":
         case "UNKNOWN":
@@ -43124,8 +44455,7 @@ var require_inflight = __commonJS({
     function slice(args) {
       var length = args.length;
       var array = [];
-      for (var i2 = 0; i2 < length; i2++)
-        array[i2] = args[i2];
+      for (var i2 = 0; i2 < length; i2++) array[i2] = args[i2];
       return array;
     }
   }
@@ -43145,7 +44475,7 @@ var require_glob = __commonJS({
     var assert = require("assert");
     var isAbsolute = require_path_is_absolute();
     var globSync = require_sync();
-    var common = require_common2();
+    var common = require_common3();
     var setopts = common.setopts;
     var ownProp = common.ownProp;
     var inflight = require_inflight();
@@ -43154,10 +44484,8 @@ var require_glob = __commonJS({
     var isIgnored = common.isIgnored;
     var once2 = require_once();
     function glob(pattern, options, cb) {
-      if (typeof options === "function")
-        cb = options, options = {};
-      if (!options)
-        options = {};
+      if (typeof options === "function") cb = options, options = {};
+      if (!options) options = {};
       if (options.sync) {
         if (cb)
           throw new TypeError("callback provided to sync glob");
@@ -43351,6 +44679,7 @@ var require_glob = __commonJS({
       }
       var prefix;
       switch (n) {
+        // if not, then this is rather simple
         case pattern.length:
           this._processSimple(pattern.join("/"), index, cb);
           return;
@@ -43540,6 +44869,7 @@ var require_glob = __commonJS({
         return;
       switch (er.code) {
         case "ENOTSUP":
+        // https://github.com/isaacs/node-glob/issues/205
         case "ENOTDIR":
           var abs = this._makeAbs(f3);
           this.cache[abs] = "FILE";
@@ -43552,6 +44882,7 @@ var require_glob = __commonJS({
           }
           break;
         case "ENOENT":
+        // not terribly unusual
         case "ELOOP":
         case "ENAMETOOLONG":
         case "UNKNOWN":
@@ -43695,8 +45026,7 @@ var require_true_case_path = __commonJS({
     var path2 = require("path");
     function trueCasePathSync(fsPath) {
       var fsPathNormalized = path2.normalize(fsPath);
-      if (process.platform === "darwin")
-        fsPathNormalized = fsPathNormalized.normalize("NFD");
+      if (process.platform === "darwin") fsPathNormalized = fsPathNormalized.normalize("NFD");
       var pathRoot = path2.parse(fsPathNormalized).root;
       var noDrivePath = fsPathNormalized.slice(Math.max(pathRoot.length - 1, 0));
       return glob.sync(noDrivePath, { nocase: true, cwd: pathRoot })[0];
@@ -43817,7 +45147,7 @@ var require_brace_expansion2 = __commonJS({
       if (str.substr(0, 2) === "{}") {
         str = "\\{\\}" + str.substr(2);
       }
-      return expand3(escapeBraces(str), true).map(unescapeBraces);
+      return expand4(escapeBraces(str), true).map(unescapeBraces);
     }
     function embrace(str) {
       return "{" + str + "}";
@@ -43831,13 +45161,12 @@ var require_brace_expansion2 = __commonJS({
     function gte(i2, y) {
       return i2 >= y;
     }
-    function expand3(str, isTop) {
+    function expand4(str, isTop) {
       var expansions = [];
       var m2 = balanced("{", "}", str);
-      if (!m2)
-        return [str];
+      if (!m2) return [str];
       var pre = m2.pre;
-      var post = m2.post.length ? expand3(m2.post, false) : [""];
+      var post = m2.post.length ? expand4(m2.post, false) : [""];
       if (/\$$/.test(m2.pre)) {
         for (var k = 0; k < post.length; k++) {
           var expansion = pre + "{" + m2.body + "}" + post[k];
@@ -43851,7 +45180,7 @@ var require_brace_expansion2 = __commonJS({
         if (!isSequence && !isOptions) {
           if (m2.post.match(/,.*\}/)) {
             str = m2.pre + "{" + m2.body + escClose + m2.post;
-            return expand3(str);
+            return expand4(str);
           }
           return [str];
         }
@@ -43861,7 +45190,7 @@ var require_brace_expansion2 = __commonJS({
         } else {
           n = parseCommaParts(m2.body);
           if (n.length === 1) {
-            n = expand3(n[0], false).map(embrace);
+            n = expand4(n[0], false).map(embrace);
             if (n.length === 1) {
               return post.map(function(p) {
                 return m2.pre + n[0] + p;
@@ -43907,7 +45236,7 @@ var require_brace_expansion2 = __commonJS({
         } else {
           N = [];
           for (var j = 0; j < n.length; j++) {
-            N.push.apply(N, expand3(n[j], false));
+            N.push.apply(N, expand4(n[j], false));
           }
         }
         for (var j = 0; j < N.length; j++) {
@@ -43923,60 +45252,6 @@ var require_brace_expansion2 = __commonJS({
   }
 });
 
-// node_modules/@octokit/auth-action/dist-node/index.js
-var require_dist_node = __commonJS({
-  "node_modules/@octokit/auth-action/dist-node/index.js"(exports2, module2) {
-    "use strict";
-    var __defProp3 = Object.defineProperty;
-    var __getOwnPropDesc3 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames3 = Object.getOwnPropertyNames;
-    var __hasOwnProp3 = Object.prototype.hasOwnProperty;
-    var __export3 = (target, all) => {
-      for (var name in all)
-        __defProp3(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps3 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames3(from))
-          if (!__hasOwnProp3.call(to, key) && key !== except)
-            __defProp3(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc3(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS3 = (mod) => __copyProps3(__defProp3({}, "__esModule", { value: true }), mod);
-    var dist_src_exports3 = {};
-    __export3(dist_src_exports3, {
-      createActionAuth: () => createActionAuth2
-    });
-    module2.exports = __toCommonJS3(dist_src_exports3);
-    var import_auth_token2 = (init_dist_src4(), __toCommonJS(dist_src_exports));
-    var createActionAuth2 = function createActionAuth22() {
-      if (!process.env.GITHUB_ACTION) {
-        throw new Error(
-          "[@octokit/auth-action] `GITHUB_ACTION` environment variable is not set. @octokit/auth-action is meant to be used in GitHub Actions only."
-        );
-      }
-      const definitions = [
-        process.env.GITHUB_TOKEN,
-        process.env.INPUT_GITHUB_TOKEN,
-        process.env.INPUT_TOKEN
-      ].filter(Boolean);
-      if (definitions.length === 0) {
-        throw new Error(
-          "[@octokit/auth-action] `GITHUB_TOKEN` variable is not set. It must be set on either `env:` or `with:`. See https://github.com/octokit/auth-action.js#createactionauth"
-        );
-      }
-      if (definitions.length > 1) {
-        throw new Error(
-          "[@octokit/auth-action] The token variable is specified more than once. Use either `with.token`, `with.GITHUB_TOKEN`, or `env.GITHUB_TOKEN`. See https://github.com/octokit/auth-action.js#createactionauth"
-        );
-      }
-      const token = definitions.pop();
-      return (0, import_auth_token2.createTokenAuth)(token);
-    };
-  }
-});
-
 // node_modules/web-streams-polyfill/dist/ponyfill.es2018.js
 var require_ponyfill_es2018 = __commonJS({
   "node_modules/web-streams-polyfill/dist/ponyfill.es2018.js"(exports2, module2) {
@@ -43985,13 +45260,13 @@ var require_ponyfill_es2018 = __commonJS({
       typeof exports2 === "object" && typeof module2 !== "undefined" ? factory(exports2) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.WebStreamsPolyfill = {}));
     })(exports2, function(exports3) {
       "use strict";
-      function noop3() {
+      function noop4() {
         return void 0;
       }
       function typeIsObject(x2) {
         return typeof x2 === "object" && x2 !== null || typeof x2 === "function";
       }
-      const rethrowAssertionErrorRejection = noop3;
+      const rethrowAssertionErrorRejection = noop4;
       function setFunctionName(fn, name) {
         try {
           Object.defineProperty(fn, "name", {
@@ -44517,9 +45792,9 @@ var require_ponyfill_es2018 = __commonJS({
       function AcquireReadableStreamAsyncIterator(stream, preventCancel) {
         const reader = AcquireReadableStreamDefaultReader(stream);
         const impl = new ReadableStreamAsyncIteratorImpl(reader, preventCancel);
-        const iterator2 = Object.create(ReadableStreamAsyncIteratorPrototype);
-        iterator2._asyncIteratorImpl = impl;
-        return iterator2;
+        const iterator3 = Object.create(ReadableStreamAsyncIteratorPrototype);
+        iterator3._asyncIteratorImpl = impl;
+        return iterator3;
       }
       function IsReadableStreamAsyncIterator(x2) {
         if (!typeIsObject(x2)) {
@@ -44611,12 +45886,12 @@ var require_ponyfill_es2018 = __commonJS({
         if (method === void 0) {
           throw new TypeError("The object is not iterable");
         }
-        const iterator2 = reflectCall(method, obj, []);
-        if (!typeIsObject(iterator2)) {
+        const iterator3 = reflectCall(method, obj, []);
+        if (!typeIsObject(iterator3)) {
           throw new TypeError("The iterator method must return an object");
         }
-        const nextMethod = iterator2.next;
-        return { iterator: iterator2, nextMethod, done: false };
+        const nextMethod = iterator3.next;
+        return { iterator: iterator3, nextMethod, done: false };
       }
       function IteratorNext(iteratorRecord) {
         const result = reflectCall(iteratorRecord.nextMethod, iteratorRecord.iterator, []);
@@ -45346,9 +46621,9 @@ var require_ponyfill_es2018 = __commonJS({
         }
         SetUpReadableByteStreamController(stream, controller, startAlgorithm, pullAlgorithm, cancelAlgorithm, highWaterMark, autoAllocateChunkSize);
       }
-      function SetUpReadableStreamBYOBRequest(request2, controller, view) {
-        request2._associatedReadableByteStreamController = controller;
-        request2._view = view;
+      function SetUpReadableStreamBYOBRequest(request3, controller, view) {
+        request3._associatedReadableByteStreamController = controller;
+        request3._view = view;
       }
       function byobRequestBrandCheckException(name) {
         return new TypeError(`ReadableStreamBYOBRequest.prototype.${name} can only be used on a ReadableStreamBYOBRequest`);
@@ -46620,7 +47895,7 @@ var require_ponyfill_es2018 = __commonJS({
               return newPromise((resolveRead, rejectRead) => {
                 ReadableStreamDefaultReaderRead(reader, {
                   _chunkSteps: (chunk) => {
-                    currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop3);
+                    currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop4);
                     resolveRead(false);
                   },
                   _closeSteps: () => resolveRead(true),
@@ -47301,7 +48576,7 @@ var require_ponyfill_es2018 = __commonJS({
       function ReadableStreamFromIterable(asyncIterable) {
         let stream;
         const iteratorRecord = GetIterator(asyncIterable, "async");
-        const startAlgorithm = noop3;
+        const startAlgorithm = noop4;
         function pullAlgorithm() {
           let nextResult;
           try {
@@ -47324,10 +48599,10 @@ var require_ponyfill_es2018 = __commonJS({
           });
         }
         function cancelAlgorithm(reason) {
-          const iterator2 = iteratorRecord.iterator;
+          const iterator3 = iteratorRecord.iterator;
           let returnMethod;
           try {
-            returnMethod = GetMethod(iterator2, "return");
+            returnMethod = GetMethod(iterator3, "return");
           } catch (e2) {
             return promiseRejectedWith(e2);
           }
@@ -47336,7 +48611,7 @@ var require_ponyfill_es2018 = __commonJS({
           }
           let returnResult;
           try {
-            returnResult = reflectCall(returnMethod, iterator2, [reason]);
+            returnResult = reflectCall(returnMethod, iterator3, [reason]);
           } catch (e2) {
             return promiseRejectedWith(e2);
           }
@@ -47353,7 +48628,7 @@ var require_ponyfill_es2018 = __commonJS({
       }
       function ReadableStreamFromDefaultReader(reader) {
         let stream;
-        const startAlgorithm = noop3;
+        const startAlgorithm = noop4;
         function pullAlgorithm() {
           let readPromise;
           try {
@@ -47672,7 +48947,7 @@ var require_ponyfill_es2018 = __commonJS({
           });
         }
         const sourceCancelPromise = stream._readableStreamController[CancelSteps](reason);
-        return transformPromiseWith(sourceCancelPromise, noop3);
+        return transformPromiseWith(sourceCancelPromise, noop4);
       }
       function ReadableStreamClose(stream) {
         stream._state = "closed";
@@ -48365,8 +49640,7 @@ var init_fetch_blob = __esm({
         if (typeof options !== "object" && typeof options !== "function") {
           throw new TypeError("Failed to construct 'Blob': parameter 2 cannot convert to dictionary.");
         }
-        if (options === null)
-          options = {};
+        if (options === null) options = {};
         const encoder = new TextEncoder();
         for (const element of blobParts) {
           let part;
@@ -48526,8 +49800,7 @@ var init_file = __esm({
           throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`);
         }
         super(fileBits, options);
-        if (options === null)
-          options = {};
+        if (options === null) options = {};
         const lastModified = options.lastModified === void 0 ? Date.now() : Number(options.lastModified);
         if (!Number.isNaN(lastModified)) {
           this.#lastModified = lastModified;
@@ -48585,8 +49858,7 @@ var init_esm_min = __esm({
     FormData = class FormData2 {
       #d = [];
       constructor(...a) {
-        if (a.length)
-          throw new TypeError(`Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'.`);
+        if (a.length) throw new TypeError(`Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'.`);
       }
       get [t]() {
         return "FormData";
@@ -48609,9 +49881,7 @@ var init_esm_min = __esm({
       get(a) {
         x("get", arguments, 1);
         a += "";
-        for (var b = this.#d, l = b.length, c = 0; c < l; c++)
-          if (b[c][0] === a)
-            return b[c][1];
+        for (var b = this.#d, l = b.length, c = 0; c < l; c++) if (b[c][0] === a) return b[c][1];
         return null;
       }
       getAll(a, b) {
@@ -48628,8 +49898,7 @@ var init_esm_min = __esm({
       }
       forEach(a, b) {
         x("forEach", arguments, 1);
-        for (var [c, d] of this)
-          a.call(b, d, c, this);
+        for (var [c, d] of this) a.call(b, d, c, this);
       }
       set(...a) {
         x("set", arguments, 2);
@@ -48645,12 +49914,10 @@ var init_esm_min = __esm({
         yield* this.#d;
       }
       *keys() {
-        for (var [a] of this)
-          yield a;
+        for (var [a] of this) yield a;
       }
       *values() {
-        for (var [, a] of this)
-          yield a;
+        for (var [, a] of this) yield a;
       }
     };
   }
@@ -48712,7 +49979,7 @@ async function toFormData(Body2, ct) {
   if (!m2) {
     throw new TypeError("no or bad content-type header, no multipart boundary");
   }
-  const parser3 = new MultipartParser(m2[1] || m2[2]);
+  const parser4 = new MultipartParser(m2[1] || m2[2]);
   let headerField;
   let headerValue;
   let entryValue;
@@ -48736,9 +50003,9 @@ async function toFormData(Body2, ct) {
   };
   const decoder = new TextDecoder("utf-8");
   decoder.decode();
-  parser3.onPartBegin = function() {
-    parser3.onPartData = onPartData;
-    parser3.onPartEnd = appendEntryToFormData;
+  parser4.onPartBegin = function() {
+    parser4.onPartData = onPartData;
+    parser4.onPartEnd = appendEntryToFormData;
     headerField = "";
     headerValue = "";
     entryValue = "";
@@ -48747,13 +50014,13 @@ async function toFormData(Body2, ct) {
     filename = null;
     entryChunks.length = 0;
   };
-  parser3.onHeaderField = function(ui8a) {
+  parser4.onHeaderField = function(ui8a) {
     headerField += decoder.decode(ui8a, { stream: true });
   };
-  parser3.onHeaderValue = function(ui8a) {
+  parser4.onHeaderValue = function(ui8a) {
     headerValue += decoder.decode(ui8a, { stream: true });
   };
-  parser3.onHeaderEnd = function() {
+  parser4.onHeaderEnd = function() {
     headerValue += decoder.decode();
     headerField = headerField.toLowerCase();
     if (headerField === "content-disposition") {
@@ -48763,8 +50030,8 @@ async function toFormData(Body2, ct) {
       }
       filename = _fileName(headerValue);
       if (filename) {
-        parser3.onPartData = appendToFile;
-        parser3.onPartEnd = appendFileToFormData;
+        parser4.onPartData = appendToFile;
+        parser4.onPartEnd = appendFileToFormData;
       }
     } else if (headerField === "content-type") {
       contentType = headerValue;
@@ -48773,12 +50040,12 @@ async function toFormData(Body2, ct) {
     headerField = "";
   };
   for await (const chunk of Body2) {
-    parser3.write(chunk);
+    parser4.write(chunk);
   }
-  parser3.end();
+  parser4.end();
   return formData;
 }
-var s, S, f2, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop2, MultipartParser;
+var s, S, f2, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop3, MultipartParser;
 var init_multipart_parser = __esm({
   "node_modules/node-fetch/src/utils/multipart-parser.js"() {
     "use strict";
@@ -48810,7 +50077,7 @@ var init_multipart_parser = __esm({
     A = 97;
     Z = 122;
     lower = (c) => c | 32;
-    noop2 = () => {
+    noop3 = () => {
     };
     MultipartParser = class {
       /**
@@ -48819,13 +50086,13 @@ var init_multipart_parser = __esm({
       constructor(boundary) {
         this.index = 0;
         this.flags = 0;
-        this.onHeaderEnd = noop2;
-        this.onHeaderField = noop2;
-        this.onHeadersEnd = noop2;
-        this.onHeaderValue = noop2;
-        this.onPartBegin = noop2;
-        this.onPartData = noop2;
-        this.onPartEnd = noop2;
+        this.onHeaderEnd = noop3;
+        this.onHeaderField = noop3;
+        this.onHeadersEnd = noop3;
+        this.onHeaderValue = noop3;
+        this.onPartBegin = noop3;
+        this.onPartData = noop3;
+        this.onPartEnd = noop3;
         this.boundaryChars = {};
         boundary = "\r\n--" + boundary;
         const ui8a = new Uint8Array(boundary.length);
@@ -48910,6 +50177,7 @@ var init_multipart_parser = __esm({
               state = S.HEADER_FIELD;
               mark("onHeaderField");
               index = 0;
+            // falls through
             case S.HEADER_FIELD:
               if (c === CR) {
                 clear("onHeaderField");
@@ -48939,6 +50207,7 @@ var init_multipart_parser = __esm({
               }
               mark("onHeaderValue");
               state = S.HEADER_VALUE;
+            // falls through
             case S.HEADER_VALUE:
               if (c === CR) {
                 dataCallback("onHeaderValue", true);
@@ -48962,6 +50231,7 @@ var init_multipart_parser = __esm({
             case S.PART_DATA_START:
               state = S.PART_DATA;
               mark("onPartData");
+            // falls through
             case S.PART_DATA:
               previousIndex = index;
               if (index === 0) {
@@ -49327,10 +50597,10 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return 3;
   }
   if ("TERM_PROGRAM" in env) {
-    const version2 = Number.parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+    const version = Number.parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
     switch (env.TERM_PROGRAM) {
       case "iTerm.app": {
-        return version2 >= 3 ? 3 : 2;
+        return version >= 3 ? 3 : 2;
       }
       case "Apple_Terminal": {
         return 2;
@@ -49553,7 +50823,7 @@ var import_core = __toESM(require_core(), 1);
 
 // node_modules/simple-git/dist/esm/index.js
 var import_file_exists = __toESM(require_dist(), 1);
-var import_debug = __toESM(require_src(), 1);
+var import_debug = __toESM(require_src3(), 1);
 var import_child_process = require("child_process");
 var import_promise_deferred = __toESM(require_dist2(), 1);
 var import_promise_deferred2 = __toESM(require_dist2(), 1);
@@ -49743,6 +51013,11 @@ function remove(target, item) {
 function asArray(source) {
   return Array.isArray(source) ? source : [source];
 }
+function asCamelCase(str) {
+  return str.replace(/[\s-]+(.)/g, (_all, chr) => {
+    return chr.toUpperCase();
+  });
+}
 function asStringArray(source) {
   return asArray(source).map(String);
 }
@@ -49796,9 +51071,9 @@ function filterType(input, filter2, def) {
   }
   return arguments.length > 2 ? def : void 0;
 }
-function filterPrimitives(input, omit2) {
+function filterPrimitives(input, omit3) {
   const type = isPathSpec(input) ? "string" : typeof input;
-  return /number|string|boolean/.test(type) && (!omit2 || !omit2.includes(type));
+  return /number|string|boolean/.test(type) && (!omit3 || !omit3.includes(type));
 }
 function filterPlainObject(input) {
   return !!input && objectToString(input) === "[object Object]";
@@ -49987,8 +51262,8 @@ var init_task_options = __esm2({
     init_pathspec();
   }
 });
-function callTaskParser(parser3, streams) {
-  return parser3(streams.stdOut, streams.stdErr);
+function callTaskParser(parser4, streams) {
+  return parser4(streams.stdOut, streams.stdErr);
 }
 function parseStringResponse(result, parsers12, texts, trim = true) {
   asArray(texts).forEach((text) => {
@@ -50021,6 +51296,7 @@ __export2(utils_exports, {
   append: () => append,
   appendTaskOptions: () => appendTaskOptions,
   asArray: () => asArray,
+  asCamelCase: () => asCamelCase,
   asFunction: () => asFunction,
   asNumber: () => asNumber,
   asStringArray: () => asStringArray,
@@ -50178,11 +51454,11 @@ __export2(task_exports, {
   straightThroughBufferTask: () => straightThroughBufferTask,
   straightThroughStringTask: () => straightThroughStringTask
 });
-function adhocExecTask(parser3) {
+function adhocExecTask(parser4) {
   return {
     commands: EMPTY_COMMANDS,
     format: "empty",
-    parser: parser3
+    parser: parser4
   };
 }
 function configurationErrorTask(error) {
@@ -51127,6 +52403,47 @@ var init_checkout = __esm2({
     init_task();
   }
 });
+function countObjectsResponse() {
+  return {
+    count: 0,
+    garbage: 0,
+    inPack: 0,
+    packs: 0,
+    prunePackable: 0,
+    size: 0,
+    sizeGarbage: 0,
+    sizePack: 0
+  };
+}
+function count_objects_default() {
+  return {
+    countObjects() {
+      return this._runTask({
+        commands: ["count-objects", "--verbose"],
+        format: "utf-8",
+        parser(stdOut) {
+          return parseStringResponse(countObjectsResponse(), [parser2], stdOut);
+        }
+      });
+    }
+  };
+}
+var parser2;
+var init_count_objects = __esm2({
+  "src/lib/tasks/count-objects.ts"() {
+    "use strict";
+    init_utils();
+    parser2 = new LineParser(
+      /([a-z-]+): (\d+)$/,
+      (result, [key, value]) => {
+        const property = asCamelCase(key);
+        if (result.hasOwnProperty(property)) {
+          result[property] = asNumber(value);
+        }
+      }
+    );
+  }
+});
 function parseCommitResult(stdOut) {
   const result = {
     author: null,
@@ -51353,8 +52670,8 @@ var init_DiffSummary = __esm2({
   }
 });
 function getDiffParser(format = "") {
-  const parser3 = diffSummaryParsers[format];
-  return (stdOut) => parseStringResponse(new DiffSummary(), parser3, stdOut, false);
+  const parser4 = diffSummaryParsers[format];
+  return (stdOut) => parseStringResponse(new DiffSummary(), parser4, stdOut, false);
 }
 var statParser;
 var numStatParser;
@@ -51446,15 +52763,17 @@ var init_parse_diff_summary = __esm2({
     nameStatusParser = [
       new LineParser(
         /([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/,
-        (result, [status, _similarity, from, _to, to]) => {
+        (result, [status, similarity, from, _to, to]) => {
           result.changed++;
           result.files.push({
             file: to != null ? to : from,
             changes: 0,
-            status: orVoid(isDiffNameStatus(status) && status),
             insertions: 0,
             deletions: 0,
-            binary: false
+            binary: false,
+            status: orVoid(isDiffNameStatus(status) && status),
+            from: orVoid(!!to && from !== to && from),
+            similarity: asNumber(similarity)
           });
         }
       )
@@ -51496,15 +52815,12 @@ function createListLogSummaryParser(splitter = SPLITTER, fields = defaultFieldNa
   const parseDiffResult = getDiffParser(logFormat);
   return function(stdOut) {
     const all = toLinesWithContent(
-      stdOut,
-      true,
+      stdOut.trim(),
+      false,
       START_BOUNDARY
     ).map(function(item) {
-      const lineDetail = item.trim().split(COMMIT_BOUNDARY);
-      const listLogLine = lineBuilder(
-        lineDetail[0].trim().split(splitter),
-        fields
-      );
+      const lineDetail = item.split(COMMIT_BOUNDARY);
+      const listLogLine = lineBuilder(lineDetail[0].split(splitter), fields);
       if (lineDetail.length > 1 && !!lineDetail[1].trim()) {
         listLogLine.diff = parseDiffResult(lineDetail[1]);
       }
@@ -51626,11 +52942,11 @@ function parseLogOptions(opt = {}, customArgs = []) {
   };
 }
 function logTask(splitter, fields, customArgs) {
-  const parser3 = createListLogSummaryParser(splitter, fields, logFormatFromCommand(customArgs));
+  const parser4 = createListLogSummaryParser(splitter, fields, logFormatFromCommand(customArgs));
   return {
     commands: ["log", ...customArgs],
     format: "utf-8",
-    parser: parser3
+    parser: parser4
   };
 }
 function log_default() {
@@ -51965,11 +53281,11 @@ function mergeTask(customArgs) {
     commands: ["merge", ...customArgs],
     format: "utf-8",
     parser(stdOut, stdErr) {
-      const merge2 = parseMergeResult(stdOut, stdErr);
-      if (merge2.failed) {
-        throw new GitResponseError(merge2);
+      const merge3 = parseMergeResult(stdOut, stdErr);
+      if (merge3.failed) {
+        throw new GitResponseError(merge3);
       }
-      return merge2;
+      return merge3;
     }
   };
 }
@@ -52117,16 +53433,16 @@ var FileStatusSummary;
 var init_FileStatusSummary = __esm2({
   "src/lib/responses/FileStatusSummary.ts"() {
     "use strict";
-    fromPathRegex = /^(.+) -> (.+)$/;
+    fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
       constructor(path2, index, working_dir) {
         this.path = path2;
         this.index = index;
         this.working_dir = working_dir;
-        if ("R" === index + working_dir) {
+        if (index === "R" || working_dir === "R") {
           const detail = fromPathRegex.exec(path2) || [null, path2, path2];
-          this.from = detail[1] || "";
-          this.path = detail[2] || "";
+          this.from = detail[2] || "";
+          this.path = detail[1] || "";
         }
       }
     };
@@ -52139,11 +53455,11 @@ function renamedFile(line) {
     to
   };
 }
-function parser2(indexX, indexY, handler2) {
-  return [`${indexX}${indexY}`, handler2];
+function parser3(indexX, indexY, handler3) {
+  return [`${indexX}${indexY}`, handler3];
 }
 function conflicts(indexX, ...indexY) {
-  return indexY.map((y) => parser2(indexX, y, (result, file) => append(result.conflicted, file)));
+  return indexY.map((y) => parser3(indexX, y, (result, file) => append(result.conflicted, file)));
 }
 function splitLine(result, lineStr) {
   const trimmed2 = lineStr.trim();
@@ -52157,12 +53473,12 @@ function splitLine(result, lineStr) {
   }
   function data(index, workingDir, path2) {
     const raw = `${index}${workingDir}`;
-    const handler2 = parsers6.get(raw);
-    if (handler2) {
-      handler2(result, path2);
+    const handler3 = parsers6.get(raw);
+    if (handler3) {
+      handler3(result, path2);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path2.replace(/\0.+$/, ""), index, workingDir));
+      result.files.push(new FileStatusSummary(path2, index, workingDir));
     }
   }
 }
@@ -52196,58 +53512,58 @@ var init_StatusSummary = __esm2({
       }
     };
     parsers6 = new Map([
-      parser2(
+      parser3(
         " ",
         "A",
         (result, file) => append(result.created, file)
       ),
-      parser2(
+      parser3(
         " ",
         "D",
         (result, file) => append(result.deleted, file)
       ),
-      parser2(
+      parser3(
         " ",
         "M",
         (result, file) => append(result.modified, file)
       ),
-      parser2(
+      parser3(
         "A",
         " ",
         (result, file) => append(result.created, file) && append(result.staged, file)
       ),
-      parser2(
+      parser3(
         "A",
         "M",
         (result, file) => append(result.created, file) && append(result.staged, file) && append(result.modified, file)
       ),
-      parser2(
+      parser3(
         "D",
         " ",
         (result, file) => append(result.deleted, file) && append(result.staged, file)
       ),
-      parser2(
+      parser3(
         "M",
         " ",
         (result, file) => append(result.modified, file) && append(result.staged, file)
       ),
-      parser2(
+      parser3(
         "M",
         "M",
         (result, file) => append(result.modified, file) && append(result.staged, file)
       ),
-      parser2("R", " ", (result, file) => {
+      parser3("R", " ", (result, file) => {
         append(result.renamed, renamedFile(file));
       }),
-      parser2("R", "M", (result, file) => {
+      parser3("R", "M", (result, file) => {
         const renamed = renamedFile(file);
         append(result.renamed, renamed);
         append(result.modified, renamed.to);
       }),
-      parser2("!", "!", (_result, _file) => {
+      parser3("!", "!", (_result, _file) => {
         append(_result.ignored = _result.ignored || [], _file);
       }),
-      parser2(
+      parser3(
         "?",
         "?",
         (result, file) => append(result.not_added, file)
@@ -52358,7 +53674,7 @@ function versionResponse(major = 0, minor = 0, patch = 0, agent = "", installed 
 function notInstalledResponse() {
   return versionResponse(0, 0, 0, "", false);
 }
-function version_default2() {
+function version_default() {
   return {
     version() {
       return this._runTask({
@@ -52383,7 +53699,7 @@ function versionParser(stdOut) {
 }
 var NOT_INSTALLED;
 var parsers7;
-var init_version5 = __esm2({
+var init_version4 = __esm2({
   "src/lib/tasks/version.ts"() {
     "use strict";
     init_utils();
@@ -52418,6 +53734,7 @@ var init_simple_git_api = __esm2({
     init_task_callback();
     init_change_working_directory();
     init_checkout();
+    init_count_objects();
     init_commit();
     init_config();
     init_first_commit();
@@ -52430,7 +53747,7 @@ var init_simple_git_api = __esm2({
     init_show();
     init_status();
     init_task();
-    init_version5();
+    init_version4();
     init_utils();
     SimpleGitApi = class {
       constructor(_executor) {
@@ -52504,8 +53821,8 @@ var init_simple_git_api = __esm2({
           trailingFunctionArgument(arguments, false)
         );
       }
-      outputHandler(handler2) {
-        this._executor.outputHandler = handler2;
+      outputHandler(handler3) {
+        this._executor.outputHandler = handler3;
         return this;
       }
       push() {
@@ -52536,11 +53853,12 @@ var init_simple_git_api = __esm2({
       checkout_default(),
       commit_default(),
       config_default(),
+      count_objects_default(),
       first_commit_default(),
       grep_default(),
       log_default(),
       show_default(),
-      version_default2()
+      version_default()
     );
   }
 });
@@ -52766,11 +54084,11 @@ function branchTask(customArgs) {
   };
 }
 function branchLocalTask() {
-  const parser3 = parseBranchSummary;
+  const parser4 = parseBranchSummary;
   return {
     format: "utf-8",
     commands: ["branch", "-v"],
-    parser: parser3
+    parser: parser4
   };
 }
 function deleteBranchesTask(branches, forceDelete = false) {
@@ -53039,8 +54357,8 @@ function parseGetRemotesVerbose(text) {
   });
   return Object.values(remotes);
 }
-function forEach(text, handler2) {
-  forEachLineWithContent(text, (line) => handler2(line.split(/\s+/)));
+function forEach(text, handler3) {
+  forEachLineWithContent(text, (line) => handler3(line.split(/\s+/)));
 }
 var init_GetRemoteSummary = __esm2({
   "src/lib/responses/GetRemoteSummary.ts"() {
@@ -53101,7 +54419,7 @@ __export2(stash_list_exports, {
 function stashListTask(opt = {}, customArgs) {
   const options = parseLogOptions(opt);
   const commands = ["stash", "list", ...options.commands, ...customArgs];
-  const parser3 = createListLogSummaryParser(
+  const parser4 = createListLogSummaryParser(
     options.splitter,
     options.fields,
     logFormatFromCommand(commands)
@@ -53109,7 +54427,7 @@ function stashListTask(opt = {}, customArgs) {
   return validateLogFormatConfig(commands) || {
     commands,
     format: "utf-8",
-    parser: parser3
+    parser: parser4
   };
 }
 var init_stash_list = __esm2({
@@ -53543,20 +54861,20 @@ var require_git = __commonJS2({
       return this._catFile("buffer", arguments);
     };
     Git2.prototype._catFile = function(format, args) {
-      var handler2 = trailingFunctionArgument2(args);
+      var handler3 = trailingFunctionArgument2(args);
       var command = ["cat-file"];
       var options = args[0];
       if (typeof options === "string") {
         return this._runTask(
           configurationErrorTask2("Git.catFile: options must be supplied as an array of strings"),
-          handler2
+          handler3
         );
       }
       if (Array.isArray(options)) {
         command.push.apply(command, options);
       }
       const task = format === "buffer" ? straightThroughBufferTask2(command) : straightThroughStringTask2(command);
-      return this._runTask(task, handler2);
+      return this._runTask(task, handler3);
     };
     Git2.prototype.diff = function(options, then) {
       const task = filterString2(options) ? configurationErrorTask2(
@@ -54105,66 +55423,65 @@ var parseClass = (glob, position) => {
   let negate = false;
   let endPos = pos;
   let rangeStart = "";
-  WHILE:
-    while (i2 < glob.length) {
-      const c = glob.charAt(i2);
-      if ((c === "!" || c === "^") && i2 === pos + 1) {
-        negate = true;
-        i2++;
-        continue;
-      }
-      if (c === "]" && sawStart && !escaping) {
-        endPos = i2 + 1;
-        break;
-      }
-      sawStart = true;
-      if (c === "\\") {
-        if (!escaping) {
-          escaping = true;
-          i2++;
-          continue;
-        }
-      }
-      if (c === "[" && !escaping) {
-        for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
-          if (glob.startsWith(cls, i2)) {
-            if (rangeStart) {
-              return ["$.", false, glob.length - pos, true];
-            }
-            i2 += cls.length;
-            if (neg)
-              negs.push(unip);
-            else
-              ranges.push(unip);
-            uflag = uflag || u;
-            continue WHILE;
-          }
-        }
-      }
-      escaping = false;
-      if (rangeStart) {
-        if (c > rangeStart) {
-          ranges.push(braceEscape(rangeStart) + "-" + braceEscape(c));
-        } else if (c === rangeStart) {
-          ranges.push(braceEscape(c));
-        }
-        rangeStart = "";
-        i2++;
-        continue;
-      }
-      if (glob.startsWith("-]", i2 + 1)) {
-        ranges.push(braceEscape(c + "-"));
-        i2 += 2;
-        continue;
-      }
-      if (glob.startsWith("-", i2 + 1)) {
-        rangeStart = c;
-        i2 += 2;
-        continue;
-      }
-      ranges.push(braceEscape(c));
+  WHILE: while (i2 < glob.length) {
+    const c = glob.charAt(i2);
+    if ((c === "!" || c === "^") && i2 === pos + 1) {
+      negate = true;
       i2++;
+      continue;
     }
+    if (c === "]" && sawStart && !escaping) {
+      endPos = i2 + 1;
+      break;
+    }
+    sawStart = true;
+    if (c === "\\") {
+      if (!escaping) {
+        escaping = true;
+        i2++;
+        continue;
+      }
+    }
+    if (c === "[" && !escaping) {
+      for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
+        if (glob.startsWith(cls, i2)) {
+          if (rangeStart) {
+            return ["$.", false, glob.length - pos, true];
+          }
+          i2 += cls.length;
+          if (neg)
+            negs.push(unip);
+          else
+            ranges.push(unip);
+          uflag = uflag || u;
+          continue WHILE;
+        }
+      }
+    }
+    escaping = false;
+    if (rangeStart) {
+      if (c > rangeStart) {
+        ranges.push(braceEscape(rangeStart) + "-" + braceEscape(c));
+      } else if (c === rangeStart) {
+        ranges.push(braceEscape(c));
+      }
+      rangeStart = "";
+      i2++;
+      continue;
+    }
+    if (glob.startsWith("-]", i2 + 1)) {
+      ranges.push(braceEscape(c + "-"));
+      i2 += 2;
+      continue;
+    }
+    if (glob.startsWith("-", i2 + 1)) {
+      rangeStart = c;
+      i2 += 2;
+      continue;
+    }
+    ranges.push(braceEscape(c));
+    i2++;
+  }
   if (endPos < i2) {
     return ["", false, 0, false];
   }
@@ -55091,10 +56408,11 @@ var Minimatch = class {
     for (let i2 = 0; i2 < globParts.length - 1; i2++) {
       for (let j = i2 + 1; j < globParts.length; j++) {
         const matched = this.partsMatch(globParts[i2], globParts[j], !this.preserveMultipleSlashes);
-        if (!matched)
-          continue;
-        globParts[i2] = matched;
-        globParts[j] = [];
+        if (matched) {
+          globParts[i2] = [];
+          globParts[j] = matched;
+          break;
+        }
       }
     }
     return globParts.filter((gs) => gs.length);
@@ -55404,7 +56722,7 @@ var getHeadDiffSinceReview = async ({
   const fileRenameRegex = /{(.*) => (.*)}/;
   await Promise.all(
     intersectionFiles.map(async (file) => {
-      const fileRenameMatch = file.match(fileRenameRegex);
+      const fileRenameMatch = fileRenameRegex.exec(file);
       if (fileRenameMatch) {
         const path1 = (0, import_path.normalize)(
           file.replace(fileRenameRegex, fileRenameMatch[1])
@@ -55758,21 +57076,3209 @@ var getPrData = async ({
   };
 };
 
-// node_modules/@octokit/action/dist-src/index.js
-init_dist_web4();
-var import_auth_action = __toESM(require_dist_node());
-init_dist_web5();
-init_dist_src5();
+// node_modules/universal-user-agent/index.js
+function getUserAgent2() {
+  if (typeof navigator === "object" && "userAgent" in navigator) {
+    return navigator.userAgent;
+  }
+  if (typeof process === "object" && process.version !== void 0) {
+    return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
+  }
+  return "<environment undetectable>";
+}
 
-// node_modules/@octokit/action/dist-src/version.js
-var VERSION7 = "6.0.7";
+// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/register.js
+function register(state, name, method, options) {
+  if (typeof method !== "function") {
+    throw new Error("method for before hook must be a function");
+  }
+  if (!options) {
+    options = {};
+  }
+  if (Array.isArray(name)) {
+    return name.reverse().reduce((callback, name2) => {
+      return register.bind(null, state, name2, callback, options);
+    }, method)();
+  }
+  return Promise.resolve().then(() => {
+    if (!state.registry[name]) {
+      return method(options);
+    }
+    return state.registry[name].reduce((method2, registered) => {
+      return registered.hook.bind(null, method2, options);
+    }, method)();
+  });
+}
 
-// node_modules/@octokit/action/dist-src/index.js
-var import_undici = __toESM(require_undici2());
+// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/add.js
+function addHook(state, kind, name, hook4) {
+  const orig = hook4;
+  if (!state.registry[name]) {
+    state.registry[name] = [];
+  }
+  if (kind === "before") {
+    hook4 = (method, options) => {
+      return Promise.resolve().then(orig.bind(null, options)).then(method.bind(null, options));
+    };
+  }
+  if (kind === "after") {
+    hook4 = (method, options) => {
+      let result;
+      return Promise.resolve().then(method.bind(null, options)).then((result_) => {
+        result = result_;
+        return orig(result, options);
+      }).then(() => {
+        return result;
+      });
+    };
+  }
+  if (kind === "error") {
+    hook4 = (method, options) => {
+      return Promise.resolve().then(method.bind(null, options)).catch((error) => {
+        return orig(error, options);
+      });
+    };
+  }
+  state.registry[name].push({
+    hook: hook4,
+    orig
+  });
+}
+
+// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/remove.js
+function removeHook(state, name, method) {
+  if (!state.registry[name]) {
+    return;
+  }
+  const index = state.registry[name].map((registered) => {
+    return registered.orig;
+  }).indexOf(method);
+  if (index === -1) {
+    return;
+  }
+  state.registry[name].splice(index, 1);
+}
+
+// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/index.js
+var bind = Function.bind;
+var bindable = bind.bind(bind);
+function bindApi(hook4, state, name) {
+  const removeHookRef = bindable(removeHook, null).apply(
+    null,
+    name ? [state, name] : [state]
+  );
+  hook4.api = { remove: removeHookRef };
+  hook4.remove = removeHookRef;
+  ["before", "error", "after", "wrap"].forEach((kind) => {
+    const args = name ? [state, kind, name] : [state, kind];
+    hook4[kind] = hook4.api[kind] = bindable(addHook, null).apply(null, args);
+  });
+}
+function Singular() {
+  const singularHookName = Symbol("Singular");
+  const singularHookState = {
+    registry: {}
+  };
+  const singularHook = register.bind(null, singularHookState, singularHookName);
+  bindApi(singularHook, singularHookState, singularHookName);
+  return singularHook;
+}
+function Collection2() {
+  const state = {
+    registry: {}
+  };
+  const hook4 = register.bind(null, state);
+  bindApi(hook4, state);
+  return hook4;
+}
+var before_after_hook_default = { Singular, Collection: Collection2 };
+
+// node_modules/@octokit/endpoint/dist-bundle/index.js
+var VERSION7 = "0.0.0-development";
+var userAgent2 = `octokit-endpoint.js/${VERSION7} ${getUserAgent2()}`;
 var DEFAULTS2 = {
-  authStrategy: import_auth_action.createActionAuth,
+  method: "GET",
+  baseUrl: "https://api.github.com",
+  headers: {
+    accept: "application/vnd.github.v3+json",
+    "user-agent": userAgent2
+  },
+  mediaType: {
+    format: ""
+  }
+};
+function lowercaseKeys2(object) {
+  if (!object) {
+    return {};
+  }
+  return Object.keys(object).reduce((newObj, key) => {
+    newObj[key.toLowerCase()] = object[key];
+    return newObj;
+  }, {});
+}
+function isPlainObject3(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
+  const proto2 = Object.getPrototypeOf(value);
+  if (proto2 === null)
+    return true;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+  return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+}
+function mergeDeep2(defaults2, options) {
+  const result = Object.assign({}, defaults2);
+  Object.keys(options).forEach((key) => {
+    if (isPlainObject3(options[key])) {
+      if (!(key in defaults2))
+        Object.assign(result, { [key]: options[key] });
+      else
+        result[key] = mergeDeep2(defaults2[key], options[key]);
+    } else {
+      Object.assign(result, { [key]: options[key] });
+    }
+  });
+  return result;
+}
+function removeUndefinedProperties2(obj) {
+  for (const key in obj) {
+    if (obj[key] === void 0) {
+      delete obj[key];
+    }
+  }
+  return obj;
+}
+function merge2(defaults2, route, options) {
+  if (typeof route === "string") {
+    let [method, url] = route.split(" ");
+    options = Object.assign(url ? { method, url } : { url: method }, options);
+  } else {
+    options = Object.assign({}, route);
+  }
+  options.headers = lowercaseKeys2(options.headers);
+  removeUndefinedProperties2(options);
+  removeUndefinedProperties2(options.headers);
+  const mergedOptions = mergeDeep2(defaults2 || {}, options);
+  if (options.url === "/graphql") {
+    if (defaults2 && defaults2.mediaType.previews?.length) {
+      mergedOptions.mediaType.previews = defaults2.mediaType.previews.filter(
+        (preview) => !mergedOptions.mediaType.previews.includes(preview)
+      ).concat(mergedOptions.mediaType.previews);
+    }
+    mergedOptions.mediaType.previews = (mergedOptions.mediaType.previews || []).map((preview) => preview.replace(/-preview/, ""));
+  }
+  return mergedOptions;
+}
+function addQueryParameters2(url, parameters) {
+  const separator = /\?/.test(url) ? "&" : "?";
+  const names = Object.keys(parameters);
+  if (names.length === 0) {
+    return url;
+  }
+  return url + separator + names.map((name) => {
+    if (name === "q") {
+      return "q=" + parameters.q.split("+").map(encodeURIComponent).join("+");
+    }
+    return `${name}=${encodeURIComponent(parameters[name])}`;
+  }).join("&");
+}
+var urlVariableRegex2 = /\{[^}]+\}/g;
+function removeNonChars2(variableName) {
+  return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
+}
+function extractUrlVariableNames2(url) {
+  const matches = url.match(urlVariableRegex2);
+  if (!matches) {
+    return [];
+  }
+  return matches.map(removeNonChars2).reduce((a, b) => a.concat(b), []);
+}
+function omit2(object, keysToOmit) {
+  const result = { __proto__: null };
+  for (const key of Object.keys(object)) {
+    if (keysToOmit.indexOf(key) === -1) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+function encodeReserved2(str) {
+  return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+    if (!/%[0-9A-Fa-f]/.test(part)) {
+      part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
+    }
+    return part;
+  }).join("");
+}
+function encodeUnreserved2(str) {
+  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+    return "%" + c.charCodeAt(0).toString(16).toUpperCase();
+  });
+}
+function encodeValue2(operator, value, key) {
+  value = operator === "+" || operator === "#" ? encodeReserved2(value) : encodeUnreserved2(value);
+  if (key) {
+    return encodeUnreserved2(key) + "=" + value;
+  } else {
+    return value;
+  }
+}
+function isDefined2(value) {
+  return value !== void 0 && value !== null;
+}
+function isKeyOperator2(operator) {
+  return operator === ";" || operator === "&" || operator === "?";
+}
+function getValues2(context2, operator, key, modifier) {
+  var value = context2[key], result = [];
+  if (isDefined2(value) && value !== "") {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      value = value.toString();
+      if (modifier && modifier !== "*") {
+        value = value.substring(0, parseInt(modifier, 10));
+      }
+      result.push(
+        encodeValue2(operator, value, isKeyOperator2(operator) ? key : "")
+      );
+    } else {
+      if (modifier === "*") {
+        if (Array.isArray(value)) {
+          value.filter(isDefined2).forEach(function(value2) {
+            result.push(
+              encodeValue2(operator, value2, isKeyOperator2(operator) ? key : "")
+            );
+          });
+        } else {
+          Object.keys(value).forEach(function(k) {
+            if (isDefined2(value[k])) {
+              result.push(encodeValue2(operator, value[k], k));
+            }
+          });
+        }
+      } else {
+        const tmp = [];
+        if (Array.isArray(value)) {
+          value.filter(isDefined2).forEach(function(value2) {
+            tmp.push(encodeValue2(operator, value2));
+          });
+        } else {
+          Object.keys(value).forEach(function(k) {
+            if (isDefined2(value[k])) {
+              tmp.push(encodeUnreserved2(k));
+              tmp.push(encodeValue2(operator, value[k].toString()));
+            }
+          });
+        }
+        if (isKeyOperator2(operator)) {
+          result.push(encodeUnreserved2(key) + "=" + tmp.join(","));
+        } else if (tmp.length !== 0) {
+          result.push(tmp.join(","));
+        }
+      }
+    }
+  } else {
+    if (operator === ";") {
+      if (isDefined2(value)) {
+        result.push(encodeUnreserved2(key));
+      }
+    } else if (value === "" && (operator === "&" || operator === "?")) {
+      result.push(encodeUnreserved2(key) + "=");
+    } else if (value === "") {
+      result.push("");
+    }
+  }
+  return result;
+}
+function parseUrl2(template) {
+  return {
+    expand: expand3.bind(null, template)
+  };
+}
+function expand3(template, context2) {
+  var operators = ["+", "#", ".", "/", ";", "?", "&"];
+  template = template.replace(
+    /\{([^\{\}]+)\}|([^\{\}]+)/g,
+    function(_, expression, literal) {
+      if (expression) {
+        let operator = "";
+        const values = [];
+        if (operators.indexOf(expression.charAt(0)) !== -1) {
+          operator = expression.charAt(0);
+          expression = expression.substr(1);
+        }
+        expression.split(/,/g).forEach(function(variable) {
+          var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
+          values.push(getValues2(context2, operator, tmp[1], tmp[2] || tmp[3]));
+        });
+        if (operator && operator !== "+") {
+          var separator = ",";
+          if (operator === "?") {
+            separator = "&";
+          } else if (operator !== "#") {
+            separator = operator;
+          }
+          return (values.length !== 0 ? operator : "") + values.join(separator);
+        } else {
+          return values.join(",");
+        }
+      } else {
+        return encodeReserved2(literal);
+      }
+    }
+  );
+  if (template === "/") {
+    return template;
+  } else {
+    return template.replace(/\/$/, "");
+  }
+}
+function parse2(options) {
+  let method = options.method.toUpperCase();
+  let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
+  let headers = Object.assign({}, options.headers);
+  let body;
+  let parameters = omit2(options, [
+    "method",
+    "baseUrl",
+    "url",
+    "headers",
+    "request",
+    "mediaType"
+  ]);
+  const urlVariableNames = extractUrlVariableNames2(url);
+  url = parseUrl2(url).expand(parameters);
+  if (!/^http/.test(url)) {
+    url = options.baseUrl + url;
+  }
+  const omittedParameters = Object.keys(options).filter((option) => urlVariableNames.includes(option)).concat("baseUrl");
+  const remainingParameters = omit2(parameters, omittedParameters);
+  const isBinaryRequest = /application\/octet-stream/i.test(headers.accept);
+  if (!isBinaryRequest) {
+    if (options.mediaType.format) {
+      headers.accept = headers.accept.split(/,/).map(
+        (format) => format.replace(
+          /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
+          `application/vnd$1$2.${options.mediaType.format}`
+        )
+      ).join(",");
+    }
+    if (url.endsWith("/graphql")) {
+      if (options.mediaType.previews?.length) {
+        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+        headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
+          const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
+          return `application/vnd.github.${preview}-preview${format}`;
+        }).join(",");
+      }
+    }
+  }
+  if (["GET", "HEAD"].includes(method)) {
+    url = addQueryParameters2(url, remainingParameters);
+  } else {
+    if ("data" in remainingParameters) {
+      body = remainingParameters.data;
+    } else {
+      if (Object.keys(remainingParameters).length) {
+        body = remainingParameters;
+      }
+    }
+  }
+  if (!headers["content-type"] && typeof body !== "undefined") {
+    headers["content-type"] = "application/json; charset=utf-8";
+  }
+  if (["PATCH", "PUT"].includes(method) && typeof body === "undefined") {
+    body = "";
+  }
+  return Object.assign(
+    { method, url, headers },
+    typeof body !== "undefined" ? { body } : null,
+    options.request ? { request: options.request } : null
+  );
+}
+function endpointWithDefaults2(defaults2, route, options) {
+  return parse2(merge2(defaults2, route, options));
+}
+function withDefaults4(oldDefaults, newDefaults) {
+  const DEFAULTS22 = merge2(oldDefaults, newDefaults);
+  const endpoint22 = endpointWithDefaults2.bind(null, DEFAULTS22);
+  return Object.assign(endpoint22, {
+    DEFAULTS: DEFAULTS22,
+    defaults: withDefaults4.bind(null, DEFAULTS22),
+    merge: merge2.bind(null, DEFAULTS22),
+    parse: parse2
+  });
+}
+var endpoint2 = withDefaults4(null, DEFAULTS2);
+
+// node_modules/@octokit/request/node_modules/@octokit/request-error/dist-src/index.js
+var RequestError2 = class extends Error {
+  name;
+  /**
+   * http status code
+   */
+  status;
+  /**
+   * Request options that lead to the error.
+   */
+  request;
+  /**
+   * Response object if a response was received
+   */
+  response;
+  constructor(message, statusCode, options) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+    this.name = "HttpError";
+    this.status = statusCode;
+    if ("response" in options) {
+      this.response = options.response;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          / .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+  }
+};
+
+// node_modules/@octokit/request/dist-bundle/index.js
+var VERSION8 = "0.0.0-development";
+function isPlainObject4(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
+  const proto2 = Object.getPrototypeOf(value);
+  if (proto2 === null)
+    return true;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+  return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+}
+function getBufferResponse2(response) {
+  return response.arrayBuffer();
+}
+function fetchWrapper2(requestOptions) {
+  const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
+  const parseSuccessResponseBody = requestOptions.request?.parseSuccessResponseBody !== false;
+  if (isPlainObject4(requestOptions.body) || Array.isArray(requestOptions.body)) {
+    requestOptions.body = JSON.stringify(requestOptions.body);
+  }
+  let headers = {};
+  let status;
+  let url;
+  let { fetch: fetch2 } = globalThis;
+  if (requestOptions.request?.fetch) {
+    fetch2 = requestOptions.request.fetch;
+  }
+  if (!fetch2) {
+    throw new Error(
+      "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
+    );
+  }
+  return fetch2(requestOptions.url, {
+    method: requestOptions.method,
+    body: requestOptions.body,
+    // Header values must be `string`
+    headers: Object.fromEntries(
+      Object.entries(requestOptions.headers).map(([name, value]) => [
+        name,
+        String(value)
+      ])
+    ),
+    signal: requestOptions.request?.signal,
+    // duplex must be set if request.body is ReadableStream or Async Iterables.
+    // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
+    ...requestOptions.body && { duplex: "half" }
+  }).then(async (response) => {
+    url = response.url;
+    status = response.status;
+    for (const keyAndValue of response.headers) {
+      headers[keyAndValue[0]] = keyAndValue[1];
+    }
+    if ("deprecation" in headers) {
+      const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
+      const deprecationLink = matches && matches.pop();
+      log.warn(
+        `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
+      );
+    }
+    if (status === 204 || status === 205) {
+      return;
+    }
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
+        return;
+      }
+      throw new RequestError2(response.statusText, status, {
+        response: {
+          url,
+          status,
+          headers,
+          data: void 0
+        },
+        request: requestOptions
+      });
+    }
+    if (status === 304) {
+      throw new RequestError2("Not modified", status, {
+        response: {
+          url,
+          status,
+          headers,
+          data: await getResponseData2(response)
+        },
+        request: requestOptions
+      });
+    }
+    if (status >= 400) {
+      const data = await getResponseData2(response);
+      const error = new RequestError2(toErrorMessage2(data), status, {
+        response: {
+          url,
+          status,
+          headers,
+          data
+        },
+        request: requestOptions
+      });
+      throw error;
+    }
+    return parseSuccessResponseBody ? await getResponseData2(response) : response.body;
+  }).then((data) => {
+    return {
+      status,
+      url,
+      headers,
+      data
+    };
+  }).catch((error) => {
+    if (error instanceof RequestError2)
+      throw error;
+    else if (error.name === "AbortError")
+      throw error;
+    let message = error.message;
+    if (error.name === "TypeError" && "cause" in error) {
+      if (error.cause instanceof Error) {
+        message = error.cause.message;
+      } else if (typeof error.cause === "string") {
+        message = error.cause;
+      }
+    }
+    throw new RequestError2(message, 500, {
+      request: requestOptions
+    });
+  });
+}
+async function getResponseData2(response) {
+  const contentType = response.headers.get("content-type");
+  if (/application\/json/.test(contentType)) {
+    return response.json().catch(() => response.text()).catch(() => "");
+  }
+  if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
+    return response.text();
+  }
+  return getBufferResponse2(response);
+}
+function toErrorMessage2(data) {
+  if (typeof data === "string")
+    return data;
+  let suffix;
+  if ("documentation_url" in data) {
+    suffix = ` - ${data.documentation_url}`;
+  } else {
+    suffix = "";
+  }
+  if ("message" in data) {
+    if (Array.isArray(data.errors)) {
+      return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}${suffix}`;
+    }
+    return `${data.message}${suffix}`;
+  }
+  return `Unknown error: ${JSON.stringify(data)}`;
+}
+function withDefaults5(oldEndpoint, newDefaults) {
+  const endpoint22 = oldEndpoint.defaults(newDefaults);
+  const newApi = function(route, parameters) {
+    const endpointOptions = endpoint22.merge(route, parameters);
+    if (!endpointOptions.request || !endpointOptions.request.hook) {
+      return fetchWrapper2(endpoint22.parse(endpointOptions));
+    }
+    const request22 = (route2, parameters2) => {
+      return fetchWrapper2(
+        endpoint22.parse(endpoint22.merge(route2, parameters2))
+      );
+    };
+    Object.assign(request22, {
+      endpoint: endpoint22,
+      defaults: withDefaults5.bind(null, endpoint22)
+    });
+    return endpointOptions.request.hook(request22, endpointOptions);
+  };
+  return Object.assign(newApi, {
+    endpoint: endpoint22,
+    defaults: withDefaults5.bind(null, endpoint22)
+  });
+}
+var request2 = withDefaults5(endpoint2, {
+  headers: {
+    "user-agent": `octokit-request.js/${VERSION8} ${getUserAgent2()}`
+  }
+});
+
+// node_modules/@octokit/graphql/dist-bundle/index.js
+var VERSION9 = "0.0.0-development";
+function _buildMessageForResponseErrors2(data) {
+  return `Request failed due to following response errors:
+` + data.errors.map((e2) => ` - ${e2.message}`).join("\n");
+}
+var GraphqlResponseError2 = class extends Error {
+  constructor(request22, headers, response) {
+    super(_buildMessageForResponseErrors2(response));
+    this.request = request22;
+    this.headers = headers;
+    this.response = response;
+    this.errors = response.errors;
+    this.data = response.data;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+  name = "GraphqlResponseError";
+  errors;
+  data;
+};
+var NON_VARIABLE_OPTIONS2 = [
+  "method",
+  "baseUrl",
+  "url",
+  "headers",
+  "request",
+  "query",
+  "mediaType"
+];
+var FORBIDDEN_VARIABLE_OPTIONS2 = ["query", "method", "url"];
+var GHES_V3_SUFFIX_REGEX2 = /\/api\/v3\/?$/;
+function graphql3(request22, query, options) {
+  if (options) {
+    if (typeof query === "string" && "query" in options) {
+      return Promise.reject(
+        new Error(`[@octokit/graphql] "query" cannot be used as variable name`)
+      );
+    }
+    for (const key in options) {
+      if (!FORBIDDEN_VARIABLE_OPTIONS2.includes(key))
+        continue;
+      return Promise.reject(
+        new Error(
+          `[@octokit/graphql] "${key}" cannot be used as variable name`
+        )
+      );
+    }
+  }
+  const parsedOptions = typeof query === "string" ? Object.assign({ query }, options) : query;
+  const requestOptions = Object.keys(
+    parsedOptions
+  ).reduce((result, key) => {
+    if (NON_VARIABLE_OPTIONS2.includes(key)) {
+      result[key] = parsedOptions[key];
+      return result;
+    }
+    if (!result.variables) {
+      result.variables = {};
+    }
+    result.variables[key] = parsedOptions[key];
+    return result;
+  }, {});
+  const baseUrl = parsedOptions.baseUrl || request22.endpoint.DEFAULTS.baseUrl;
+  if (GHES_V3_SUFFIX_REGEX2.test(baseUrl)) {
+    requestOptions.url = baseUrl.replace(GHES_V3_SUFFIX_REGEX2, "/api/graphql");
+  }
+  return request22(requestOptions).then((response) => {
+    if (response.data.errors) {
+      const headers = {};
+      for (const key of Object.keys(response.headers)) {
+        headers[key] = response.headers[key];
+      }
+      throw new GraphqlResponseError2(
+        requestOptions,
+        headers,
+        response.data
+      );
+    }
+    return response.data.data;
+  });
+}
+function withDefaults6(request22, newDefaults) {
+  const newRequest = request22.defaults(newDefaults);
+  const newApi = (query, options) => {
+    return graphql3(newRequest, query, options);
+  };
+  return Object.assign(newApi, {
+    defaults: withDefaults6.bind(null, newRequest),
+    endpoint: newRequest.endpoint
+  });
+}
+var graphql22 = withDefaults6(request2, {
+  headers: {
+    "user-agent": `octokit-graphql.js/${VERSION9} ${getUserAgent2()}`
+  },
+  method: "POST",
+  url: "/graphql"
+});
+function withCustomRequest2(customRequest) {
+  return withDefaults6(customRequest, {
+    method: "POST",
+    url: "/graphql"
+  });
+}
+
+// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/@octokit/auth-token/dist-bundle/index.js
+var REGEX_IS_INSTALLATION_LEGACY2 = /^v1\./;
+var REGEX_IS_INSTALLATION2 = /^ghs_/;
+var REGEX_IS_USER_TO_SERVER2 = /^ghu_/;
+async function auth2(token) {
+  const isApp = token.split(/\./).length === 3;
+  const isInstallation = REGEX_IS_INSTALLATION_LEGACY2.test(token) || REGEX_IS_INSTALLATION2.test(token);
+  const isUserToServer = REGEX_IS_USER_TO_SERVER2.test(token);
+  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
+  return {
+    type: "token",
+    token,
+    tokenType
+  };
+}
+function withAuthorizationPrefix2(token) {
+  if (token.split(/\./).length === 3) {
+    return `bearer ${token}`;
+  }
+  return `token ${token}`;
+}
+async function hook2(token, request3, route, parameters) {
+  const endpoint3 = request3.endpoint.merge(
+    route,
+    parameters
+  );
+  endpoint3.headers.authorization = withAuthorizationPrefix2(token);
+  return request3(endpoint3);
+}
+var createTokenAuth3 = function createTokenAuth22(token) {
+  if (!token) {
+    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
+  }
+  if (typeof token !== "string") {
+    throw new Error(
+      "[@octokit/auth-token] Token passed to createTokenAuth is not a string"
+    );
+  }
+  token = token.replace(/^(token|bearer) +/i, "");
+  return Object.assign(auth2.bind(null, token), {
+    hook: hook2.bind(null, token)
+  });
+};
+
+// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/version.js
+var VERSION10 = "6.1.2";
+
+// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/index.js
+var noop2 = () => {
+};
+var consoleWarn2 = console.warn.bind(console);
+var consoleError2 = console.error.bind(console);
+var userAgentTrail2 = `octokit-core.js/${VERSION10} ${getUserAgent2()}`;
+var Octokit2 = class {
+  static VERSION = VERSION10;
+  static defaults(defaults2) {
+    const OctokitWithDefaults = class extends this {
+      constructor(...args) {
+        const options = args[0] || {};
+        if (typeof defaults2 === "function") {
+          super(defaults2(options));
+          return;
+        }
+        super(
+          Object.assign(
+            {},
+            defaults2,
+            options,
+            options.userAgent && defaults2.userAgent ? {
+              userAgent: `${options.userAgent} ${defaults2.userAgent}`
+            } : null
+          )
+        );
+      }
+    };
+    return OctokitWithDefaults;
+  }
+  static plugins = [];
+  /**
+   * Attach a plugin (or many) to your Octokit instance.
+   *
+   * @example
+   * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+   */
+  static plugin(...newPlugins) {
+    const currentPlugins = this.plugins;
+    const NewOctokit = class extends this {
+      static plugins = currentPlugins.concat(
+        newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+      );
+    };
+    return NewOctokit;
+  }
+  constructor(options = {}) {
+    const hook4 = new before_after_hook_default.Collection();
+    const requestDefaults = {
+      baseUrl: request2.endpoint.DEFAULTS.baseUrl,
+      headers: {},
+      request: Object.assign({}, options.request, {
+        // @ts-ignore internal usage only, no need to type
+        hook: hook4.bind(null, "request")
+      }),
+      mediaType: {
+        previews: [],
+        format: ""
+      }
+    };
+    requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail2}` : userAgentTrail2;
+    if (options.baseUrl) {
+      requestDefaults.baseUrl = options.baseUrl;
+    }
+    if (options.previews) {
+      requestDefaults.mediaType.previews = options.previews;
+    }
+    if (options.timeZone) {
+      requestDefaults.headers["time-zone"] = options.timeZone;
+    }
+    this.request = request2.defaults(requestDefaults);
+    this.graphql = withCustomRequest2(this.request).defaults(requestDefaults);
+    this.log = Object.assign(
+      {
+        debug: noop2,
+        info: noop2,
+        warn: consoleWarn2,
+        error: consoleError2
+      },
+      options.log
+    );
+    this.hook = hook4;
+    if (!options.authStrategy) {
+      if (!options.auth) {
+        this.auth = async () => ({
+          type: "unauthenticated"
+        });
+      } else {
+        const auth4 = createTokenAuth3(options.auth);
+        hook4.wrap("request", auth4.hook);
+        this.auth = auth4;
+      }
+    } else {
+      const { authStrategy, ...otherOptions } = options;
+      const auth4 = authStrategy(
+        Object.assign(
+          {
+            request: this.request,
+            log: this.log,
+            // we pass the current octokit instance as well as its constructor options
+            // to allow for authentication strategies that return a new octokit instance
+            // that shares the same internal state as the current one. The original
+            // requirement for this was the "event-octokit" authentication strategy
+            // of https://github.com/probot/octokit-auth-probot.
+            octokit: this,
+            octokitOptions: otherOptions
+          },
+          options.auth
+        )
+      );
+      hook4.wrap("request", auth4.hook);
+      this.auth = auth4;
+    }
+    const classConstructor = this.constructor;
+    for (let i2 = 0; i2 < classConstructor.plugins.length; ++i2) {
+      Object.assign(this, classConstructor.plugins[i2](this, options));
+    }
+  }
+  // assigned during constructor
+  request;
+  graphql;
+  log;
+  hook;
+  // TODO: type `octokit.auth` based on passed options.authStrategy
+  auth;
+};
+
+// node_modules/@octokit/auth-action/node_modules/@octokit/auth-token/dist-bundle/index.js
+var REGEX_IS_INSTALLATION_LEGACY3 = /^v1\./;
+var REGEX_IS_INSTALLATION3 = /^ghs_/;
+var REGEX_IS_USER_TO_SERVER3 = /^ghu_/;
+async function auth3(token) {
+  const isApp = token.split(/\./).length === 3;
+  const isInstallation = REGEX_IS_INSTALLATION_LEGACY3.test(token) || REGEX_IS_INSTALLATION3.test(token);
+  const isUserToServer = REGEX_IS_USER_TO_SERVER3.test(token);
+  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
+  return {
+    type: "token",
+    token,
+    tokenType
+  };
+}
+function withAuthorizationPrefix3(token) {
+  if (token.split(/\./).length === 3) {
+    return `bearer ${token}`;
+  }
+  return `token ${token}`;
+}
+async function hook3(token, request3, route, parameters) {
+  const endpoint3 = request3.endpoint.merge(
+    route,
+    parameters
+  );
+  endpoint3.headers.authorization = withAuthorizationPrefix3(token);
+  return request3(endpoint3);
+}
+var createTokenAuth4 = function createTokenAuth23(token) {
+  if (!token) {
+    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
+  }
+  if (typeof token !== "string") {
+    throw new Error(
+      "[@octokit/auth-token] Token passed to createTokenAuth is not a string"
+    );
+  }
+  token = token.replace(/^(token|bearer) +/i, "");
+  return Object.assign(auth3.bind(null, token), {
+    hook: hook3.bind(null, token)
+  });
+};
+
+// node_modules/@octokit/auth-action/dist-src/index.js
+var createActionAuth = function createActionAuth2() {
+  if (!process.env.GITHUB_ACTION) {
+    throw new Error(
+      "[@octokit/auth-action] `GITHUB_ACTION` environment variable is not set. @octokit/auth-action is meant to be used in GitHub Actions only."
+    );
+  }
+  const definitions = [
+    process.env.GITHUB_TOKEN,
+    process.env.INPUT_GITHUB_TOKEN,
+    process.env.INPUT_TOKEN
+  ].filter(Boolean);
+  if (definitions.length === 0) {
+    throw new Error(
+      "[@octokit/auth-action] `GITHUB_TOKEN` variable is not set. It must be set on either `env:` or `with:`. See https://github.com/octokit/auth-action.js#createactionauth"
+    );
+  }
+  if (definitions.length > 1) {
+    throw new Error(
+      "[@octokit/auth-action] The token variable is specified more than once. Use either `with.token`, `with.GITHUB_TOKEN`, or `env.GITHUB_TOKEN`. See https://github.com/octokit/auth-action.js#createactionauth"
+    );
+  }
+  const token = definitions.pop();
+  return createTokenAuth4(token);
+};
+
+// node_modules/@octokit/action/node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
+var VERSION11 = "0.0.0-development";
+function normalizePaginatedListResponse2(response) {
+  if (!response.data) {
+    return {
+      ...response,
+      data: []
+    };
+  }
+  const responseNeedsNormalization = "total_count" in response.data && !("url" in response.data);
+  if (!responseNeedsNormalization) return response;
+  const incompleteResults = response.data.incomplete_results;
+  const repositorySelection = response.data.repository_selection;
+  const totalCount = response.data.total_count;
+  delete response.data.incomplete_results;
+  delete response.data.repository_selection;
+  delete response.data.total_count;
+  const namespaceKey = Object.keys(response.data)[0];
+  const data = response.data[namespaceKey];
+  response.data = data;
+  if (typeof incompleteResults !== "undefined") {
+    response.data.incomplete_results = incompleteResults;
+  }
+  if (typeof repositorySelection !== "undefined") {
+    response.data.repository_selection = repositorySelection;
+  }
+  response.data.total_count = totalCount;
+  return response;
+}
+function iterator2(octokit, route, parameters) {
+  const options = typeof route === "function" ? route.endpoint(parameters) : octokit.request.endpoint(route, parameters);
+  const requestMethod = typeof route === "function" ? route : octokit.request;
+  const method = options.method;
+  const headers = options.headers;
+  let url = options.url;
+  return {
+    [Symbol.asyncIterator]: () => ({
+      async next() {
+        if (!url) return { done: true };
+        try {
+          const response = await requestMethod({ method, url, headers });
+          const normalizedResponse = normalizePaginatedListResponse2(response);
+          url = ((normalizedResponse.headers.link || "").match(
+            /<([^>]+)>;\s*rel="next"/
+          ) || [])[1];
+          return { value: normalizedResponse };
+        } catch (error) {
+          if (error.status !== 409) throw error;
+          url = "";
+          return {
+            value: {
+              status: 200,
+              headers: {},
+              data: []
+            }
+          };
+        }
+      }
+    })
+  };
+}
+function paginate2(octokit, route, parameters, mapFn) {
+  if (typeof parameters === "function") {
+    mapFn = parameters;
+    parameters = void 0;
+  }
+  return gather2(
+    octokit,
+    [],
+    iterator2(octokit, route, parameters)[Symbol.asyncIterator](),
+    mapFn
+  );
+}
+function gather2(octokit, results, iterator22, mapFn) {
+  return iterator22.next().then((result) => {
+    if (result.done) {
+      return results;
+    }
+    let earlyExit = false;
+    function done() {
+      earlyExit = true;
+    }
+    results = results.concat(
+      mapFn ? mapFn(result.value, done) : result.value.data
+    );
+    if (earlyExit) {
+      return results;
+    }
+    return gather2(octokit, results, iterator22, mapFn);
+  });
+}
+var composePaginateRest2 = Object.assign(paginate2, {
+  iterator: iterator2
+});
+function paginateRest2(octokit) {
+  return {
+    paginate: Object.assign(paginate2.bind(null, octokit), {
+      iterator: iterator2.bind(null, octokit)
+    })
+  };
+}
+paginateRest2.VERSION = VERSION11;
+
+// node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
+var VERSION12 = "13.2.6";
+
+// node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
+var Endpoints2 = {
+  actions: {
+    addCustomLabelsToSelfHostedRunnerForOrg: [
+      "POST /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    addCustomLabelsToSelfHostedRunnerForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    addSelectedRepoToOrgVariable: [
+      "PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}"
+    ],
+    approveWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve"
+    ],
+    cancelWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel"
+    ],
+    createEnvironmentVariable: [
+      "POST /repos/{owner}/{repo}/environments/{environment_name}/variables"
+    ],
+    createOrUpdateEnvironmentSecret: [
+      "PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    createOrUpdateOrgSecret: ["PUT /orgs/{org}/actions/secrets/{secret_name}"],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}"
+    ],
+    createOrgVariable: ["POST /orgs/{org}/actions/variables"],
+    createRegistrationTokenForOrg: [
+      "POST /orgs/{org}/actions/runners/registration-token"
+    ],
+    createRegistrationTokenForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/registration-token"
+    ],
+    createRemoveTokenForOrg: ["POST /orgs/{org}/actions/runners/remove-token"],
+    createRemoveTokenForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/remove-token"
+    ],
+    createRepoVariable: ["POST /repos/{owner}/{repo}/actions/variables"],
+    createWorkflowDispatch: [
+      "POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches"
+    ],
+    deleteActionsCacheById: [
+      "DELETE /repos/{owner}/{repo}/actions/caches/{cache_id}"
+    ],
+    deleteActionsCacheByKey: [
+      "DELETE /repos/{owner}/{repo}/actions/caches{?key,ref}"
+    ],
+    deleteArtifact: [
+      "DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"
+    ],
+    deleteEnvironmentSecret: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    deleteEnvironmentVariable: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/actions/secrets/{secret_name}"],
+    deleteOrgVariable: ["DELETE /orgs/{org}/actions/variables/{name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}"
+    ],
+    deleteRepoVariable: [
+      "DELETE /repos/{owner}/{repo}/actions/variables/{name}"
+    ],
+    deleteSelfHostedRunnerFromOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}"
+    ],
+    deleteSelfHostedRunnerFromRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}"
+    ],
+    deleteWorkflowRun: ["DELETE /repos/{owner}/{repo}/actions/runs/{run_id}"],
+    deleteWorkflowRunLogs: [
+      "DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs"
+    ],
+    disableSelectedRepositoryGithubActionsOrganization: [
+      "DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}"
+    ],
+    disableWorkflow: [
+      "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable"
+    ],
+    downloadArtifact: [
+      "GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}"
+    ],
+    downloadJobLogsForWorkflowRun: [
+      "GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs"
+    ],
+    downloadWorkflowRunAttemptLogs: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs"
+    ],
+    downloadWorkflowRunLogs: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs"
+    ],
+    enableSelectedRepositoryGithubActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/repositories/{repository_id}"
+    ],
+    enableWorkflow: [
+      "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable"
+    ],
+    forceCancelWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel"
+    ],
+    generateRunnerJitconfigForOrg: [
+      "POST /orgs/{org}/actions/runners/generate-jitconfig"
+    ],
+    generateRunnerJitconfigForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig"
+    ],
+    getActionsCacheList: ["GET /repos/{owner}/{repo}/actions/caches"],
+    getActionsCacheUsage: ["GET /repos/{owner}/{repo}/actions/cache/usage"],
+    getActionsCacheUsageByRepoForOrg: [
+      "GET /orgs/{org}/actions/cache/usage-by-repository"
+    ],
+    getActionsCacheUsageForOrg: ["GET /orgs/{org}/actions/cache/usage"],
+    getAllowedActionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/selected-actions"
+    ],
+    getAllowedActionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/selected-actions"
+    ],
+    getArtifact: ["GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"],
+    getCustomOidcSubClaimForRepo: [
+      "GET /repos/{owner}/{repo}/actions/oidc/customization/sub"
+    ],
+    getEnvironmentPublicKey: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key"
+    ],
+    getEnvironmentSecret: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    getEnvironmentVariable: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}"
+    ],
+    getGithubActionsDefaultWorkflowPermissionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/workflow"
+    ],
+    getGithubActionsDefaultWorkflowPermissionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/workflow"
+    ],
+    getGithubActionsPermissionsOrganization: [
+      "GET /orgs/{org}/actions/permissions"
+    ],
+    getGithubActionsPermissionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions"
+    ],
+    getJobForWorkflowRun: ["GET /repos/{owner}/{repo}/actions/jobs/{job_id}"],
+    getOrgPublicKey: ["GET /orgs/{org}/actions/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/actions/secrets/{secret_name}"],
+    getOrgVariable: ["GET /orgs/{org}/actions/variables/{name}"],
+    getPendingDeploymentsForRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"
+    ],
+    getRepoPermissions: [
+      "GET /repos/{owner}/{repo}/actions/permissions",
+      {},
+      { renamed: ["actions", "getGithubActionsPermissionsRepository"] }
+    ],
+    getRepoPublicKey: ["GET /repos/{owner}/{repo}/actions/secrets/public-key"],
+    getRepoSecret: ["GET /repos/{owner}/{repo}/actions/secrets/{secret_name}"],
+    getRepoVariable: ["GET /repos/{owner}/{repo}/actions/variables/{name}"],
+    getReviewsForRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals"
+    ],
+    getSelfHostedRunnerForOrg: ["GET /orgs/{org}/actions/runners/{runner_id}"],
+    getSelfHostedRunnerForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/{runner_id}"
+    ],
+    getWorkflow: ["GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}"],
+    getWorkflowAccessToRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/access"
+    ],
+    getWorkflowRun: ["GET /repos/{owner}/{repo}/actions/runs/{run_id}"],
+    getWorkflowRunAttempt: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}"
+    ],
+    getWorkflowRunUsage: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing"
+    ],
+    getWorkflowUsage: [
+      "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing"
+    ],
+    listArtifactsForRepo: ["GET /repos/{owner}/{repo}/actions/artifacts"],
+    listEnvironmentSecrets: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/secrets"
+    ],
+    listEnvironmentVariables: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/variables"
+    ],
+    listJobsForWorkflowRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"
+    ],
+    listJobsForWorkflowRunAttempt: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs"
+    ],
+    listLabelsForSelfHostedRunnerForOrg: [
+      "GET /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    listLabelsForSelfHostedRunnerForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    listOrgSecrets: ["GET /orgs/{org}/actions/secrets"],
+    listOrgVariables: ["GET /orgs/{org}/actions/variables"],
+    listRepoOrganizationSecrets: [
+      "GET /repos/{owner}/{repo}/actions/organization-secrets"
+    ],
+    listRepoOrganizationVariables: [
+      "GET /repos/{owner}/{repo}/actions/organization-variables"
+    ],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/actions/secrets"],
+    listRepoVariables: ["GET /repos/{owner}/{repo}/actions/variables"],
+    listRepoWorkflows: ["GET /repos/{owner}/{repo}/actions/workflows"],
+    listRunnerApplicationsForOrg: ["GET /orgs/{org}/actions/runners/downloads"],
+    listRunnerApplicationsForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/downloads"
+    ],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/actions/secrets/{secret_name}/repositories"
+    ],
+    listSelectedReposForOrgVariable: [
+      "GET /orgs/{org}/actions/variables/{name}/repositories"
+    ],
+    listSelectedRepositoriesEnabledGithubActionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/repositories"
+    ],
+    listSelfHostedRunnersForOrg: ["GET /orgs/{org}/actions/runners"],
+    listSelfHostedRunnersForRepo: ["GET /repos/{owner}/{repo}/actions/runners"],
+    listWorkflowRunArtifacts: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts"
+    ],
+    listWorkflowRuns: [
+      "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs"
+    ],
+    listWorkflowRunsForRepo: ["GET /repos/{owner}/{repo}/actions/runs"],
+    reRunJobForWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun"
+    ],
+    reRunWorkflow: ["POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun"],
+    reRunWorkflowFailedJobs: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs"
+    ],
+    removeAllCustomLabelsFromSelfHostedRunnerForOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    removeAllCustomLabelsFromSelfHostedRunnerForRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    removeCustomLabelFromSelfHostedRunnerForOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}/labels/{name}"
+    ],
+    removeCustomLabelFromSelfHostedRunnerForRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    removeSelectedRepoFromOrgVariable: [
+      "DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}"
+    ],
+    reviewCustomGatesForRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule"
+    ],
+    reviewPendingDeploymentsForRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"
+    ],
+    setAllowedActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/selected-actions"
+    ],
+    setAllowedActionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/selected-actions"
+    ],
+    setCustomLabelsForSelfHostedRunnerForOrg: [
+      "PUT /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    setCustomLabelsForSelfHostedRunnerForRepo: [
+      "PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    setCustomOidcSubClaimForRepo: [
+      "PUT /repos/{owner}/{repo}/actions/oidc/customization/sub"
+    ],
+    setGithubActionsDefaultWorkflowPermissionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/workflow"
+    ],
+    setGithubActionsDefaultWorkflowPermissionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/workflow"
+    ],
+    setGithubActionsPermissionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions"
+    ],
+    setGithubActionsPermissionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/actions/secrets/{secret_name}/repositories"
+    ],
+    setSelectedReposForOrgVariable: [
+      "PUT /orgs/{org}/actions/variables/{name}/repositories"
+    ],
+    setSelectedRepositoriesEnabledGithubActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/repositories"
+    ],
+    setWorkflowAccessToRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/access"
+    ],
+    updateEnvironmentVariable: [
+      "PATCH /repos/{owner}/{repo}/environments/{environment_name}/variables/{name}"
+    ],
+    updateOrgVariable: ["PATCH /orgs/{org}/actions/variables/{name}"],
+    updateRepoVariable: [
+      "PATCH /repos/{owner}/{repo}/actions/variables/{name}"
+    ]
+  },
+  activity: {
+    checkRepoIsStarredByAuthenticatedUser: ["GET /user/starred/{owner}/{repo}"],
+    deleteRepoSubscription: ["DELETE /repos/{owner}/{repo}/subscription"],
+    deleteThreadSubscription: [
+      "DELETE /notifications/threads/{thread_id}/subscription"
+    ],
+    getFeeds: ["GET /feeds"],
+    getRepoSubscription: ["GET /repos/{owner}/{repo}/subscription"],
+    getThread: ["GET /notifications/threads/{thread_id}"],
+    getThreadSubscriptionForAuthenticatedUser: [
+      "GET /notifications/threads/{thread_id}/subscription"
+    ],
+    listEventsForAuthenticatedUser: ["GET /users/{username}/events"],
+    listNotificationsForAuthenticatedUser: ["GET /notifications"],
+    listOrgEventsForAuthenticatedUser: [
+      "GET /users/{username}/events/orgs/{org}"
+    ],
+    listPublicEvents: ["GET /events"],
+    listPublicEventsForRepoNetwork: ["GET /networks/{owner}/{repo}/events"],
+    listPublicEventsForUser: ["GET /users/{username}/events/public"],
+    listPublicOrgEvents: ["GET /orgs/{org}/events"],
+    listReceivedEventsForUser: ["GET /users/{username}/received_events"],
+    listReceivedPublicEventsForUser: [
+      "GET /users/{username}/received_events/public"
+    ],
+    listRepoEvents: ["GET /repos/{owner}/{repo}/events"],
+    listRepoNotificationsForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/notifications"
+    ],
+    listReposStarredByAuthenticatedUser: ["GET /user/starred"],
+    listReposStarredByUser: ["GET /users/{username}/starred"],
+    listReposWatchedByUser: ["GET /users/{username}/subscriptions"],
+    listStargazersForRepo: ["GET /repos/{owner}/{repo}/stargazers"],
+    listWatchedReposForAuthenticatedUser: ["GET /user/subscriptions"],
+    listWatchersForRepo: ["GET /repos/{owner}/{repo}/subscribers"],
+    markNotificationsAsRead: ["PUT /notifications"],
+    markRepoNotificationsAsRead: ["PUT /repos/{owner}/{repo}/notifications"],
+    markThreadAsDone: ["DELETE /notifications/threads/{thread_id}"],
+    markThreadAsRead: ["PATCH /notifications/threads/{thread_id}"],
+    setRepoSubscription: ["PUT /repos/{owner}/{repo}/subscription"],
+    setThreadSubscription: [
+      "PUT /notifications/threads/{thread_id}/subscription"
+    ],
+    starRepoForAuthenticatedUser: ["PUT /user/starred/{owner}/{repo}"],
+    unstarRepoForAuthenticatedUser: ["DELETE /user/starred/{owner}/{repo}"]
+  },
+  apps: {
+    addRepoToInstallation: [
+      "PUT /user/installations/{installation_id}/repositories/{repository_id}",
+      {},
+      { renamed: ["apps", "addRepoToInstallationForAuthenticatedUser"] }
+    ],
+    addRepoToInstallationForAuthenticatedUser: [
+      "PUT /user/installations/{installation_id}/repositories/{repository_id}"
+    ],
+    checkToken: ["POST /applications/{client_id}/token"],
+    createFromManifest: ["POST /app-manifests/{code}/conversions"],
+    createInstallationAccessToken: [
+      "POST /app/installations/{installation_id}/access_tokens"
+    ],
+    deleteAuthorization: ["DELETE /applications/{client_id}/grant"],
+    deleteInstallation: ["DELETE /app/installations/{installation_id}"],
+    deleteToken: ["DELETE /applications/{client_id}/token"],
+    getAuthenticated: ["GET /app"],
+    getBySlug: ["GET /apps/{app_slug}"],
+    getInstallation: ["GET /app/installations/{installation_id}"],
+    getOrgInstallation: ["GET /orgs/{org}/installation"],
+    getRepoInstallation: ["GET /repos/{owner}/{repo}/installation"],
+    getSubscriptionPlanForAccount: [
+      "GET /marketplace_listing/accounts/{account_id}"
+    ],
+    getSubscriptionPlanForAccountStubbed: [
+      "GET /marketplace_listing/stubbed/accounts/{account_id}"
+    ],
+    getUserInstallation: ["GET /users/{username}/installation"],
+    getWebhookConfigForApp: ["GET /app/hook/config"],
+    getWebhookDelivery: ["GET /app/hook/deliveries/{delivery_id}"],
+    listAccountsForPlan: ["GET /marketplace_listing/plans/{plan_id}/accounts"],
+    listAccountsForPlanStubbed: [
+      "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts"
+    ],
+    listInstallationReposForAuthenticatedUser: [
+      "GET /user/installations/{installation_id}/repositories"
+    ],
+    listInstallationRequestsForAuthenticatedApp: [
+      "GET /app/installation-requests"
+    ],
+    listInstallations: ["GET /app/installations"],
+    listInstallationsForAuthenticatedUser: ["GET /user/installations"],
+    listPlans: ["GET /marketplace_listing/plans"],
+    listPlansStubbed: ["GET /marketplace_listing/stubbed/plans"],
+    listReposAccessibleToInstallation: ["GET /installation/repositories"],
+    listSubscriptionsForAuthenticatedUser: ["GET /user/marketplace_purchases"],
+    listSubscriptionsForAuthenticatedUserStubbed: [
+      "GET /user/marketplace_purchases/stubbed"
+    ],
+    listWebhookDeliveries: ["GET /app/hook/deliveries"],
+    redeliverWebhookDelivery: [
+      "POST /app/hook/deliveries/{delivery_id}/attempts"
+    ],
+    removeRepoFromInstallation: [
+      "DELETE /user/installations/{installation_id}/repositories/{repository_id}",
+      {},
+      { renamed: ["apps", "removeRepoFromInstallationForAuthenticatedUser"] }
+    ],
+    removeRepoFromInstallationForAuthenticatedUser: [
+      "DELETE /user/installations/{installation_id}/repositories/{repository_id}"
+    ],
+    resetToken: ["PATCH /applications/{client_id}/token"],
+    revokeInstallationAccessToken: ["DELETE /installation/token"],
+    scopeToken: ["POST /applications/{client_id}/token/scoped"],
+    suspendInstallation: ["PUT /app/installations/{installation_id}/suspended"],
+    unsuspendInstallation: [
+      "DELETE /app/installations/{installation_id}/suspended"
+    ],
+    updateWebhookConfigForApp: ["PATCH /app/hook/config"]
+  },
+  billing: {
+    getGithubActionsBillingOrg: ["GET /orgs/{org}/settings/billing/actions"],
+    getGithubActionsBillingUser: [
+      "GET /users/{username}/settings/billing/actions"
+    ],
+    getGithubPackagesBillingOrg: ["GET /orgs/{org}/settings/billing/packages"],
+    getGithubPackagesBillingUser: [
+      "GET /users/{username}/settings/billing/packages"
+    ],
+    getSharedStorageBillingOrg: [
+      "GET /orgs/{org}/settings/billing/shared-storage"
+    ],
+    getSharedStorageBillingUser: [
+      "GET /users/{username}/settings/billing/shared-storage"
+    ]
+  },
+  checks: {
+    create: ["POST /repos/{owner}/{repo}/check-runs"],
+    createSuite: ["POST /repos/{owner}/{repo}/check-suites"],
+    get: ["GET /repos/{owner}/{repo}/check-runs/{check_run_id}"],
+    getSuite: ["GET /repos/{owner}/{repo}/check-suites/{check_suite_id}"],
+    listAnnotations: [
+      "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations"
+    ],
+    listForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/check-runs"],
+    listForSuite: [
+      "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs"
+    ],
+    listSuitesForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/check-suites"],
+    rerequestRun: [
+      "POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest"
+    ],
+    rerequestSuite: [
+      "POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest"
+    ],
+    setSuitesPreferences: [
+      "PATCH /repos/{owner}/{repo}/check-suites/preferences"
+    ],
+    update: ["PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}"]
+  },
+  codeScanning: {
+    deleteAnalysis: [
+      "DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}{?confirm_delete}"
+    ],
+    getAlert: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}",
+      {},
+      { renamedParameters: { alert_id: "alert_number" } }
+    ],
+    getAnalysis: [
+      "GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}"
+    ],
+    getCodeqlDatabase: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}"
+    ],
+    getDefaultSetup: ["GET /repos/{owner}/{repo}/code-scanning/default-setup"],
+    getSarif: ["GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}"],
+    listAlertInstances: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/code-scanning/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/code-scanning/alerts"],
+    listAlertsInstances: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances",
+      {},
+      { renamed: ["codeScanning", "listAlertInstances"] }
+    ],
+    listCodeqlDatabases: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/databases"
+    ],
+    listRecentAnalyses: ["GET /repos/{owner}/{repo}/code-scanning/analyses"],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}"
+    ],
+    updateDefaultSetup: [
+      "PATCH /repos/{owner}/{repo}/code-scanning/default-setup"
+    ],
+    uploadSarif: ["POST /repos/{owner}/{repo}/code-scanning/sarifs"]
+  },
+  codesOfConduct: {
+    getAllCodesOfConduct: ["GET /codes_of_conduct"],
+    getConductCode: ["GET /codes_of_conduct/{key}"]
+  },
+  codespaces: {
+    addRepositoryForSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    checkPermissionsForDevcontainer: [
+      "GET /repos/{owner}/{repo}/codespaces/permissions_check"
+    ],
+    codespaceMachinesForAuthenticatedUser: [
+      "GET /user/codespaces/{codespace_name}/machines"
+    ],
+    createForAuthenticatedUser: ["POST /user/codespaces"],
+    createOrUpdateOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}"
+    ],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    createOrUpdateSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}"
+    ],
+    createWithPrForAuthenticatedUser: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces"
+    ],
+    createWithRepoForAuthenticatedUser: [
+      "POST /repos/{owner}/{repo}/codespaces"
+    ],
+    deleteForAuthenticatedUser: ["DELETE /user/codespaces/{codespace_name}"],
+    deleteFromOrganization: [
+      "DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/codespaces/secrets/{secret_name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    deleteSecretForAuthenticatedUser: [
+      "DELETE /user/codespaces/secrets/{secret_name}"
+    ],
+    exportForAuthenticatedUser: [
+      "POST /user/codespaces/{codespace_name}/exports"
+    ],
+    getCodespacesForUserInOrg: [
+      "GET /orgs/{org}/members/{username}/codespaces"
+    ],
+    getExportDetailsForAuthenticatedUser: [
+      "GET /user/codespaces/{codespace_name}/exports/{export_id}"
+    ],
+    getForAuthenticatedUser: ["GET /user/codespaces/{codespace_name}"],
+    getOrgPublicKey: ["GET /orgs/{org}/codespaces/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/codespaces/secrets/{secret_name}"],
+    getPublicKeyForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/public-key"
+    ],
+    getRepoPublicKey: [
+      "GET /repos/{owner}/{repo}/codespaces/secrets/public-key"
+    ],
+    getRepoSecret: [
+      "GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    getSecretForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/{secret_name}"
+    ],
+    listDevcontainersInRepositoryForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/devcontainers"
+    ],
+    listForAuthenticatedUser: ["GET /user/codespaces"],
+    listInOrganization: [
+      "GET /orgs/{org}/codespaces",
+      {},
+      { renamedParameters: { org_id: "org" } }
+    ],
+    listInRepositoryForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces"
+    ],
+    listOrgSecrets: ["GET /orgs/{org}/codespaces/secrets"],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/codespaces/secrets"],
+    listRepositoriesForSecretForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/{secret_name}/repositories"
+    ],
+    listSecretsForAuthenticatedUser: ["GET /user/codespaces/secrets"],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories"
+    ],
+    preFlightWithRepoForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/new"
+    ],
+    publishForAuthenticatedUser: [
+      "POST /user/codespaces/{codespace_name}/publish"
+    ],
+    removeRepositoryForSecretForAuthenticatedUser: [
+      "DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    repoMachinesForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/machines"
+    ],
+    setRepositoriesForSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}/repositories"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories"
+    ],
+    startForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/start"],
+    stopForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/stop"],
+    stopInOrganization: [
+      "POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop"
+    ],
+    updateForAuthenticatedUser: ["PATCH /user/codespaces/{codespace_name}"]
+  },
+  copilot: {
+    addCopilotSeatsForTeams: [
+      "POST /orgs/{org}/copilot/billing/selected_teams"
+    ],
+    addCopilotSeatsForUsers: [
+      "POST /orgs/{org}/copilot/billing/selected_users"
+    ],
+    cancelCopilotSeatAssignmentForTeams: [
+      "DELETE /orgs/{org}/copilot/billing/selected_teams"
+    ],
+    cancelCopilotSeatAssignmentForUsers: [
+      "DELETE /orgs/{org}/copilot/billing/selected_users"
+    ],
+    getCopilotOrganizationDetails: ["GET /orgs/{org}/copilot/billing"],
+    getCopilotSeatDetailsForUser: [
+      "GET /orgs/{org}/members/{username}/copilot"
+    ],
+    listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"],
+    usageMetricsForEnterprise: ["GET /enterprises/{enterprise}/copilot/usage"],
+    usageMetricsForOrg: ["GET /orgs/{org}/copilot/usage"],
+    usageMetricsForTeam: ["GET /orgs/{org}/team/{team_slug}/copilot/usage"]
+  },
+  dependabot: {
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    createOrUpdateOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}"
+    ],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/dependabot/secrets/{secret_name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    getAlert: ["GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"],
+    getOrgPublicKey: ["GET /orgs/{org}/dependabot/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/dependabot/secrets/{secret_name}"],
+    getRepoPublicKey: [
+      "GET /repos/{owner}/{repo}/dependabot/secrets/public-key"
+    ],
+    getRepoSecret: [
+      "GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    listAlertsForEnterprise: [
+      "GET /enterprises/{enterprise}/dependabot/alerts"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/dependabot/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/dependabot/alerts"],
+    listOrgSecrets: ["GET /orgs/{org}/dependabot/secrets"],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/dependabot/secrets"],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories"
+    ],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"
+    ]
+  },
+  dependencyGraph: {
+    createRepositorySnapshot: [
+      "POST /repos/{owner}/{repo}/dependency-graph/snapshots"
+    ],
+    diffRange: [
+      "GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}"
+    ],
+    exportSbom: ["GET /repos/{owner}/{repo}/dependency-graph/sbom"]
+  },
+  emojis: { get: ["GET /emojis"] },
+  gists: {
+    checkIsStarred: ["GET /gists/{gist_id}/star"],
+    create: ["POST /gists"],
+    createComment: ["POST /gists/{gist_id}/comments"],
+    delete: ["DELETE /gists/{gist_id}"],
+    deleteComment: ["DELETE /gists/{gist_id}/comments/{comment_id}"],
+    fork: ["POST /gists/{gist_id}/forks"],
+    get: ["GET /gists/{gist_id}"],
+    getComment: ["GET /gists/{gist_id}/comments/{comment_id}"],
+    getRevision: ["GET /gists/{gist_id}/{sha}"],
+    list: ["GET /gists"],
+    listComments: ["GET /gists/{gist_id}/comments"],
+    listCommits: ["GET /gists/{gist_id}/commits"],
+    listForUser: ["GET /users/{username}/gists"],
+    listForks: ["GET /gists/{gist_id}/forks"],
+    listPublic: ["GET /gists/public"],
+    listStarred: ["GET /gists/starred"],
+    star: ["PUT /gists/{gist_id}/star"],
+    unstar: ["DELETE /gists/{gist_id}/star"],
+    update: ["PATCH /gists/{gist_id}"],
+    updateComment: ["PATCH /gists/{gist_id}/comments/{comment_id}"]
+  },
+  git: {
+    createBlob: ["POST /repos/{owner}/{repo}/git/blobs"],
+    createCommit: ["POST /repos/{owner}/{repo}/git/commits"],
+    createRef: ["POST /repos/{owner}/{repo}/git/refs"],
+    createTag: ["POST /repos/{owner}/{repo}/git/tags"],
+    createTree: ["POST /repos/{owner}/{repo}/git/trees"],
+    deleteRef: ["DELETE /repos/{owner}/{repo}/git/refs/{ref}"],
+    getBlob: ["GET /repos/{owner}/{repo}/git/blobs/{file_sha}"],
+    getCommit: ["GET /repos/{owner}/{repo}/git/commits/{commit_sha}"],
+    getRef: ["GET /repos/{owner}/{repo}/git/ref/{ref}"],
+    getTag: ["GET /repos/{owner}/{repo}/git/tags/{tag_sha}"],
+    getTree: ["GET /repos/{owner}/{repo}/git/trees/{tree_sha}"],
+    listMatchingRefs: ["GET /repos/{owner}/{repo}/git/matching-refs/{ref}"],
+    updateRef: ["PATCH /repos/{owner}/{repo}/git/refs/{ref}"]
+  },
+  gitignore: {
+    getAllTemplates: ["GET /gitignore/templates"],
+    getTemplate: ["GET /gitignore/templates/{name}"]
+  },
+  interactions: {
+    getRestrictionsForAuthenticatedUser: ["GET /user/interaction-limits"],
+    getRestrictionsForOrg: ["GET /orgs/{org}/interaction-limits"],
+    getRestrictionsForRepo: ["GET /repos/{owner}/{repo}/interaction-limits"],
+    getRestrictionsForYourPublicRepos: [
+      "GET /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "getRestrictionsForAuthenticatedUser"] }
+    ],
+    removeRestrictionsForAuthenticatedUser: ["DELETE /user/interaction-limits"],
+    removeRestrictionsForOrg: ["DELETE /orgs/{org}/interaction-limits"],
+    removeRestrictionsForRepo: [
+      "DELETE /repos/{owner}/{repo}/interaction-limits"
+    ],
+    removeRestrictionsForYourPublicRepos: [
+      "DELETE /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "removeRestrictionsForAuthenticatedUser"] }
+    ],
+    setRestrictionsForAuthenticatedUser: ["PUT /user/interaction-limits"],
+    setRestrictionsForOrg: ["PUT /orgs/{org}/interaction-limits"],
+    setRestrictionsForRepo: ["PUT /repos/{owner}/{repo}/interaction-limits"],
+    setRestrictionsForYourPublicRepos: [
+      "PUT /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "setRestrictionsForAuthenticatedUser"] }
+    ]
+  },
+  issues: {
+    addAssignees: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees"
+    ],
+    addLabels: ["POST /repos/{owner}/{repo}/issues/{issue_number}/labels"],
+    checkUserCanBeAssigned: ["GET /repos/{owner}/{repo}/assignees/{assignee}"],
+    checkUserCanBeAssignedToIssue: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}"
+    ],
+    create: ["POST /repos/{owner}/{repo}/issues"],
+    createComment: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments"
+    ],
+    createLabel: ["POST /repos/{owner}/{repo}/labels"],
+    createMilestone: ["POST /repos/{owner}/{repo}/milestones"],
+    deleteComment: [
+      "DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}"
+    ],
+    deleteLabel: ["DELETE /repos/{owner}/{repo}/labels/{name}"],
+    deleteMilestone: [
+      "DELETE /repos/{owner}/{repo}/milestones/{milestone_number}"
+    ],
+    get: ["GET /repos/{owner}/{repo}/issues/{issue_number}"],
+    getComment: ["GET /repos/{owner}/{repo}/issues/comments/{comment_id}"],
+    getEvent: ["GET /repos/{owner}/{repo}/issues/events/{event_id}"],
+    getLabel: ["GET /repos/{owner}/{repo}/labels/{name}"],
+    getMilestone: ["GET /repos/{owner}/{repo}/milestones/{milestone_number}"],
+    list: ["GET /issues"],
+    listAssignees: ["GET /repos/{owner}/{repo}/assignees"],
+    listComments: ["GET /repos/{owner}/{repo}/issues/{issue_number}/comments"],
+    listCommentsForRepo: ["GET /repos/{owner}/{repo}/issues/comments"],
+    listEvents: ["GET /repos/{owner}/{repo}/issues/{issue_number}/events"],
+    listEventsForRepo: ["GET /repos/{owner}/{repo}/issues/events"],
+    listEventsForTimeline: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline"
+    ],
+    listForAuthenticatedUser: ["GET /user/issues"],
+    listForOrg: ["GET /orgs/{org}/issues"],
+    listForRepo: ["GET /repos/{owner}/{repo}/issues"],
+    listLabelsForMilestone: [
+      "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels"
+    ],
+    listLabelsForRepo: ["GET /repos/{owner}/{repo}/labels"],
+    listLabelsOnIssue: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/labels"
+    ],
+    listMilestones: ["GET /repos/{owner}/{repo}/milestones"],
+    lock: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/lock"],
+    removeAllLabels: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels"
+    ],
+    removeAssignees: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees"
+    ],
+    removeLabel: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}"
+    ],
+    setLabels: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/labels"],
+    unlock: ["DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock"],
+    update: ["PATCH /repos/{owner}/{repo}/issues/{issue_number}"],
+    updateComment: ["PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}"],
+    updateLabel: ["PATCH /repos/{owner}/{repo}/labels/{name}"],
+    updateMilestone: [
+      "PATCH /repos/{owner}/{repo}/milestones/{milestone_number}"
+    ]
+  },
+  licenses: {
+    get: ["GET /licenses/{license}"],
+    getAllCommonlyUsed: ["GET /licenses"],
+    getForRepo: ["GET /repos/{owner}/{repo}/license"]
+  },
+  markdown: {
+    render: ["POST /markdown"],
+    renderRaw: [
+      "POST /markdown/raw",
+      { headers: { "content-type": "text/plain; charset=utf-8" } }
+    ]
+  },
+  meta: {
+    get: ["GET /meta"],
+    getAllVersions: ["GET /versions"],
+    getOctocat: ["GET /octocat"],
+    getZen: ["GET /zen"],
+    root: ["GET /"]
+  },
+  migrations: {
+    deleteArchiveForAuthenticatedUser: [
+      "DELETE /user/migrations/{migration_id}/archive"
+    ],
+    deleteArchiveForOrg: [
+      "DELETE /orgs/{org}/migrations/{migration_id}/archive"
+    ],
+    downloadArchiveForOrg: [
+      "GET /orgs/{org}/migrations/{migration_id}/archive"
+    ],
+    getArchiveForAuthenticatedUser: [
+      "GET /user/migrations/{migration_id}/archive"
+    ],
+    getStatusForAuthenticatedUser: ["GET /user/migrations/{migration_id}"],
+    getStatusForOrg: ["GET /orgs/{org}/migrations/{migration_id}"],
+    listForAuthenticatedUser: ["GET /user/migrations"],
+    listForOrg: ["GET /orgs/{org}/migrations"],
+    listReposForAuthenticatedUser: [
+      "GET /user/migrations/{migration_id}/repositories"
+    ],
+    listReposForOrg: ["GET /orgs/{org}/migrations/{migration_id}/repositories"],
+    listReposForUser: [
+      "GET /user/migrations/{migration_id}/repositories",
+      {},
+      { renamed: ["migrations", "listReposForAuthenticatedUser"] }
+    ],
+    startForAuthenticatedUser: ["POST /user/migrations"],
+    startForOrg: ["POST /orgs/{org}/migrations"],
+    unlockRepoForAuthenticatedUser: [
+      "DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock"
+    ],
+    unlockRepoForOrg: [
+      "DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock"
+    ]
+  },
+  oidc: {
+    getOidcCustomSubTemplateForOrg: [
+      "GET /orgs/{org}/actions/oidc/customization/sub"
+    ],
+    updateOidcCustomSubTemplateForOrg: [
+      "PUT /orgs/{org}/actions/oidc/customization/sub"
+    ]
+  },
+  orgs: {
+    addSecurityManagerTeam: [
+      "PUT /orgs/{org}/security-managers/teams/{team_slug}"
+    ],
+    assignTeamToOrgRole: [
+      "PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+    ],
+    assignUserToOrgRole: [
+      "PUT /orgs/{org}/organization-roles/users/{username}/{role_id}"
+    ],
+    blockUser: ["PUT /orgs/{org}/blocks/{username}"],
+    cancelInvitation: ["DELETE /orgs/{org}/invitations/{invitation_id}"],
+    checkBlockedUser: ["GET /orgs/{org}/blocks/{username}"],
+    checkMembershipForUser: ["GET /orgs/{org}/members/{username}"],
+    checkPublicMembershipForUser: ["GET /orgs/{org}/public_members/{username}"],
+    convertMemberToOutsideCollaborator: [
+      "PUT /orgs/{org}/outside_collaborators/{username}"
+    ],
+    createCustomOrganizationRole: ["POST /orgs/{org}/organization-roles"],
+    createInvitation: ["POST /orgs/{org}/invitations"],
+    createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
+    createOrUpdateCustomPropertiesValuesForRepos: [
+      "PATCH /orgs/{org}/properties/values"
+    ],
+    createOrUpdateCustomProperty: [
+      "PUT /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    createWebhook: ["POST /orgs/{org}/hooks"],
+    delete: ["DELETE /orgs/{org}"],
+    deleteCustomOrganizationRole: [
+      "DELETE /orgs/{org}/organization-roles/{role_id}"
+    ],
+    deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
+    enableOrDisableSecurityProductOnAllOrgRepos: [
+      "POST /orgs/{org}/{security_product}/{enablement}"
+    ],
+    get: ["GET /orgs/{org}"],
+    getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
+    getCustomProperty: [
+      "GET /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    getMembershipForAuthenticatedUser: ["GET /user/memberships/orgs/{org}"],
+    getMembershipForUser: ["GET /orgs/{org}/memberships/{username}"],
+    getOrgRole: ["GET /orgs/{org}/organization-roles/{role_id}"],
+    getWebhook: ["GET /orgs/{org}/hooks/{hook_id}"],
+    getWebhookConfigForOrg: ["GET /orgs/{org}/hooks/{hook_id}/config"],
+    getWebhookDelivery: [
+      "GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}"
+    ],
+    list: ["GET /organizations"],
+    listAppInstallations: ["GET /orgs/{org}/installations"],
+    listBlockedUsers: ["GET /orgs/{org}/blocks"],
+    listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
+    listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
+    listForAuthenticatedUser: ["GET /user/orgs"],
+    listForUser: ["GET /users/{username}/orgs"],
+    listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
+    listMembers: ["GET /orgs/{org}/members"],
+    listMembershipsForAuthenticatedUser: ["GET /user/memberships/orgs"],
+    listOrgRoleTeams: ["GET /orgs/{org}/organization-roles/{role_id}/teams"],
+    listOrgRoleUsers: ["GET /orgs/{org}/organization-roles/{role_id}/users"],
+    listOrgRoles: ["GET /orgs/{org}/organization-roles"],
+    listOrganizationFineGrainedPermissions: [
+      "GET /orgs/{org}/organization-fine-grained-permissions"
+    ],
+    listOutsideCollaborators: ["GET /orgs/{org}/outside_collaborators"],
+    listPatGrantRepositories: [
+      "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories"
+    ],
+    listPatGrantRequestRepositories: [
+      "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories"
+    ],
+    listPatGrantRequests: ["GET /orgs/{org}/personal-access-token-requests"],
+    listPatGrants: ["GET /orgs/{org}/personal-access-tokens"],
+    listPendingInvitations: ["GET /orgs/{org}/invitations"],
+    listPublicMembers: ["GET /orgs/{org}/public_members"],
+    listSecurityManagerTeams: ["GET /orgs/{org}/security-managers"],
+    listWebhookDeliveries: ["GET /orgs/{org}/hooks/{hook_id}/deliveries"],
+    listWebhooks: ["GET /orgs/{org}/hooks"],
+    patchCustomOrganizationRole: [
+      "PATCH /orgs/{org}/organization-roles/{role_id}"
+    ],
+    pingWebhook: ["POST /orgs/{org}/hooks/{hook_id}/pings"],
+    redeliverWebhookDelivery: [
+      "POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+    ],
+    removeCustomProperty: [
+      "DELETE /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    removeMember: ["DELETE /orgs/{org}/members/{username}"],
+    removeMembershipForUser: ["DELETE /orgs/{org}/memberships/{username}"],
+    removeOutsideCollaborator: [
+      "DELETE /orgs/{org}/outside_collaborators/{username}"
+    ],
+    removePublicMembershipForAuthenticatedUser: [
+      "DELETE /orgs/{org}/public_members/{username}"
+    ],
+    removeSecurityManagerTeam: [
+      "DELETE /orgs/{org}/security-managers/teams/{team_slug}"
+    ],
+    reviewPatGrantRequest: [
+      "POST /orgs/{org}/personal-access-token-requests/{pat_request_id}"
+    ],
+    reviewPatGrantRequestsInBulk: [
+      "POST /orgs/{org}/personal-access-token-requests"
+    ],
+    revokeAllOrgRolesTeam: [
+      "DELETE /orgs/{org}/organization-roles/teams/{team_slug}"
+    ],
+    revokeAllOrgRolesUser: [
+      "DELETE /orgs/{org}/organization-roles/users/{username}"
+    ],
+    revokeOrgRoleTeam: [
+      "DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+    ],
+    revokeOrgRoleUser: [
+      "DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}"
+    ],
+    setMembershipForUser: ["PUT /orgs/{org}/memberships/{username}"],
+    setPublicMembershipForAuthenticatedUser: [
+      "PUT /orgs/{org}/public_members/{username}"
+    ],
+    unblockUser: ["DELETE /orgs/{org}/blocks/{username}"],
+    update: ["PATCH /orgs/{org}"],
+    updateMembershipForAuthenticatedUser: [
+      "PATCH /user/memberships/orgs/{org}"
+    ],
+    updatePatAccess: ["POST /orgs/{org}/personal-access-tokens/{pat_id}"],
+    updatePatAccesses: ["POST /orgs/{org}/personal-access-tokens"],
+    updateWebhook: ["PATCH /orgs/{org}/hooks/{hook_id}"],
+    updateWebhookConfigForOrg: ["PATCH /orgs/{org}/hooks/{hook_id}/config"]
+  },
+  packages: {
+    deletePackageForAuthenticatedUser: [
+      "DELETE /user/packages/{package_type}/{package_name}"
+    ],
+    deletePackageForOrg: [
+      "DELETE /orgs/{org}/packages/{package_type}/{package_name}"
+    ],
+    deletePackageForUser: [
+      "DELETE /users/{username}/packages/{package_type}/{package_name}"
+    ],
+    deletePackageVersionForAuthenticatedUser: [
+      "DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    deletePackageVersionForOrg: [
+      "DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    deletePackageVersionForUser: [
+      "DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getAllPackageVersionsForAPackageOwnedByAnOrg: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
+      {},
+      { renamed: ["packages", "getAllPackageVersionsForPackageOwnedByOrg"] }
+    ],
+    getAllPackageVersionsForAPackageOwnedByTheAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions",
+      {},
+      {
+        renamed: [
+          "packages",
+          "getAllPackageVersionsForPackageOwnedByAuthenticatedUser"
+        ]
+      }
+    ],
+    getAllPackageVersionsForPackageOwnedByAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions"
+    ],
+    getAllPackageVersionsForPackageOwnedByOrg: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions"
+    ],
+    getAllPackageVersionsForPackageOwnedByUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}/versions"
+    ],
+    getPackageForAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}"
+    ],
+    getPackageForOrganization: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}"
+    ],
+    getPackageForUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}"
+    ],
+    getPackageVersionForAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getPackageVersionForOrganization: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getPackageVersionForUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    listDockerMigrationConflictingPackagesForAuthenticatedUser: [
+      "GET /user/docker/conflicts"
+    ],
+    listDockerMigrationConflictingPackagesForOrganization: [
+      "GET /orgs/{org}/docker/conflicts"
+    ],
+    listDockerMigrationConflictingPackagesForUser: [
+      "GET /users/{username}/docker/conflicts"
+    ],
+    listPackagesForAuthenticatedUser: ["GET /user/packages"],
+    listPackagesForOrganization: ["GET /orgs/{org}/packages"],
+    listPackagesForUser: ["GET /users/{username}/packages"],
+    restorePackageForAuthenticatedUser: [
+      "POST /user/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageForOrg: [
+      "POST /orgs/{org}/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageForUser: [
+      "POST /users/{username}/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageVersionForAuthenticatedUser: [
+      "POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ],
+    restorePackageVersionForOrg: [
+      "POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ],
+    restorePackageVersionForUser: [
+      "POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ]
+  },
+  projects: {
+    addCollaborator: ["PUT /projects/{project_id}/collaborators/{username}"],
+    createCard: ["POST /projects/columns/{column_id}/cards"],
+    createColumn: ["POST /projects/{project_id}/columns"],
+    createForAuthenticatedUser: ["POST /user/projects"],
+    createForOrg: ["POST /orgs/{org}/projects"],
+    createForRepo: ["POST /repos/{owner}/{repo}/projects"],
+    delete: ["DELETE /projects/{project_id}"],
+    deleteCard: ["DELETE /projects/columns/cards/{card_id}"],
+    deleteColumn: ["DELETE /projects/columns/{column_id}"],
+    get: ["GET /projects/{project_id}"],
+    getCard: ["GET /projects/columns/cards/{card_id}"],
+    getColumn: ["GET /projects/columns/{column_id}"],
+    getPermissionForUser: [
+      "GET /projects/{project_id}/collaborators/{username}/permission"
+    ],
+    listCards: ["GET /projects/columns/{column_id}/cards"],
+    listCollaborators: ["GET /projects/{project_id}/collaborators"],
+    listColumns: ["GET /projects/{project_id}/columns"],
+    listForOrg: ["GET /orgs/{org}/projects"],
+    listForRepo: ["GET /repos/{owner}/{repo}/projects"],
+    listForUser: ["GET /users/{username}/projects"],
+    moveCard: ["POST /projects/columns/cards/{card_id}/moves"],
+    moveColumn: ["POST /projects/columns/{column_id}/moves"],
+    removeCollaborator: [
+      "DELETE /projects/{project_id}/collaborators/{username}"
+    ],
+    update: ["PATCH /projects/{project_id}"],
+    updateCard: ["PATCH /projects/columns/cards/{card_id}"],
+    updateColumn: ["PATCH /projects/columns/{column_id}"]
+  },
+  pulls: {
+    checkIfMerged: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/merge"],
+    create: ["POST /repos/{owner}/{repo}/pulls"],
+    createReplyForReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies"
+    ],
+    createReview: ["POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews"],
+    createReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/comments"
+    ],
+    deletePendingReview: [
+      "DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    deleteReviewComment: [
+      "DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}"
+    ],
+    dismissReview: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals"
+    ],
+    get: ["GET /repos/{owner}/{repo}/pulls/{pull_number}"],
+    getReview: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    getReviewComment: ["GET /repos/{owner}/{repo}/pulls/comments/{comment_id}"],
+    list: ["GET /repos/{owner}/{repo}/pulls"],
+    listCommentsForReview: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments"
+    ],
+    listCommits: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/commits"],
+    listFiles: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/files"],
+    listRequestedReviewers: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    listReviewComments: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments"
+    ],
+    listReviewCommentsForRepo: ["GET /repos/{owner}/{repo}/pulls/comments"],
+    listReviews: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews"],
+    merge: ["PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge"],
+    removeRequestedReviewers: [
+      "DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    requestReviewers: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    submitReview: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events"
+    ],
+    update: ["PATCH /repos/{owner}/{repo}/pulls/{pull_number}"],
+    updateBranch: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch"
+    ],
+    updateReview: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    updateReviewComment: [
+      "PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}"
+    ]
+  },
+  rateLimit: { get: ["GET /rate_limit"] },
+  reactions: {
+    createForCommitComment: [
+      "POST /repos/{owner}/{repo}/comments/{comment_id}/reactions"
+    ],
+    createForIssue: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/reactions"
+    ],
+    createForIssueComment: [
+      "POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions"
+    ],
+    createForPullRequestReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions"
+    ],
+    createForRelease: [
+      "POST /repos/{owner}/{repo}/releases/{release_id}/reactions"
+    ],
+    createForTeamDiscussionCommentInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions"
+    ],
+    createForTeamDiscussionInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions"
+    ],
+    deleteForCommitComment: [
+      "DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForIssue: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}"
+    ],
+    deleteForIssueComment: [
+      "DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForPullRequestComment: [
+      "DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForRelease: [
+      "DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}"
+    ],
+    deleteForTeamDiscussion: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions/{reaction_id}"
+    ],
+    deleteForTeamDiscussionComment: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions/{reaction_id}"
+    ],
+    listForCommitComment: [
+      "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions"
+    ],
+    listForIssue: ["GET /repos/{owner}/{repo}/issues/{issue_number}/reactions"],
+    listForIssueComment: [
+      "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions"
+    ],
+    listForPullRequestReviewComment: [
+      "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions"
+    ],
+    listForRelease: [
+      "GET /repos/{owner}/{repo}/releases/{release_id}/reactions"
+    ],
+    listForTeamDiscussionCommentInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions"
+    ],
+    listForTeamDiscussionInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions"
+    ]
+  },
+  repos: {
+    acceptInvitation: [
+      "PATCH /user/repository_invitations/{invitation_id}",
+      {},
+      { renamed: ["repos", "acceptInvitationForAuthenticatedUser"] }
+    ],
+    acceptInvitationForAuthenticatedUser: [
+      "PATCH /user/repository_invitations/{invitation_id}"
+    ],
+    addAppAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    addCollaborator: ["PUT /repos/{owner}/{repo}/collaborators/{username}"],
+    addStatusCheckContexts: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    addTeamAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    addUserAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    cancelPagesDeployment: [
+      "POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel"
+    ],
+    checkAutomatedSecurityFixes: [
+      "GET /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    checkCollaborator: ["GET /repos/{owner}/{repo}/collaborators/{username}"],
+    checkPrivateVulnerabilityReporting: [
+      "GET /repos/{owner}/{repo}/private-vulnerability-reporting"
+    ],
+    checkVulnerabilityAlerts: [
+      "GET /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    codeownersErrors: ["GET /repos/{owner}/{repo}/codeowners/errors"],
+    compareCommits: ["GET /repos/{owner}/{repo}/compare/{base}...{head}"],
+    compareCommitsWithBasehead: [
+      "GET /repos/{owner}/{repo}/compare/{basehead}"
+    ],
+    createAutolink: ["POST /repos/{owner}/{repo}/autolinks"],
+    createCommitComment: [
+      "POST /repos/{owner}/{repo}/commits/{commit_sha}/comments"
+    ],
+    createCommitSignatureProtection: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    createCommitStatus: ["POST /repos/{owner}/{repo}/statuses/{sha}"],
+    createDeployKey: ["POST /repos/{owner}/{repo}/keys"],
+    createDeployment: ["POST /repos/{owner}/{repo}/deployments"],
+    createDeploymentBranchPolicy: [
+      "POST /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies"
+    ],
+    createDeploymentProtectionRule: [
+      "POST /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules"
+    ],
+    createDeploymentStatus: [
+      "POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses"
+    ],
+    createDispatchEvent: ["POST /repos/{owner}/{repo}/dispatches"],
+    createForAuthenticatedUser: ["POST /user/repos"],
+    createFork: ["POST /repos/{owner}/{repo}/forks"],
+    createInOrg: ["POST /orgs/{org}/repos"],
+    createOrUpdateCustomPropertiesValues: [
+      "PATCH /repos/{owner}/{repo}/properties/values"
+    ],
+    createOrUpdateEnvironment: [
+      "PUT /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    createOrUpdateFileContents: ["PUT /repos/{owner}/{repo}/contents/{path}"],
+    createOrgRuleset: ["POST /orgs/{org}/rulesets"],
+    createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployments"],
+    createPagesSite: ["POST /repos/{owner}/{repo}/pages"],
+    createRelease: ["POST /repos/{owner}/{repo}/releases"],
+    createRepoRuleset: ["POST /repos/{owner}/{repo}/rulesets"],
+    createTagProtection: ["POST /repos/{owner}/{repo}/tags/protection"],
+    createUsingTemplate: [
+      "POST /repos/{template_owner}/{template_repo}/generate"
+    ],
+    createWebhook: ["POST /repos/{owner}/{repo}/hooks"],
+    declineInvitation: [
+      "DELETE /user/repository_invitations/{invitation_id}",
+      {},
+      { renamed: ["repos", "declineInvitationForAuthenticatedUser"] }
+    ],
+    declineInvitationForAuthenticatedUser: [
+      "DELETE /user/repository_invitations/{invitation_id}"
+    ],
+    delete: ["DELETE /repos/{owner}/{repo}"],
+    deleteAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions"
+    ],
+    deleteAdminBranchProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    deleteAnEnvironment: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    deleteAutolink: ["DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}"],
+    deleteBranchProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    deleteCommitComment: ["DELETE /repos/{owner}/{repo}/comments/{comment_id}"],
+    deleteCommitSignatureProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    deleteDeployKey: ["DELETE /repos/{owner}/{repo}/keys/{key_id}"],
+    deleteDeployment: [
+      "DELETE /repos/{owner}/{repo}/deployments/{deployment_id}"
+    ],
+    deleteDeploymentBranchPolicy: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    deleteFile: ["DELETE /repos/{owner}/{repo}/contents/{path}"],
+    deleteInvitation: [
+      "DELETE /repos/{owner}/{repo}/invitations/{invitation_id}"
+    ],
+    deleteOrgRuleset: ["DELETE /orgs/{org}/rulesets/{ruleset_id}"],
+    deletePagesSite: ["DELETE /repos/{owner}/{repo}/pages"],
+    deletePullRequestReviewProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    deleteRelease: ["DELETE /repos/{owner}/{repo}/releases/{release_id}"],
+    deleteReleaseAsset: [
+      "DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}"
+    ],
+    deleteRepoRuleset: ["DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    deleteTagProtection: [
+      "DELETE /repos/{owner}/{repo}/tags/protection/{tag_protection_id}"
+    ],
+    deleteWebhook: ["DELETE /repos/{owner}/{repo}/hooks/{hook_id}"],
+    disableAutomatedSecurityFixes: [
+      "DELETE /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    disableDeploymentProtectionRule: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
+    ],
+    disablePrivateVulnerabilityReporting: [
+      "DELETE /repos/{owner}/{repo}/private-vulnerability-reporting"
+    ],
+    disableVulnerabilityAlerts: [
+      "DELETE /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    downloadArchive: [
+      "GET /repos/{owner}/{repo}/zipball/{ref}",
+      {},
+      { renamed: ["repos", "downloadZipballArchive"] }
+    ],
+    downloadTarballArchive: ["GET /repos/{owner}/{repo}/tarball/{ref}"],
+    downloadZipballArchive: ["GET /repos/{owner}/{repo}/zipball/{ref}"],
+    enableAutomatedSecurityFixes: [
+      "PUT /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    enablePrivateVulnerabilityReporting: [
+      "PUT /repos/{owner}/{repo}/private-vulnerability-reporting"
+    ],
+    enableVulnerabilityAlerts: [
+      "PUT /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    generateReleaseNotes: [
+      "POST /repos/{owner}/{repo}/releases/generate-notes"
+    ],
+    get: ["GET /repos/{owner}/{repo}"],
+    getAccessRestrictions: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions"
+    ],
+    getAdminBranchProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    getAllDeploymentProtectionRules: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules"
+    ],
+    getAllEnvironments: ["GET /repos/{owner}/{repo}/environments"],
+    getAllStatusCheckContexts: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts"
+    ],
+    getAllTopics: ["GET /repos/{owner}/{repo}/topics"],
+    getAppsWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps"
+    ],
+    getAutolink: ["GET /repos/{owner}/{repo}/autolinks/{autolink_id}"],
+    getBranch: ["GET /repos/{owner}/{repo}/branches/{branch}"],
+    getBranchProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    getBranchRules: ["GET /repos/{owner}/{repo}/rules/branches/{branch}"],
+    getClones: ["GET /repos/{owner}/{repo}/traffic/clones"],
+    getCodeFrequencyStats: ["GET /repos/{owner}/{repo}/stats/code_frequency"],
+    getCollaboratorPermissionLevel: [
+      "GET /repos/{owner}/{repo}/collaborators/{username}/permission"
+    ],
+    getCombinedStatusForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/status"],
+    getCommit: ["GET /repos/{owner}/{repo}/commits/{ref}"],
+    getCommitActivityStats: ["GET /repos/{owner}/{repo}/stats/commit_activity"],
+    getCommitComment: ["GET /repos/{owner}/{repo}/comments/{comment_id}"],
+    getCommitSignatureProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    getCommunityProfileMetrics: ["GET /repos/{owner}/{repo}/community/profile"],
+    getContent: ["GET /repos/{owner}/{repo}/contents/{path}"],
+    getContributorsStats: ["GET /repos/{owner}/{repo}/stats/contributors"],
+    getCustomDeploymentProtectionRule: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
+    ],
+    getCustomPropertiesValues: ["GET /repos/{owner}/{repo}/properties/values"],
+    getDeployKey: ["GET /repos/{owner}/{repo}/keys/{key_id}"],
+    getDeployment: ["GET /repos/{owner}/{repo}/deployments/{deployment_id}"],
+    getDeploymentBranchPolicy: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    getDeploymentStatus: [
+      "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}"
+    ],
+    getEnvironment: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    getLatestPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/latest"],
+    getLatestRelease: ["GET /repos/{owner}/{repo}/releases/latest"],
+    getOrgRuleSuite: ["GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}"],
+    getOrgRuleSuites: ["GET /orgs/{org}/rulesets/rule-suites"],
+    getOrgRuleset: ["GET /orgs/{org}/rulesets/{ruleset_id}"],
+    getOrgRulesets: ["GET /orgs/{org}/rulesets"],
+    getPages: ["GET /repos/{owner}/{repo}/pages"],
+    getPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/{build_id}"],
+    getPagesDeployment: [
+      "GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}"
+    ],
+    getPagesHealthCheck: ["GET /repos/{owner}/{repo}/pages/health"],
+    getParticipationStats: ["GET /repos/{owner}/{repo}/stats/participation"],
+    getPullRequestReviewProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    getPunchCardStats: ["GET /repos/{owner}/{repo}/stats/punch_card"],
+    getReadme: ["GET /repos/{owner}/{repo}/readme"],
+    getReadmeInDirectory: ["GET /repos/{owner}/{repo}/readme/{dir}"],
+    getRelease: ["GET /repos/{owner}/{repo}/releases/{release_id}"],
+    getReleaseAsset: ["GET /repos/{owner}/{repo}/releases/assets/{asset_id}"],
+    getReleaseByTag: ["GET /repos/{owner}/{repo}/releases/tags/{tag}"],
+    getRepoRuleSuite: [
+      "GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}"
+    ],
+    getRepoRuleSuites: ["GET /repos/{owner}/{repo}/rulesets/rule-suites"],
+    getRepoRuleset: ["GET /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    getRepoRulesets: ["GET /repos/{owner}/{repo}/rulesets"],
+    getStatusChecksProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    getTeamsWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams"
+    ],
+    getTopPaths: ["GET /repos/{owner}/{repo}/traffic/popular/paths"],
+    getTopReferrers: ["GET /repos/{owner}/{repo}/traffic/popular/referrers"],
+    getUsersWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users"
+    ],
+    getViews: ["GET /repos/{owner}/{repo}/traffic/views"],
+    getWebhook: ["GET /repos/{owner}/{repo}/hooks/{hook_id}"],
+    getWebhookConfigForRepo: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/config"
+    ],
+    getWebhookDelivery: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}"
+    ],
+    listActivities: ["GET /repos/{owner}/{repo}/activity"],
+    listAutolinks: ["GET /repos/{owner}/{repo}/autolinks"],
+    listBranches: ["GET /repos/{owner}/{repo}/branches"],
+    listBranchesForHeadCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head"
+    ],
+    listCollaborators: ["GET /repos/{owner}/{repo}/collaborators"],
+    listCommentsForCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments"
+    ],
+    listCommitCommentsForRepo: ["GET /repos/{owner}/{repo}/comments"],
+    listCommitStatusesForRef: [
+      "GET /repos/{owner}/{repo}/commits/{ref}/statuses"
+    ],
+    listCommits: ["GET /repos/{owner}/{repo}/commits"],
+    listContributors: ["GET /repos/{owner}/{repo}/contributors"],
+    listCustomDeploymentRuleIntegrations: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps"
+    ],
+    listDeployKeys: ["GET /repos/{owner}/{repo}/keys"],
+    listDeploymentBranchPolicies: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies"
+    ],
+    listDeploymentStatuses: [
+      "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses"
+    ],
+    listDeployments: ["GET /repos/{owner}/{repo}/deployments"],
+    listForAuthenticatedUser: ["GET /user/repos"],
+    listForOrg: ["GET /orgs/{org}/repos"],
+    listForUser: ["GET /users/{username}/repos"],
+    listForks: ["GET /repos/{owner}/{repo}/forks"],
+    listInvitations: ["GET /repos/{owner}/{repo}/invitations"],
+    listInvitationsForAuthenticatedUser: ["GET /user/repository_invitations"],
+    listLanguages: ["GET /repos/{owner}/{repo}/languages"],
+    listPagesBuilds: ["GET /repos/{owner}/{repo}/pages/builds"],
+    listPublic: ["GET /repositories"],
+    listPullRequestsAssociatedWithCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls"
+    ],
+    listReleaseAssets: [
+      "GET /repos/{owner}/{repo}/releases/{release_id}/assets"
+    ],
+    listReleases: ["GET /repos/{owner}/{repo}/releases"],
+    listTagProtection: ["GET /repos/{owner}/{repo}/tags/protection"],
+    listTags: ["GET /repos/{owner}/{repo}/tags"],
+    listTeams: ["GET /repos/{owner}/{repo}/teams"],
+    listWebhookDeliveries: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries"
+    ],
+    listWebhooks: ["GET /repos/{owner}/{repo}/hooks"],
+    merge: ["POST /repos/{owner}/{repo}/merges"],
+    mergeUpstream: ["POST /repos/{owner}/{repo}/merge-upstream"],
+    pingWebhook: ["POST /repos/{owner}/{repo}/hooks/{hook_id}/pings"],
+    redeliverWebhookDelivery: [
+      "POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+    ],
+    removeAppAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    removeCollaborator: [
+      "DELETE /repos/{owner}/{repo}/collaborators/{username}"
+    ],
+    removeStatusCheckContexts: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    removeStatusCheckProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    removeTeamAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    removeUserAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    renameBranch: ["POST /repos/{owner}/{repo}/branches/{branch}/rename"],
+    replaceAllTopics: ["PUT /repos/{owner}/{repo}/topics"],
+    requestPagesBuild: ["POST /repos/{owner}/{repo}/pages/builds"],
+    setAdminBranchProtection: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    setAppAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    setStatusCheckContexts: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    setTeamAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    setUserAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    testPushWebhook: ["POST /repos/{owner}/{repo}/hooks/{hook_id}/tests"],
+    transfer: ["POST /repos/{owner}/{repo}/transfer"],
+    update: ["PATCH /repos/{owner}/{repo}"],
+    updateBranchProtection: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    updateCommitComment: ["PATCH /repos/{owner}/{repo}/comments/{comment_id}"],
+    updateDeploymentBranchPolicy: [
+      "PUT /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    updateInformationAboutPagesSite: ["PUT /repos/{owner}/{repo}/pages"],
+    updateInvitation: [
+      "PATCH /repos/{owner}/{repo}/invitations/{invitation_id}"
+    ],
+    updateOrgRuleset: ["PUT /orgs/{org}/rulesets/{ruleset_id}"],
+    updatePullRequestReviewProtection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    updateRelease: ["PATCH /repos/{owner}/{repo}/releases/{release_id}"],
+    updateReleaseAsset: [
+      "PATCH /repos/{owner}/{repo}/releases/assets/{asset_id}"
+    ],
+    updateRepoRuleset: ["PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    updateStatusCheckPotection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks",
+      {},
+      { renamed: ["repos", "updateStatusCheckProtection"] }
+    ],
+    updateStatusCheckProtection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    updateWebhook: ["PATCH /repos/{owner}/{repo}/hooks/{hook_id}"],
+    updateWebhookConfigForRepo: [
+      "PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config"
+    ],
+    uploadReleaseAsset: [
+      "POST /repos/{owner}/{repo}/releases/{release_id}/assets{?name,label}",
+      { baseUrl: "https://uploads.github.com" }
+    ]
+  },
+  search: {
+    code: ["GET /search/code"],
+    commits: ["GET /search/commits"],
+    issuesAndPullRequests: ["GET /search/issues"],
+    labels: ["GET /search/labels"],
+    repos: ["GET /search/repositories"],
+    topics: ["GET /search/topics"],
+    users: ["GET /search/users"]
+  },
+  secretScanning: {
+    getAlert: [
+      "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
+    ],
+    listAlertsForEnterprise: [
+      "GET /enterprises/{enterprise}/secret-scanning/alerts"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/secret-scanning/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/secret-scanning/alerts"],
+    listLocationsForAlert: [
+      "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations"
+    ],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
+    ]
+  },
+  securityAdvisories: {
+    createFork: [
+      "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks"
+    ],
+    createPrivateVulnerabilityReport: [
+      "POST /repos/{owner}/{repo}/security-advisories/reports"
+    ],
+    createRepositoryAdvisory: [
+      "POST /repos/{owner}/{repo}/security-advisories"
+    ],
+    createRepositoryAdvisoryCveRequest: [
+      "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve"
+    ],
+    getGlobalAdvisory: ["GET /advisories/{ghsa_id}"],
+    getRepositoryAdvisory: [
+      "GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}"
+    ],
+    listGlobalAdvisories: ["GET /advisories"],
+    listOrgRepositoryAdvisories: ["GET /orgs/{org}/security-advisories"],
+    listRepositoryAdvisories: ["GET /repos/{owner}/{repo}/security-advisories"],
+    updateRepositoryAdvisory: [
+      "PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}"
+    ]
+  },
+  teams: {
+    addOrUpdateMembershipForUserInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    addOrUpdateProjectPermissionsInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    addOrUpdateRepoPermissionsInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    checkPermissionsForProjectInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    checkPermissionsForRepoInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    create: ["POST /orgs/{org}/teams"],
+    createDiscussionCommentInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments"
+    ],
+    createDiscussionInOrg: ["POST /orgs/{org}/teams/{team_slug}/discussions"],
+    deleteDiscussionCommentInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    deleteDiscussionInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    deleteInOrg: ["DELETE /orgs/{org}/teams/{team_slug}"],
+    getByName: ["GET /orgs/{org}/teams/{team_slug}"],
+    getDiscussionCommentInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    getDiscussionInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    getMembershipForUserInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    list: ["GET /orgs/{org}/teams"],
+    listChildInOrg: ["GET /orgs/{org}/teams/{team_slug}/teams"],
+    listDiscussionCommentsInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments"
+    ],
+    listDiscussionsInOrg: ["GET /orgs/{org}/teams/{team_slug}/discussions"],
+    listForAuthenticatedUser: ["GET /user/teams"],
+    listMembersInOrg: ["GET /orgs/{org}/teams/{team_slug}/members"],
+    listPendingInvitationsInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/invitations"
+    ],
+    listProjectsInOrg: ["GET /orgs/{org}/teams/{team_slug}/projects"],
+    listReposInOrg: ["GET /orgs/{org}/teams/{team_slug}/repos"],
+    removeMembershipForUserInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    removeProjectInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    removeRepoInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    updateDiscussionCommentInOrg: [
+      "PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    updateDiscussionInOrg: [
+      "PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    updateInOrg: ["PATCH /orgs/{org}/teams/{team_slug}"]
+  },
+  users: {
+    addEmailForAuthenticated: [
+      "POST /user/emails",
+      {},
+      { renamed: ["users", "addEmailForAuthenticatedUser"] }
+    ],
+    addEmailForAuthenticatedUser: ["POST /user/emails"],
+    addSocialAccountForAuthenticatedUser: ["POST /user/social_accounts"],
+    block: ["PUT /user/blocks/{username}"],
+    checkBlocked: ["GET /user/blocks/{username}"],
+    checkFollowingForUser: ["GET /users/{username}/following/{target_user}"],
+    checkPersonIsFollowedByAuthenticated: ["GET /user/following/{username}"],
+    createGpgKeyForAuthenticated: [
+      "POST /user/gpg_keys",
+      {},
+      { renamed: ["users", "createGpgKeyForAuthenticatedUser"] }
+    ],
+    createGpgKeyForAuthenticatedUser: ["POST /user/gpg_keys"],
+    createPublicSshKeyForAuthenticated: [
+      "POST /user/keys",
+      {},
+      { renamed: ["users", "createPublicSshKeyForAuthenticatedUser"] }
+    ],
+    createPublicSshKeyForAuthenticatedUser: ["POST /user/keys"],
+    createSshSigningKeyForAuthenticatedUser: ["POST /user/ssh_signing_keys"],
+    deleteEmailForAuthenticated: [
+      "DELETE /user/emails",
+      {},
+      { renamed: ["users", "deleteEmailForAuthenticatedUser"] }
+    ],
+    deleteEmailForAuthenticatedUser: ["DELETE /user/emails"],
+    deleteGpgKeyForAuthenticated: [
+      "DELETE /user/gpg_keys/{gpg_key_id}",
+      {},
+      { renamed: ["users", "deleteGpgKeyForAuthenticatedUser"] }
+    ],
+    deleteGpgKeyForAuthenticatedUser: ["DELETE /user/gpg_keys/{gpg_key_id}"],
+    deletePublicSshKeyForAuthenticated: [
+      "DELETE /user/keys/{key_id}",
+      {},
+      { renamed: ["users", "deletePublicSshKeyForAuthenticatedUser"] }
+    ],
+    deletePublicSshKeyForAuthenticatedUser: ["DELETE /user/keys/{key_id}"],
+    deleteSocialAccountForAuthenticatedUser: ["DELETE /user/social_accounts"],
+    deleteSshSigningKeyForAuthenticatedUser: [
+      "DELETE /user/ssh_signing_keys/{ssh_signing_key_id}"
+    ],
+    follow: ["PUT /user/following/{username}"],
+    getAuthenticated: ["GET /user"],
+    getByUsername: ["GET /users/{username}"],
+    getContextForUser: ["GET /users/{username}/hovercard"],
+    getGpgKeyForAuthenticated: [
+      "GET /user/gpg_keys/{gpg_key_id}",
+      {},
+      { renamed: ["users", "getGpgKeyForAuthenticatedUser"] }
+    ],
+    getGpgKeyForAuthenticatedUser: ["GET /user/gpg_keys/{gpg_key_id}"],
+    getPublicSshKeyForAuthenticated: [
+      "GET /user/keys/{key_id}",
+      {},
+      { renamed: ["users", "getPublicSshKeyForAuthenticatedUser"] }
+    ],
+    getPublicSshKeyForAuthenticatedUser: ["GET /user/keys/{key_id}"],
+    getSshSigningKeyForAuthenticatedUser: [
+      "GET /user/ssh_signing_keys/{ssh_signing_key_id}"
+    ],
+    list: ["GET /users"],
+    listBlockedByAuthenticated: [
+      "GET /user/blocks",
+      {},
+      { renamed: ["users", "listBlockedByAuthenticatedUser"] }
+    ],
+    listBlockedByAuthenticatedUser: ["GET /user/blocks"],
+    listEmailsForAuthenticated: [
+      "GET /user/emails",
+      {},
+      { renamed: ["users", "listEmailsForAuthenticatedUser"] }
+    ],
+    listEmailsForAuthenticatedUser: ["GET /user/emails"],
+    listFollowedByAuthenticated: [
+      "GET /user/following",
+      {},
+      { renamed: ["users", "listFollowedByAuthenticatedUser"] }
+    ],
+    listFollowedByAuthenticatedUser: ["GET /user/following"],
+    listFollowersForAuthenticatedUser: ["GET /user/followers"],
+    listFollowersForUser: ["GET /users/{username}/followers"],
+    listFollowingForUser: ["GET /users/{username}/following"],
+    listGpgKeysForAuthenticated: [
+      "GET /user/gpg_keys",
+      {},
+      { renamed: ["users", "listGpgKeysForAuthenticatedUser"] }
+    ],
+    listGpgKeysForAuthenticatedUser: ["GET /user/gpg_keys"],
+    listGpgKeysForUser: ["GET /users/{username}/gpg_keys"],
+    listPublicEmailsForAuthenticated: [
+      "GET /user/public_emails",
+      {},
+      { renamed: ["users", "listPublicEmailsForAuthenticatedUser"] }
+    ],
+    listPublicEmailsForAuthenticatedUser: ["GET /user/public_emails"],
+    listPublicKeysForUser: ["GET /users/{username}/keys"],
+    listPublicSshKeysForAuthenticated: [
+      "GET /user/keys",
+      {},
+      { renamed: ["users", "listPublicSshKeysForAuthenticatedUser"] }
+    ],
+    listPublicSshKeysForAuthenticatedUser: ["GET /user/keys"],
+    listSocialAccountsForAuthenticatedUser: ["GET /user/social_accounts"],
+    listSocialAccountsForUser: ["GET /users/{username}/social_accounts"],
+    listSshSigningKeysForAuthenticatedUser: ["GET /user/ssh_signing_keys"],
+    listSshSigningKeysForUser: ["GET /users/{username}/ssh_signing_keys"],
+    setPrimaryEmailVisibilityForAuthenticated: [
+      "PATCH /user/email/visibility",
+      {},
+      { renamed: ["users", "setPrimaryEmailVisibilityForAuthenticatedUser"] }
+    ],
+    setPrimaryEmailVisibilityForAuthenticatedUser: [
+      "PATCH /user/email/visibility"
+    ],
+    unblock: ["DELETE /user/blocks/{username}"],
+    unfollow: ["DELETE /user/following/{username}"],
+    updateAuthenticated: ["PATCH /user"]
+  }
+};
+var endpoints_default2 = Endpoints2;
+
+// node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/endpoints-to-methods.js
+var endpointMethodsMap2 = /* @__PURE__ */ new Map();
+for (const [scope, endpoints] of Object.entries(endpoints_default2)) {
+  for (const [methodName, endpoint3] of Object.entries(endpoints)) {
+    const [route, defaults2, decorations] = endpoint3;
+    const [method, url] = route.split(/ /);
+    const endpointDefaults = Object.assign(
+      {
+        method,
+        url
+      },
+      defaults2
+    );
+    if (!endpointMethodsMap2.has(scope)) {
+      endpointMethodsMap2.set(scope, /* @__PURE__ */ new Map());
+    }
+    endpointMethodsMap2.get(scope).set(methodName, {
+      scope,
+      methodName,
+      endpointDefaults,
+      decorations
+    });
+  }
+}
+var handler2 = {
+  has({ scope }, methodName) {
+    return endpointMethodsMap2.get(scope).has(methodName);
+  },
+  getOwnPropertyDescriptor(target, methodName) {
+    return {
+      value: this.get(target, methodName),
+      // ensures method is in the cache
+      configurable: true,
+      writable: true,
+      enumerable: true
+    };
+  },
+  defineProperty(target, methodName, descriptor) {
+    Object.defineProperty(target.cache, methodName, descriptor);
+    return true;
+  },
+  deleteProperty(target, methodName) {
+    delete target.cache[methodName];
+    return true;
+  },
+  ownKeys({ scope }) {
+    return [...endpointMethodsMap2.get(scope).keys()];
+  },
+  set(target, methodName, value) {
+    return target.cache[methodName] = value;
+  },
+  get({ octokit, scope, cache: cache2 }, methodName) {
+    if (cache2[methodName]) {
+      return cache2[methodName];
+    }
+    const method = endpointMethodsMap2.get(scope).get(methodName);
+    if (!method) {
+      return void 0;
+    }
+    const { endpointDefaults, decorations } = method;
+    if (decorations) {
+      cache2[methodName] = decorate2(
+        octokit,
+        scope,
+        methodName,
+        endpointDefaults,
+        decorations
+      );
+    } else {
+      cache2[methodName] = octokit.request.defaults(endpointDefaults);
+    }
+    return cache2[methodName];
+  }
+};
+function endpointsToMethods2(octokit) {
+  const newMethods = {};
+  for (const scope of endpointMethodsMap2.keys()) {
+    newMethods[scope] = new Proxy({ octokit, scope, cache: {} }, handler2);
+  }
+  return newMethods;
+}
+function decorate2(octokit, scope, methodName, defaults2, decorations) {
+  const requestWithDefaults = octokit.request.defaults(defaults2);
+  function withDecorations(...args) {
+    let options = requestWithDefaults.endpoint.merge(...args);
+    if (decorations.mapToData) {
+      options = Object.assign({}, options, {
+        data: options[decorations.mapToData],
+        [decorations.mapToData]: void 0
+      });
+      return requestWithDefaults(options);
+    }
+    if (decorations.renamed) {
+      const [newScope, newMethodName] = decorations.renamed;
+      octokit.log.warn(
+        `octokit.${scope}.${methodName}() has been renamed to octokit.${newScope}.${newMethodName}()`
+      );
+    }
+    if (decorations.deprecated) {
+      octokit.log.warn(decorations.deprecated);
+    }
+    if (decorations.renamedParameters) {
+      const options2 = requestWithDefaults.endpoint.merge(...args);
+      for (const [name, alias] of Object.entries(
+        decorations.renamedParameters
+      )) {
+        if (name in options2) {
+          octokit.log.warn(
+            `"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`
+          );
+          if (!(alias in options2)) {
+            options2[alias] = options2[name];
+          }
+          delete options2[name];
+        }
+      }
+      return requestWithDefaults(options2);
+    }
+    return requestWithDefaults(...args);
+  }
+  return Object.assign(withDecorations, requestWithDefaults);
+}
+
+// node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
+function restEndpointMethods2(octokit) {
+  const api = endpointsToMethods2(octokit);
+  return {
+    rest: api
+  };
+}
+restEndpointMethods2.VERSION = VERSION12;
+function legacyRestEndpointMethods2(octokit) {
+  const api = endpointsToMethods2(octokit);
+  return {
+    ...api,
+    rest: api
+  };
+}
+legacyRestEndpointMethods2.VERSION = VERSION12;
+
+// node_modules/@octokit/action/dist-bundle/index.js
+var import_undici = __toESM(require_undici2(), 1);
+var VERSION13 = "0.0.0-development";
+var DEFAULTS3 = {
+  authStrategy: createActionAuth,
   baseUrl: getApiBaseUrl(),
-  userAgent: `octokit-action.js/${VERSION7}`
+  userAgent: `octokit-action.js/${VERSION13}`
 };
 function getProxyAgent() {
   const httpProxy = process.env["HTTP_PROXY"] || process.env["http_proxy"];
@@ -55791,24 +60297,23 @@ var customFetch = async function(url, opts) {
     ...opts
   });
 };
-var Octokit2 = Octokit.plugin(
-  paginateRest,
-  legacyRestEndpointMethods
-).defaults(function buildDefaults(options) {
-  return {
-    ...DEFAULTS2,
-    ...options,
-    request: {
-      fetch: customFetch,
-      ...options.request
-    }
-  };
-});
+var Octokit3 = Octokit2.plugin(paginateRest2, legacyRestEndpointMethods2).defaults(
+  function buildDefaults(options) {
+    return {
+      ...DEFAULTS3,
+      ...options,
+      request: {
+        fetch: customFetch,
+        ...options.request
+      }
+    };
+  }
+);
 function getApiBaseUrl() {
   return process.env["GITHUB_API_URL"] || "https://api.github.com";
 }
 
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/errors.js
+// node_modules/@octokit/plugin-paginate-graphql/dist-bundle/index.js
 var generateMessage = (path2, cursorValue) => `The cursor at "${path2.join(
   ","
 )}" did not change its value "${cursorValue}" after a page transition. Please make sure your that your query is set up correctly.`;
@@ -55817,11 +60322,11 @@ var MissingCursorChange = class extends Error {
     super(generateMessage(pageInfo.pathInQuery, cursorValue));
     this.pageInfo = pageInfo;
     this.cursorValue = cursorValue;
-    this.name = "MissingCursorChangeError";
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
   }
+  name = "MissingCursorChangeError";
 };
 var MissingPageInfo = class extends Error {
   constructor(response) {
@@ -55833,14 +60338,12 @@ var MissingPageInfo = class extends Error {
       )}`
     );
     this.response = response;
-    this.name = "MissingPageInfo";
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
   }
+  name = "MissingPageInfo";
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/object-helpers.js
 var isObject = (value) => Object.prototype.toString.call(value) === "[object Object]";
 function findPaginatedResourcePath(responseData) {
   const paginatedResourcePath = deepFindPathToProperty(
@@ -55856,10 +60359,10 @@ var deepFindPathToProperty = (object, searchProp, path2 = []) => {
   for (const key of Object.keys(object)) {
     const currentPath = [...path2, key];
     const currentValue = object[key];
-    if (currentValue.hasOwnProperty(searchProp)) {
-      return currentPath;
-    }
     if (isObject(currentValue)) {
+      if (currentValue.hasOwnProperty(searchProp)) {
+        return currentPath;
+      }
       const result = deepFindPathToProperty(
         currentValue,
         searchProp,
@@ -55885,8 +60388,6 @@ var set = (object, path2, mutator) => {
     parent[lastProperty] = mutator;
   }
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/extract-page-info.js
 var extractPageInfos = (responseData) => {
   const pageInfoPath = findPaginatedResourcePath(responseData);
   return {
@@ -55894,15 +60395,11 @@ var extractPageInfos = (responseData) => {
     pageInfo: get(responseData, [...pageInfoPath, "pageInfo"])
   };
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/page-info.js
 var isForwardSearch = (givenPageInfo) => {
   return givenPageInfo.hasOwnProperty("hasNextPage");
 };
 var getCursorFrom = (pageInfo) => isForwardSearch(pageInfo) ? pageInfo.endCursor : pageInfo.startCursor;
 var hasAnotherPage = (pageInfo) => isForwardSearch(pageInfo) ? pageInfo.hasNextPage : pageInfo.hasPreviousPage;
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/iterator.js
 var createIterator = (octokit) => {
   return (query, initialParameters = {}) => {
     let nextPageExists = true;
@@ -55910,8 +60407,7 @@ var createIterator = (octokit) => {
     return {
       [Symbol.asyncIterator]: () => ({
         async next() {
-          if (!nextPageExists)
-            return { done: true, value: {} };
+          if (!nextPageExists) return { done: true, value: {} };
           const response = await octokit.graphql(
             query,
             parameters
@@ -55932,8 +60428,6 @@ var createIterator = (octokit) => {
     };
   };
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/merge-responses.js
 var mergeResponses = (response1, response2) => {
   if (Object.keys(response1).length === 0) {
     return Object.assign(response1, response2);
@@ -55957,13 +60451,11 @@ var mergeResponses = (response1, response2) => {
   set(response1, pageInfoPath, get(response2, pageInfoPath));
   return response1;
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/paginate.js
 var createPaginate = (octokit) => {
-  const iterator2 = createIterator(octokit);
+  const iterator3 = createIterator(octokit);
   return async (query, initialParameters = {}) => {
     let mergedResponse = {};
-    for await (const response of iterator2(
+    for await (const response of iterator3(
       query,
       initialParameters
     )) {
@@ -55972,10 +60464,7 @@ var createPaginate = (octokit) => {
     return mergedResponse;
   };
 };
-
-// node_modules/@octokit/plugin-paginate-graphql/dist-src/index.js
-function paginateGraphql(octokit) {
-  octokit.graphql;
+function paginateGraphQL(octokit) {
   return {
     graphql: Object.assign(octokit.graphql, {
       paginate: Object.assign(createPaginate(octokit), {
@@ -56285,7 +60774,7 @@ var getNonSpecFormDataBoundary = (0, import_node_util.deprecate)(
   "form-data doesn't follow the spec and requires special treatment. Use alternative package",
   "https://github.com/node-fetch/node-fetch/issues/1167"
 );
-var extractContentType = (body, request2) => {
+var extractContentType = (body, request3) => {
   if (body === null) {
     return null;
   }
@@ -56302,7 +60791,7 @@ var extractContentType = (body, request2) => {
     return null;
   }
   if (body instanceof FormData) {
-    return `multipart/form-data; boundary=${request2[INTERNALS].boundary}`;
+    return `multipart/form-data; boundary=${request3[INTERNALS].boundary}`;
   }
   if (body && typeof body.getBoundary === "function") {
     return `multipart/form-data;boundary=${getNonSpecFormDataBoundary(body)}`;
@@ -56312,8 +60801,8 @@ var extractContentType = (body, request2) => {
   }
   return "text/plain;charset=UTF-8";
 };
-var getTotalBytes = (request2) => {
-  const { body } = request2[INTERNALS];
+var getTotalBytes = (request3) => {
+  const { body } = request3[INTERNALS];
   if (body === null) {
     return 0;
   }
@@ -56729,15 +61218,15 @@ function isUrlPotentiallyTrustworthy(url) {
   }
   return isOriginPotentiallyTrustworthy(url);
 }
-function determineRequestsReferrer(request2, { referrerURLCallback, referrerOriginCallback } = {}) {
-  if (request2.referrer === "no-referrer" || request2.referrerPolicy === "") {
+function determineRequestsReferrer(request3, { referrerURLCallback, referrerOriginCallback } = {}) {
+  if (request3.referrer === "no-referrer" || request3.referrerPolicy === "") {
     return null;
   }
-  const policy = request2.referrerPolicy;
-  if (request2.referrer === "about:client") {
+  const policy = request3.referrerPolicy;
+  if (request3.referrer === "about:client") {
     return "no-referrer";
   }
-  const referrerSource = request2.referrer;
+  const referrerSource = request3.referrer;
   let referrerURL = stripURLForUseAsAReferrer(referrerSource);
   let referrerOrigin = stripURLForUseAsAReferrer(referrerSource, true);
   if (referrerURL.toString().length > 4096) {
@@ -56749,7 +61238,7 @@ function determineRequestsReferrer(request2, { referrerURLCallback, referrerOrig
   if (referrerOriginCallback) {
     referrerOrigin = referrerOriginCallback(referrerOrigin);
   }
-  const currentURL = new URL(request2.url);
+  const currentURL = new URL(request3.url);
   switch (policy) {
     case "no-referrer":
       return "no-referrer";
@@ -56936,18 +61425,18 @@ Object.defineProperties(Request.prototype, {
   referrer: { enumerable: true },
   referrerPolicy: { enumerable: true }
 });
-var getNodeRequestOptions = (request2) => {
-  const { parsedURL } = request2[INTERNALS3];
-  const headers = new Headers(request2[INTERNALS3].headers);
+var getNodeRequestOptions = (request3) => {
+  const { parsedURL } = request3[INTERNALS3];
+  const headers = new Headers(request3[INTERNALS3].headers);
   if (!headers.has("Accept")) {
     headers.set("Accept", "*/*");
   }
   let contentLengthValue = null;
-  if (request2.body === null && /^(post|put)$/i.test(request2.method)) {
+  if (request3.body === null && /^(post|put)$/i.test(request3.method)) {
     contentLengthValue = "0";
   }
-  if (request2.body !== null) {
-    const totalBytes = getTotalBytes(request2);
+  if (request3.body !== null) {
+    const totalBytes = getTotalBytes(request3);
     if (typeof totalBytes === "number" && !Number.isNaN(totalBytes)) {
       contentLengthValue = String(totalBytes);
     }
@@ -56955,24 +61444,24 @@ var getNodeRequestOptions = (request2) => {
   if (contentLengthValue) {
     headers.set("Content-Length", contentLengthValue);
   }
-  if (request2.referrerPolicy === "") {
-    request2.referrerPolicy = DEFAULT_REFERRER_POLICY;
+  if (request3.referrerPolicy === "") {
+    request3.referrerPolicy = DEFAULT_REFERRER_POLICY;
   }
-  if (request2.referrer && request2.referrer !== "no-referrer") {
-    request2[INTERNALS3].referrer = determineRequestsReferrer(request2);
+  if (request3.referrer && request3.referrer !== "no-referrer") {
+    request3[INTERNALS3].referrer = determineRequestsReferrer(request3);
   } else {
-    request2[INTERNALS3].referrer = "no-referrer";
+    request3[INTERNALS3].referrer = "no-referrer";
   }
-  if (request2[INTERNALS3].referrer instanceof URL) {
-    headers.set("Referer", request2.referrer);
+  if (request3[INTERNALS3].referrer instanceof URL) {
+    headers.set("Referer", request3.referrer);
   }
   if (!headers.has("User-Agent")) {
     headers.set("User-Agent", "node-fetch");
   }
-  if (request2.compress && !headers.has("Accept-Encoding")) {
+  if (request3.compress && !headers.has("Accept-Encoding")) {
     headers.set("Accept-Encoding", "gzip, deflate, br");
   }
-  let { agent } = request2;
+  let { agent } = request3;
   if (typeof agent === "function") {
     agent = agent(parsedURL);
   }
@@ -56981,9 +61470,9 @@ var getNodeRequestOptions = (request2) => {
     // Overwrite search to retain trailing ? (issue #776)
     path: parsedURL.pathname + search,
     // The following options are not expressed in the URL
-    method: request2.method,
+    method: request3.method,
     headers: headers[Symbol.for("nodejs.util.inspect.custom")](),
-    insecureHTTPParser: request2.insecureHTTPParser,
+    insecureHTTPParser: request3.insecureHTTPParser,
     agent
   };
   return {
@@ -57006,25 +61495,25 @@ init_from();
 var supportedSchemas = /* @__PURE__ */ new Set(["data:", "http:", "https:"]);
 async function fetch(url, options_) {
   return new Promise((resolve, reject) => {
-    const request2 = new Request(url, options_);
-    const { parsedURL, options } = getNodeRequestOptions(request2);
+    const request3 = new Request(url, options_);
+    const { parsedURL, options } = getNodeRequestOptions(request3);
     if (!supportedSchemas.has(parsedURL.protocol)) {
       throw new TypeError(`node-fetch cannot load ${url}. URL scheme "${parsedURL.protocol.replace(/:$/, "")}" is not supported.`);
     }
     if (parsedURL.protocol === "data:") {
-      const data = dist_default(request2.url);
+      const data = dist_default(request3.url);
       const response2 = new Response(data, { headers: { "Content-Type": data.typeFull } });
       resolve(response2);
       return;
     }
     const send = (parsedURL.protocol === "https:" ? import_node_https.default : import_node_http2.default).request;
-    const { signal } = request2;
+    const { signal } = request3;
     let response = null;
     const abort = () => {
       const error = new AbortError("The operation was aborted.");
       reject(error);
-      if (request2.body && request2.body instanceof import_node_stream2.default.Readable) {
-        request2.body.destroy(error);
+      if (request3.body && request3.body instanceof import_node_stream2.default.Readable) {
+        request3.body.destroy(error);
       }
       if (!response || !response.body) {
         return;
@@ -57050,7 +61539,7 @@ async function fetch(url, options_) {
       }
     };
     request_.on("error", (error) => {
-      reject(new FetchError(`request to ${request2.url} failed, reason: ${error.message}`, "system", error));
+      reject(new FetchError(`request to ${request3.url} failed, reason: ${error.message}`, "system", error));
       finalize();
     });
     fixResponseChunkedTransferBadEnding(request_, (error) => {
@@ -57080,17 +61569,17 @@ async function fetch(url, options_) {
         const location = headers.get("Location");
         let locationURL = null;
         try {
-          locationURL = location === null ? null : new URL(location, request2.url);
+          locationURL = location === null ? null : new URL(location, request3.url);
         } catch {
-          if (request2.redirect !== "manual") {
+          if (request3.redirect !== "manual") {
             reject(new FetchError(`uri requested responds with an invalid redirect URL: ${location}`, "invalid-redirect"));
             finalize();
             return;
           }
         }
-        switch (request2.redirect) {
+        switch (request3.redirect) {
           case "error":
-            reject(new FetchError(`uri requested responds with a redirect, redirect mode is set to error: ${request2.url}`, "no-redirect"));
+            reject(new FetchError(`uri requested responds with a redirect, redirect mode is set to error: ${request3.url}`, "no-redirect"));
             finalize();
             return;
           case "manual":
@@ -57099,35 +61588,35 @@ async function fetch(url, options_) {
             if (locationURL === null) {
               break;
             }
-            if (request2.counter >= request2.follow) {
-              reject(new FetchError(`maximum redirect reached at: ${request2.url}`, "max-redirect"));
+            if (request3.counter >= request3.follow) {
+              reject(new FetchError(`maximum redirect reached at: ${request3.url}`, "max-redirect"));
               finalize();
               return;
             }
             const requestOptions = {
-              headers: new Headers(request2.headers),
-              follow: request2.follow,
-              counter: request2.counter + 1,
-              agent: request2.agent,
-              compress: request2.compress,
-              method: request2.method,
-              body: clone(request2),
-              signal: request2.signal,
-              size: request2.size,
-              referrer: request2.referrer,
-              referrerPolicy: request2.referrerPolicy
+              headers: new Headers(request3.headers),
+              follow: request3.follow,
+              counter: request3.counter + 1,
+              agent: request3.agent,
+              compress: request3.compress,
+              method: request3.method,
+              body: clone(request3),
+              signal: request3.signal,
+              size: request3.size,
+              referrer: request3.referrer,
+              referrerPolicy: request3.referrerPolicy
             };
-            if (!isDomainOrSubdomain(request2.url, locationURL) || !isSameProtocol(request2.url, locationURL)) {
+            if (!isDomainOrSubdomain(request3.url, locationURL) || !isSameProtocol(request3.url, locationURL)) {
               for (const name of ["authorization", "www-authenticate", "cookie", "cookie2"]) {
                 requestOptions.headers.delete(name);
               }
             }
-            if (response_.statusCode !== 303 && request2.body && options_.body instanceof import_node_stream2.default.Readable) {
+            if (response_.statusCode !== 303 && request3.body && options_.body instanceof import_node_stream2.default.Readable) {
               reject(new FetchError("Cannot follow redirect with body being a readable stream", "unsupported-redirect"));
               finalize();
               return;
             }
-            if (response_.statusCode === 303 || (response_.statusCode === 301 || response_.statusCode === 302) && request2.method === "POST") {
+            if (response_.statusCode === 303 || (response_.statusCode === 301 || response_.statusCode === 302) && request3.method === "POST") {
               requestOptions.method = "GET";
               requestOptions.body = void 0;
               requestOptions.headers.delete("content-length");
@@ -57141,7 +61630,7 @@ async function fetch(url, options_) {
             return;
           }
           default:
-            return reject(new TypeError(`Redirect option '${request2.redirect}' is not a valid value of RequestRedirect`));
+            return reject(new TypeError(`Redirect option '${request3.redirect}' is not a valid value of RequestRedirect`));
         }
       }
       if (signal) {
@@ -57158,16 +61647,16 @@ async function fetch(url, options_) {
         response_.on("aborted", abortAndFinalize);
       }
       const responseOptions = {
-        url: request2.url,
+        url: request3.url,
         status: response_.statusCode,
         statusText: response_.statusMessage,
         headers,
-        size: request2.size,
-        counter: request2.counter,
-        highWaterMark: request2.highWaterMark
+        size: request3.size,
+        counter: request3.counter,
+        highWaterMark: request3.highWaterMark
       };
       const codings = headers.get("Content-Encoding");
-      if (!request2.compress || request2.method === "HEAD" || codings === null || response_.statusCode === 204 || response_.statusCode === 304) {
+      if (!request3.compress || request3.method === "HEAD" || codings === null || response_.statusCode === 204 || response_.statusCode === 304) {
         response = new Response(body, responseOptions);
         resolve(response);
         return;
@@ -57230,19 +61719,19 @@ async function fetch(url, options_) {
       response = new Response(body, responseOptions);
       resolve(response);
     });
-    writeToStream(request_, request2).catch(reject);
+    writeToStream(request_, request3).catch(reject);
   });
 }
-function fixResponseChunkedTransferBadEnding(request2, errorCallback) {
+function fixResponseChunkedTransferBadEnding(request3, errorCallback) {
   const LAST_CHUNK = import_node_buffer2.Buffer.from("0\r\n\r\n");
   let isChunkedTransfer = false;
   let properLastChunkReceived = false;
   let previousChunk;
-  request2.on("response", (response) => {
+  request3.on("response", (response) => {
     const { headers } = response;
     isChunkedTransfer = headers["transfer-encoding"] === "chunked" && !headers["content-length"];
   });
-  request2.on("socket", (socket) => {
+  request3.on("socket", (socket) => {
     const onSocketClose = () => {
       if (isChunkedTransfer && !properLastChunkReceived) {
         const error = new Error("Premature close");
@@ -57259,7 +61748,7 @@ function fixResponseChunkedTransferBadEnding(request2, errorCallback) {
     };
     socket.prependListener("close", onSocketClose);
     socket.on("data", onData);
-    request2.on("close", () => {
+    request3.on("close", () => {
       socket.removeListener("close", onSocketClose);
       socket.removeListener("data", onData);
     });
@@ -57268,7 +61757,7 @@ function fixResponseChunkedTransferBadEnding(request2, errorCallback) {
 
 // src/get-octokit.ts
 var getOctokit = ({ ghToken }) => {
-  const OctokitWithPlugins = Octokit2.plugin(paginateGraphql);
+  const OctokitWithPlugins = Octokit3.plugin(paginateGraphQL);
   return new OctokitWithPlugins({ auth: ghToken, request: { fetch } });
 };
 

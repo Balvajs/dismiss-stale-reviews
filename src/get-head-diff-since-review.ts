@@ -36,7 +36,7 @@ export const getHeadDiffSinceReview = async ({
   // find if files from intersectionFiles changed between head and review associated commit relatively to base branch
   await Promise.all(
     intersectionFiles.map(async file => {
-      const fileRenameMatch = file.match(fileRenameRegex)
+      const fileRenameMatch = fileRenameRegex.exec(file)
 
       if (fileRenameMatch) {
         const path1 = normalize(

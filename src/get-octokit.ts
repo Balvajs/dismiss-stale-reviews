@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/action'
-import { paginateGraphql } from '@octokit/plugin-paginate-graphql'
+import { paginateGraphQL } from '@octokit/plugin-paginate-graphql'
 import fetch from 'node-fetch'
 
 export const getOctokit = ({ ghToken }: { ghToken: string }) => {
-  const OctokitWithPlugins = Octokit.plugin(paginateGraphql)
+  const OctokitWithPlugins = Octokit.plugin(paginateGraphQL)
   return new OctokitWithPlugins({ auth: ghToken, request: { fetch } })
 }
