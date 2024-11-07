@@ -9070,7 +9070,7 @@ var require_readable = __commonJS({
     var kBody = Symbol("kBody");
     var kAbort = Symbol("abort");
     var kContentType = Symbol("kContentType");
-    var noop4 = () => {
+    var noop3 = () => {
     };
     module2.exports = class BodyReadable extends Readable {
       constructor({
@@ -9192,7 +9192,7 @@ var require_readable = __commonJS({
         return new Promise((resolve, reject) => {
           const signalListenerCleanup = signal ? util.addAbortListener(signal, () => {
             this.destroy();
-          }) : noop4;
+          }) : noop3;
           this.on("close", function() {
             signalListenerCleanup();
             if (signal && signal.aborted) {
@@ -9200,7 +9200,7 @@ var require_readable = __commonJS({
             } else {
               resolve(null);
             }
-          }).on("error", noop4).on("data", function(chunk) {
+          }).on("error", noop3).on("data", function(chunk) {
             limit -= chunk.length;
             if (limit <= 0) {
               this.destroy();
@@ -19803,7 +19803,7 @@ var require_connect2 = __commonJS({
     var util = require_util8();
     var { InvalidArgumentError, ConnectTimeoutError } = require_errors2();
     var timers = require_timers2();
-    function noop4() {
+    function noop3() {
     }
     var tls;
     var SessionCache;
@@ -19928,7 +19928,7 @@ var require_connect2 = __commonJS({
     }
     var setupConnectTimeout = process.platform === "win32" ? (socketWeakRef, opts) => {
       if (!opts.timeout) {
-        return noop4;
+        return noop3;
       }
       let s1 = null;
       let s2 = null;
@@ -19944,7 +19944,7 @@ var require_connect2 = __commonJS({
       };
     } : (socketWeakRef, opts) => {
       if (!opts.timeout) {
-        return noop4;
+        return noop3;
       }
       let s1 = null;
       const fastTimer = timers.setFastTimeout(() => {
@@ -22721,7 +22721,7 @@ var require_body2 = __commonJS({
     var { serializeAMimeType } = require_data_url();
     var { multipartFormDataParser } = require_formdata_parser();
     var textEncoder = new TextEncoder();
-    function noop4() {
+    function noop3() {
     }
     var hasFinalizationRegistry = globalThis.FinalizationRegistry && process.version.indexOf("v18") !== 0;
     var streamRegistry;
@@ -22729,7 +22729,7 @@ var require_body2 = __commonJS({
       streamRegistry = new FinalizationRegistry((weakRef) => {
         const stream = weakRef.deref();
         if (stream && !stream.locked && !isDisturbed(stream) && !isErrored(stream)) {
-          stream.cancel("Response object has been garbage collected").catch(noop4);
+          stream.cancel("Response object has been garbage collected").catch(noop3);
         }
       });
     }
@@ -24799,7 +24799,7 @@ var require_client2 = __commonJS({
     var connectH2 = require_client_h2();
     var deprecatedInterceptorWarned = false;
     var kClosedResolve = Symbol("kClosedResolve");
-    var noop4 = () => {
+    var noop3 = () => {
     };
     function getPipelining(client) {
       return client[kPipelining] ?? client[kHTTPContext]?.defaultPipelining ?? 1;
@@ -25089,14 +25089,14 @@ var require_client2 = __commonJS({
           });
         });
         if (client.destroyed) {
-          util.destroy(socket.on("error", noop4), new ClientDestroyedError());
+          util.destroy(socket.on("error", noop3), new ClientDestroyedError());
           return;
         }
         assert(socket);
         try {
           client[kHTTPContext] = socket.alpnProtocol === "h2" ? await connectH2(client, socket) : await connectH1(client, socket);
         } catch (err) {
-          socket.destroy().on("error", noop4);
+          socket.destroy().on("error", noop3);
           throw err;
         }
         client[kConnecting] = false;
@@ -25828,7 +25828,7 @@ var require_proxy_agent2 = __commonJS({
     function defaultFactory(origin, opts) {
       return new Pool(origin, opts);
     }
-    var noop4 = () => {
+    var noop3 = () => {
     };
     var ProxyAgent2 = class extends DispatcherBase {
       constructor(opts) {
@@ -25879,7 +25879,7 @@ var require_proxy_agent2 = __commonJS({
                 servername: this[kProxyTls]?.servername || proxyHostname
               });
               if (statusCode !== 200) {
-                socket.on("error", noop4).destroy();
+                socket.on("error", noop3).destroy();
                 callback(new RequestAbortedError(`Proxy response (${statusCode}) !== 200 when HTTP Tunneling`));
               }
               if (opts2.protocol !== "https:") {
@@ -26444,7 +26444,7 @@ var require_readable2 = __commonJS({
     var kAbort = Symbol("kAbort");
     var kContentType = Symbol("kContentType");
     var kContentLength = Symbol("kContentLength");
-    var noop4 = () => {
+    var noop3 = () => {
     };
     var BodyReadable = class extends Readable {
       constructor({
@@ -26576,7 +26576,7 @@ var require_readable2 = __commonJS({
             } else {
               resolve(null);
             }
-          }).on("error", noop4).on("data", function(chunk) {
+          }).on("error", noop3).on("data", function(chunk) {
             limit -= chunk.length;
             if (limit <= 0) {
               this.destroy();
@@ -35646,18 +35646,18 @@ var init_register = __esm({
 });
 
 // node_modules/before-after-hook/lib/add.js
-function addHook(state, kind, name, hook4) {
-  const orig = hook4;
+function addHook(state, kind, name, hook2) {
+  const orig = hook2;
   if (!state.registry[name]) {
     state.registry[name] = [];
   }
   if (kind === "before") {
-    hook4 = (method, options) => {
+    hook2 = (method, options) => {
       return Promise.resolve().then(orig.bind(null, options)).then(method.bind(null, options));
     };
   }
   if (kind === "after") {
-    hook4 = (method, options) => {
+    hook2 = (method, options) => {
       let result;
       return Promise.resolve().then(method.bind(null, options)).then((result_) => {
         result = result_;
@@ -35668,14 +35668,14 @@ function addHook(state, kind, name, hook4) {
     };
   }
   if (kind === "error") {
-    hook4 = (method, options) => {
+    hook2 = (method, options) => {
       return Promise.resolve().then(method.bind(null, options)).catch((error) => {
         return orig(error, options);
       });
     };
   }
   state.registry[name].push({
-    hook: hook4,
+    hook: hook2,
     orig
   });
 }
@@ -35705,16 +35705,16 @@ var init_remove = __esm({
 });
 
 // node_modules/before-after-hook/index.js
-function bindApi(hook4, state, name) {
+function bindApi(hook2, state, name) {
   const removeHookRef = bindable(removeHook, null).apply(
     null,
     name ? [state, name] : [state]
   );
-  hook4.api = { remove: removeHookRef };
-  hook4.remove = removeHookRef;
+  hook2.api = { remove: removeHookRef };
+  hook2.remove = removeHookRef;
   ["before", "error", "after", "wrap"].forEach((kind) => {
     const args = name ? [state, kind, name] : [state, kind];
-    hook4[kind] = hook4.api[kind] = bindable(addHook, null).apply(null, args);
+    hook2[kind] = hook2.api[kind] = bindable(addHook, null).apply(null, args);
   });
 }
 function Singular() {
@@ -35730,9 +35730,9 @@ function Collection() {
   const state = {
     registry: {}
   };
-  const hook4 = register.bind(null, state);
-  bindApi(hook4, state);
-  return hook4;
+  const hook2 = register.bind(null, state);
+  bindApi(hook2, state);
+  return hook2;
 }
 var bind, bindable, before_after_hook_default;
 var init_before_after_hook = __esm({
@@ -36072,10 +36072,10 @@ var init_dist_bundle = __esm({
   }
 });
 
-// node_modules/@octokit/request/node_modules/@octokit/request-error/dist-src/index.js
+// node_modules/@octokit/request-error/dist-src/index.js
 var RequestError;
 var init_dist_src = __esm({
-  "node_modules/@octokit/request/node_modules/@octokit/request-error/dist-src/index.js"() {
+  "node_modules/@octokit/request-error/dist-src/index.js"() {
     "use strict";
     RequestError = class extends Error {
       name;
@@ -36545,13 +36545,13 @@ var init_dist_src2 = __esm({
         return NewOctokit;
       }
       constructor(options = {}) {
-        const hook4 = new before_after_hook_default.Collection();
+        const hook2 = new before_after_hook_default.Collection();
         const requestDefaults = {
           baseUrl: request.endpoint.DEFAULTS.baseUrl,
           headers: {},
           request: Object.assign({}, options.request, {
             // @ts-ignore internal usage only, no need to type
-            hook: hook4.bind(null, "request")
+            hook: hook2.bind(null, "request")
           }),
           mediaType: {
             previews: [],
@@ -36579,20 +36579,20 @@ var init_dist_src2 = __esm({
           },
           options.log
         );
-        this.hook = hook4;
+        this.hook = hook2;
         if (!options.authStrategy) {
           if (!options.auth) {
             this.auth = async () => ({
               type: "unauthenticated"
             });
           } else {
-            const auth4 = createTokenAuth(options.auth);
-            hook4.wrap("request", auth4.hook);
-            this.auth = auth4;
+            const auth2 = createTokenAuth(options.auth);
+            hook2.wrap("request", auth2.hook);
+            this.auth = auth2;
           }
         } else {
           const { authStrategy, ...otherOptions } = options;
-          const auth4 = authStrategy(
+          const auth2 = authStrategy(
             Object.assign(
               {
                 request: this.request,
@@ -36608,8 +36608,8 @@ var init_dist_src2 = __esm({
               options.auth
             )
           );
-          hook4.wrap("request", auth4.hook);
-          this.auth = auth4;
+          hook2.wrap("request", auth2.hook);
+          this.auth = auth2;
         }
         const classConstructor = this.constructor;
         for (let i2 = 0; i2 < classConstructor.plugins.length; ++i2) {
@@ -39204,9 +39204,9 @@ var require_utils4 = __commonJS({
     exports2.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports2.defaults);
     function getOctokitOptions(token, options) {
       const opts = Object.assign({}, options || {});
-      const auth4 = Utils.getAuthString(token, opts);
-      if (auth4) {
-        opts.auth = auth4;
+      const auth2 = Utils.getAuthString(token, opts);
+      if (auth2) {
+        opts.auth = auth2;
       }
       return opts;
     }
@@ -45977,13 +45977,13 @@ var require_ponyfill_es2018 = __commonJS({
       typeof exports2 === "object" && typeof module2 !== "undefined" ? factory(exports2) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.WebStreamsPolyfill = {}));
     })(exports2, function(exports3) {
       "use strict";
-      function noop4() {
+      function noop3() {
         return void 0;
       }
       function typeIsObject(x2) {
         return typeof x2 === "object" && x2 !== null || typeof x2 === "function";
       }
-      const rethrowAssertionErrorRejection = noop4;
+      const rethrowAssertionErrorRejection = noop3;
       function setFunctionName(fn, name) {
         try {
           Object.defineProperty(fn, "name", {
@@ -48612,7 +48612,7 @@ var require_ponyfill_es2018 = __commonJS({
               return newPromise((resolveRead, rejectRead) => {
                 ReadableStreamDefaultReaderRead(reader, {
                   _chunkSteps: (chunk) => {
-                    currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop4);
+                    currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop3);
                     resolveRead(false);
                   },
                   _closeSteps: () => resolveRead(true),
@@ -49293,7 +49293,7 @@ var require_ponyfill_es2018 = __commonJS({
       function ReadableStreamFromIterable(asyncIterable) {
         let stream;
         const iteratorRecord = GetIterator(asyncIterable, "async");
-        const startAlgorithm = noop4;
+        const startAlgorithm = noop3;
         function pullAlgorithm() {
           let nextResult;
           try {
@@ -49345,7 +49345,7 @@ var require_ponyfill_es2018 = __commonJS({
       }
       function ReadableStreamFromDefaultReader(reader) {
         let stream;
-        const startAlgorithm = noop4;
+        const startAlgorithm = noop3;
         function pullAlgorithm() {
           let readPromise;
           try {
@@ -49664,7 +49664,7 @@ var require_ponyfill_es2018 = __commonJS({
           });
         }
         const sourceCancelPromise = stream._readableStreamController[CancelSteps](reason);
-        return transformPromiseWith(sourceCancelPromise, noop4);
+        return transformPromiseWith(sourceCancelPromise, noop3);
       }
       function ReadableStreamClose(stream) {
         stream._state = "closed";
@@ -50762,7 +50762,7 @@ async function toFormData(Body2, ct) {
   parser4.end();
   return formData;
 }
-var s, S, f2, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop3, MultipartParser;
+var s, S, f2, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop2, MultipartParser;
 var init_multipart_parser = __esm({
   "node_modules/node-fetch/src/utils/multipart-parser.js"() {
     "use strict";
@@ -50794,7 +50794,7 @@ var init_multipart_parser = __esm({
     A = 97;
     Z = 122;
     lower = (c) => c | 32;
-    noop3 = () => {
+    noop2 = () => {
     };
     MultipartParser = class {
       /**
@@ -50803,13 +50803,13 @@ var init_multipart_parser = __esm({
       constructor(boundary) {
         this.index = 0;
         this.flags = 0;
-        this.onHeaderEnd = noop3;
-        this.onHeaderField = noop3;
-        this.onHeadersEnd = noop3;
-        this.onHeaderValue = noop3;
-        this.onPartBegin = noop3;
-        this.onPartData = noop3;
-        this.onPartEnd = noop3;
+        this.onHeaderEnd = noop2;
+        this.onHeaderField = noop2;
+        this.onHeadersEnd = noop2;
+        this.onHeaderValue = noop2;
+        this.onPartBegin = noop2;
+        this.onPartData = noop2;
+        this.onPartEnd = noop2;
         this.boundaryChars = {};
         boundary = "\r\n--" + boundary;
         const ui8a = new Uint8Array(boundary.length);
@@ -57793,338 +57793,11 @@ var getPrData = async ({
   };
 };
 
-// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/index.js
-init_universal_user_agent();
-
-// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/register.js
-function register2(state, name, method, options) {
-  if (typeof method !== "function") {
-    throw new Error("method for before hook must be a function");
-  }
-  if (!options) {
-    options = {};
-  }
-  if (Array.isArray(name)) {
-    return name.reverse().reduce((callback, name2) => {
-      return register2.bind(null, state, name2, callback, options);
-    }, method)();
-  }
-  return Promise.resolve().then(() => {
-    if (!state.registry[name]) {
-      return method(options);
-    }
-    return state.registry[name].reduce((method2, registered) => {
-      return registered.hook.bind(null, method2, options);
-    }, method)();
-  });
-}
-
-// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/add.js
-function addHook2(state, kind, name, hook4) {
-  const orig = hook4;
-  if (!state.registry[name]) {
-    state.registry[name] = [];
-  }
-  if (kind === "before") {
-    hook4 = (method, options) => {
-      return Promise.resolve().then(orig.bind(null, options)).then(method.bind(null, options));
-    };
-  }
-  if (kind === "after") {
-    hook4 = (method, options) => {
-      let result;
-      return Promise.resolve().then(method.bind(null, options)).then((result_) => {
-        result = result_;
-        return orig(result, options);
-      }).then(() => {
-        return result;
-      });
-    };
-  }
-  if (kind === "error") {
-    hook4 = (method, options) => {
-      return Promise.resolve().then(method.bind(null, options)).catch((error) => {
-        return orig(error, options);
-      });
-    };
-  }
-  state.registry[name].push({
-    hook: hook4,
-    orig
-  });
-}
-
-// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/lib/remove.js
-function removeHook2(state, name, method) {
-  if (!state.registry[name]) {
-    return;
-  }
-  const index = state.registry[name].map((registered) => {
-    return registered.orig;
-  }).indexOf(method);
-  if (index === -1) {
-    return;
-  }
-  state.registry[name].splice(index, 1);
-}
-
-// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/before-after-hook/index.js
-var bind2 = Function.bind;
-var bindable2 = bind2.bind(bind2);
-function bindApi2(hook4, state, name) {
-  const removeHookRef = bindable2(removeHook2, null).apply(
-    null,
-    name ? [state, name] : [state]
-  );
-  hook4.api = { remove: removeHookRef };
-  hook4.remove = removeHookRef;
-  ["before", "error", "after", "wrap"].forEach((kind) => {
-    const args = name ? [state, kind, name] : [state, kind];
-    hook4[kind] = hook4.api[kind] = bindable2(addHook2, null).apply(null, args);
-  });
-}
-function Singular2() {
-  const singularHookName = Symbol("Singular");
-  const singularHookState = {
-    registry: {}
-  };
-  const singularHook = register2.bind(null, singularHookState, singularHookName);
-  bindApi2(singularHook, singularHookState, singularHookName);
-  return singularHook;
-}
-function Collection2() {
-  const state = {
-    registry: {}
-  };
-  const hook4 = register2.bind(null, state);
-  bindApi2(hook4, state);
-  return hook4;
-}
-var before_after_hook_default2 = { Singular: Singular2, Collection: Collection2 };
-
-// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/index.js
-init_dist_bundle2();
-init_dist_bundle3();
-
-// node_modules/@octokit/action/node_modules/@octokit/core/node_modules/@octokit/auth-token/dist-bundle/index.js
-var REGEX_IS_INSTALLATION_LEGACY2 = /^v1\./;
-var REGEX_IS_INSTALLATION2 = /^ghs_/;
-var REGEX_IS_USER_TO_SERVER2 = /^ghu_/;
-async function auth2(token) {
-  const isApp = token.split(/\./).length === 3;
-  const isInstallation = REGEX_IS_INSTALLATION_LEGACY2.test(token) || REGEX_IS_INSTALLATION2.test(token);
-  const isUserToServer = REGEX_IS_USER_TO_SERVER2.test(token);
-  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
-  return {
-    type: "token",
-    token,
-    tokenType
-  };
-}
-function withAuthorizationPrefix2(token) {
-  if (token.split(/\./).length === 3) {
-    return `bearer ${token}`;
-  }
-  return `token ${token}`;
-}
-async function hook2(token, request2, route, parameters) {
-  const endpoint2 = request2.endpoint.merge(
-    route,
-    parameters
-  );
-  endpoint2.headers.authorization = withAuthorizationPrefix2(token);
-  return request2(endpoint2);
-}
-var createTokenAuth3 = function createTokenAuth22(token) {
-  if (!token) {
-    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
-  }
-  if (typeof token !== "string") {
-    throw new Error(
-      "[@octokit/auth-token] Token passed to createTokenAuth is not a string"
-    );
-  }
-  token = token.replace(/^(token|bearer) +/i, "");
-  return Object.assign(auth2.bind(null, token), {
-    hook: hook2.bind(null, token)
-  });
-};
-
-// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/version.js
-var VERSION7 = "6.1.2";
-
-// node_modules/@octokit/action/node_modules/@octokit/core/dist-src/index.js
-var noop2 = () => {
-};
-var consoleWarn2 = console.warn.bind(console);
-var consoleError2 = console.error.bind(console);
-var userAgentTrail2 = `octokit-core.js/${VERSION7} ${getUserAgent()}`;
-var Octokit2 = class {
-  static VERSION = VERSION7;
-  static defaults(defaults2) {
-    const OctokitWithDefaults = class extends this {
-      constructor(...args) {
-        const options = args[0] || {};
-        if (typeof defaults2 === "function") {
-          super(defaults2(options));
-          return;
-        }
-        super(
-          Object.assign(
-            {},
-            defaults2,
-            options,
-            options.userAgent && defaults2.userAgent ? {
-              userAgent: `${options.userAgent} ${defaults2.userAgent}`
-            } : null
-          )
-        );
-      }
-    };
-    return OctokitWithDefaults;
-  }
-  static plugins = [];
-  /**
-   * Attach a plugin (or many) to your Octokit instance.
-   *
-   * @example
-   * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
-   */
-  static plugin(...newPlugins) {
-    const currentPlugins = this.plugins;
-    const NewOctokit = class extends this {
-      static plugins = currentPlugins.concat(
-        newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
-      );
-    };
-    return NewOctokit;
-  }
-  constructor(options = {}) {
-    const hook4 = new before_after_hook_default2.Collection();
-    const requestDefaults = {
-      baseUrl: request.endpoint.DEFAULTS.baseUrl,
-      headers: {},
-      request: Object.assign({}, options.request, {
-        // @ts-ignore internal usage only, no need to type
-        hook: hook4.bind(null, "request")
-      }),
-      mediaType: {
-        previews: [],
-        format: ""
-      }
-    };
-    requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail2}` : userAgentTrail2;
-    if (options.baseUrl) {
-      requestDefaults.baseUrl = options.baseUrl;
-    }
-    if (options.previews) {
-      requestDefaults.mediaType.previews = options.previews;
-    }
-    if (options.timeZone) {
-      requestDefaults.headers["time-zone"] = options.timeZone;
-    }
-    this.request = request.defaults(requestDefaults);
-    this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
-    this.log = Object.assign(
-      {
-        debug: noop2,
-        info: noop2,
-        warn: consoleWarn2,
-        error: consoleError2
-      },
-      options.log
-    );
-    this.hook = hook4;
-    if (!options.authStrategy) {
-      if (!options.auth) {
-        this.auth = async () => ({
-          type: "unauthenticated"
-        });
-      } else {
-        const auth4 = createTokenAuth3(options.auth);
-        hook4.wrap("request", auth4.hook);
-        this.auth = auth4;
-      }
-    } else {
-      const { authStrategy, ...otherOptions } = options;
-      const auth4 = authStrategy(
-        Object.assign(
-          {
-            request: this.request,
-            log: this.log,
-            // we pass the current octokit instance as well as its constructor options
-            // to allow for authentication strategies that return a new octokit instance
-            // that shares the same internal state as the current one. The original
-            // requirement for this was the "event-octokit" authentication strategy
-            // of https://github.com/probot/octokit-auth-probot.
-            octokit: this,
-            octokitOptions: otherOptions
-          },
-          options.auth
-        )
-      );
-      hook4.wrap("request", auth4.hook);
-      this.auth = auth4;
-    }
-    const classConstructor = this.constructor;
-    for (let i2 = 0; i2 < classConstructor.plugins.length; ++i2) {
-      Object.assign(this, classConstructor.plugins[i2](this, options));
-    }
-  }
-  // assigned during constructor
-  request;
-  graphql;
-  log;
-  hook;
-  // TODO: type `octokit.auth` based on passed options.authStrategy
-  auth;
-};
-
-// node_modules/@octokit/auth-action/node_modules/@octokit/auth-token/dist-bundle/index.js
-var REGEX_IS_INSTALLATION_LEGACY3 = /^v1\./;
-var REGEX_IS_INSTALLATION3 = /^ghs_/;
-var REGEX_IS_USER_TO_SERVER3 = /^ghu_/;
-async function auth3(token) {
-  const isApp = token.split(/\./).length === 3;
-  const isInstallation = REGEX_IS_INSTALLATION_LEGACY3.test(token) || REGEX_IS_INSTALLATION3.test(token);
-  const isUserToServer = REGEX_IS_USER_TO_SERVER3.test(token);
-  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
-  return {
-    type: "token",
-    token,
-    tokenType
-  };
-}
-function withAuthorizationPrefix3(token) {
-  if (token.split(/\./).length === 3) {
-    return `bearer ${token}`;
-  }
-  return `token ${token}`;
-}
-async function hook3(token, request2, route, parameters) {
-  const endpoint2 = request2.endpoint.merge(
-    route,
-    parameters
-  );
-  endpoint2.headers.authorization = withAuthorizationPrefix3(token);
-  return request2(endpoint2);
-}
-var createTokenAuth4 = function createTokenAuth23(token) {
-  if (!token) {
-    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
-  }
-  if (typeof token !== "string") {
-    throw new Error(
-      "[@octokit/auth-token] Token passed to createTokenAuth is not a string"
-    );
-  }
-  token = token.replace(/^(token|bearer) +/i, "");
-  return Object.assign(auth3.bind(null, token), {
-    hook: hook3.bind(null, token)
-  });
-};
+// node_modules/@octokit/action/dist-bundle/index.js
+init_dist_src2();
 
 // node_modules/@octokit/auth-action/dist-src/index.js
+init_dist_bundle4();
 var createActionAuth = function createActionAuth2() {
   if (!process.env.GITHUB_ACTION) {
     throw new Error(
@@ -58147,11 +57820,11 @@ var createActionAuth = function createActionAuth2() {
     );
   }
   const token = definitions.pop();
-  return createTokenAuth4(token);
+  return createTokenAuth(token);
 };
 
 // node_modules/@octokit/action/node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
-var VERSION8 = "0.0.0-development";
+var VERSION7 = "0.0.0-development";
 function normalizePaginatedListResponse2(response) {
   if (!response.data) {
     return {
@@ -58251,10 +57924,10 @@ function paginateRest2(octokit) {
     })
   };
 }
-paginateRest2.VERSION = VERSION8;
+paginateRest2.VERSION = VERSION7;
 
 // node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
-var VERSION9 = "13.2.6";
+var VERSION8 = "13.2.6";
 
 // node_modules/@octokit/action/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
 var Endpoints2 = {
@@ -60327,7 +60000,7 @@ function restEndpointMethods2(octokit) {
     rest: api
   };
 }
-restEndpointMethods2.VERSION = VERSION9;
+restEndpointMethods2.VERSION = VERSION8;
 function legacyRestEndpointMethods2(octokit) {
   const api = endpointsToMethods2(octokit);
   return {
@@ -60335,15 +60008,15 @@ function legacyRestEndpointMethods2(octokit) {
     rest: api
   };
 }
-legacyRestEndpointMethods2.VERSION = VERSION9;
+legacyRestEndpointMethods2.VERSION = VERSION8;
 
 // node_modules/@octokit/action/dist-bundle/index.js
 var import_undici = __toESM(require_undici2(), 1);
-var VERSION10 = "0.0.0-development";
+var VERSION9 = "0.0.0-development";
 var DEFAULTS2 = {
   authStrategy: createActionAuth,
   baseUrl: getApiBaseUrl(),
-  userAgent: `octokit-action.js/${VERSION10}`
+  userAgent: `octokit-action.js/${VERSION9}`
 };
 function getProxyAgent() {
   const httpProxy = process.env["HTTP_PROXY"] || process.env["http_proxy"];
@@ -60362,7 +60035,7 @@ var customFetch = async function(url, opts) {
     ...opts
   });
 };
-var Octokit3 = Octokit2.plugin(paginateRest2, legacyRestEndpointMethods2).defaults(
+var Octokit2 = Octokit.plugin(paginateRest2, legacyRestEndpointMethods2).defaults(
   function buildDefaults(options) {
     return {
       ...DEFAULTS2,
@@ -61822,7 +61495,7 @@ function fixResponseChunkedTransferBadEnding(request2, errorCallback) {
 
 // src/get-octokit.ts
 var getOctokit = ({ ghToken }) => {
-  const OctokitWithPlugins = Octokit3.plugin(paginateGraphQL);
+  const OctokitWithPlugins = Octokit2.plugin(paginateGraphQL);
   return new OctokitWithPlugins({ auth: ghToken, request: { fetch } });
 };
 
