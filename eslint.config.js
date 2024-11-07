@@ -1,18 +1,6 @@
 import tsEslint from 'typescript-eslint'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import stylistic from '@stylistic/eslint-plugin'
 import js from '@eslint/js'
-
-import { FlatCompat } from '@eslint/eslintrc'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-})
 
 const recommendedConfig = [
   {
@@ -21,7 +9,7 @@ const recommendedConfig = [
     languageOptions: {
       ...tsEslint.configs.base.languageOptions,
       parserOptions: {
-        EXPERIMENTAL_useProjectService: true,
+        projectService: true,
         sourceType: 'module',
       },
     },
@@ -49,13 +37,6 @@ export default [
   ...recommendedConfig,
   stylistic.configs['recommended-flat'],
   js.configs.recommended,
-  ...compat
-    .config({
-      extends: ['prettier'],
-    })
-    .map(config => ({
-      ...config,
-    })),
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
