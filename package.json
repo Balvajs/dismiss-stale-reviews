@@ -55,7 +55,7 @@
     "codeowners": "5.1.1",
     "dayjs": "1.11.13",
     "eslint": "9.14.0",
-    "graphql": "16.9.0",
+    "graphql": "16.10.0",
     "husky": "9.1.7",
     "jest": "29.7.0",
     "lint-staged": "15.2.11",
