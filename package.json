@@ -45,7 +45,7 @@
     "@octokit/plugin-paginate-graphql": "5.2.4",
     "@semantic-release/commit-analyzer": "13.0.0",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/release-notes-generator": "14.0.1",
+    "@semantic-release/release-notes-generator": "14.0.2",
     "@stylistic/eslint-plugin": "2.10.1",
     "@swc/core": "1.10.1",
     "@swc/jest": "0.2.37",
