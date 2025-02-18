@@ -22,7 +22,7 @@
     "actions"
   ],
   "engines": {
-    "node": "=20"
+    "node": "=22.11.0"
   },
   "packageManager": "bun@1.1.1",
   "type": "module",
