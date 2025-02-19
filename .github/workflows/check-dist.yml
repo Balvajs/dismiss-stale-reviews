@@ -24,7 +24,7 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@8f24390df009a496891208e5e36b8a1de1f45135 # v1
 
-      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+      - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
