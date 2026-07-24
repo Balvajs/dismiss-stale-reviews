@@ -2,13 +2,16 @@ name: 'build-test'
 on:
   pull_request:
 
+permissions:
+  contents: read # for checkout
+
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Set Node.js 20.x
+      - name: Set Node.js 24.x
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24.x
@@ -19,7 +22,7 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
 
@@ -27,14 +30,53 @@ jobs:
 
       - run: bun all
 
-  test: # make sure the action works on a clean machine without building
+  e2e: # run the built action against real fixture PRs and assert review states
+    # fork PRs have no access to the e2e secrets
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # to be able to checkout
-      pull-requests: write # to be able to remove stale reviews
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
 
-      - uses: ./
+      - name: Set Node.js 24.x
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build dist
+        run: bun run package
+
+      - name: Get token for the fixture repository
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.E2E_APP_CLIENT_ID }}
+          private-key: ${{ secrets.E2E_APP_PRIVATE_KEY }}
+          owner: balvajs-actions
+          repositories: dismiss-stale-reviews-e2e
+
+      - name: Run e2e scenarios
+        run: bun e2e/run-e2e.ts
+        env:
+          E2E_APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          E2E_REVIEWER_PAT: ${{ secrets.E2E_REVIEWER_PAT }}
+          E2E_REVIEWER2_PAT: ${{ secrets.E2E_REVIEWER2_PAT }}
+
+      - name: Clean up leftover fixtures
+        if: always() && steps.app-token.outputs.token
+        run: bun e2e/cleanup-run.ts
+        env:
+          E2E_APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          E2E_REVIEWER_PAT: ${{ secrets.E2E_REVIEWER_PAT }}
+          E2E_REVIEWER2_PAT: ${{ secrets.E2E_REVIEWER2_PAT }}
