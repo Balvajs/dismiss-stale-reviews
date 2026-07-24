@@ -3,7 +3,8 @@
 module.exports = (path, options) => {
   try {
     return options.defaultResolver(path, options)
-  } catch (error) {
+  }
+  catch {
     return options.defaultResolver(path, {
       ...options,
       conditions: ['import', 'node', 'default'],
