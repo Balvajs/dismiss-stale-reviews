@@ -58,7 +58,7 @@ export const getPrData = async ({
     } as GetPrDataQueryVariables,
   )
 
-  if (!pullRequest || pullRequest.__typename !== 'PullRequest') {
+  if (pullRequest?.__typename !== 'PullRequest') {
     throw new Error('The pull request could not be found!')
   }
 

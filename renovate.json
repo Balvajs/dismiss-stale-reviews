@@ -10,7 +10,17 @@
   "packageRules": [
     {
       "matchPackageNames": ["@types/node"],
-      "allowedVersions": "/^20\\..*$/"
+      "allowedVersions": "/^24\\..*$/"
+    },
+    {
+      "description": "keep the node version in mise.toml and engines in sync",
+      "matchDepNames": ["node"],
+      "groupName": "node"
+    },
+    {
+      "description": "keep the bun version in mise.toml and packageManager in sync",
+      "matchDepNames": ["bun"],
+      "groupName": "bun"
     },
     {
       "matchManagers": ["npm"],

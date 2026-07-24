@@ -1,13 +1,5 @@
 import type { Config } from 'jest'
 
-const esModules = [
-  'chalk',
-  'node-fetch',
-  'data-uri-to-buffer',
-  'fetch-blob',
-  'formdata-polyfill',
-].join('|')
-
 const config: Config = {
   clearMocks: true,
   moduleFileExtensions: ['js', 'ts'],
@@ -15,7 +7,9 @@ const config: Config = {
   transform: {
     '^.+\\.(t|j)s$': '@swc/jest',
   },
-  transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
+  // many dependencies (@actions/*, @octokit/*, chalk, ...) are ESM-only, transform everything
+  transformIgnorePatterns: [],
+  resolver: '<rootDir>/jest.resolver.cjs',
   verbose: true,
   testEnvironment: 'node',
 }

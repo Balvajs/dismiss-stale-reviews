@@ -3,11 +3,32 @@
  * This file is generated, don’t edit it manually. Run `bun generate` to re-generate.
  */
 
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] }
+/** Internal type. DO NOT USE DIRECTLY. */
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
+    }
 import * as Types from '../base-graphql-types.js'
 
-export type GetPrDataQueryVariables = Types.Exact<{
-  nodeId: Types.Scalars['ID']['input']
-  cursor: Types.InputMaybe<Types.Scalars['String']['input']>
+/** The possible states of a pull request review. */
+export type PullRequestReviewState =
+  /** A review allowing the pull request to merge. */
+  | 'APPROVED'
+  /** A review blocking the pull request from merging. */
+  | 'CHANGES_REQUESTED'
+  /** An informational review. */
+  | 'COMMENTED'
+  /** A review that has been dismissed. */
+  | 'DISMISSED'
+  /** A review that has not yet been submitted. */
+  | 'PENDING'
+
+export type GetPrDataQueryVariables = Exact<{
+  nodeId: string | number
+  cursor: string | null | undefined
 }>
 
 export type GetPrDataQuery = {
@@ -46,6 +67,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'ConvertedToDiscussionEvent' }
     | { readonly __typename: 'CrossReferencedEvent' }
     | { readonly __typename: 'DemilestonedEvent' }
+    | { readonly __typename: 'DependencyGraphManifest' }
     | { readonly __typename: 'DeployKey' }
     | { readonly __typename: 'DeployedEvent' }
     | { readonly __typename: 'Deployment' }
@@ -62,6 +84,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'Enterprise' }
     | { readonly __typename: 'EnterpriseAdministratorInvitation' }
     | { readonly __typename: 'EnterpriseIdentityProvider' }
+    | { readonly __typename: 'EnterpriseMemberInvitation' }
     | { readonly __typename: 'EnterpriseRepositoryInfo' }
     | { readonly __typename: 'EnterpriseServerInstallation' }
     | { readonly __typename: 'EnterpriseServerUserAccount' }
@@ -142,7 +165,10 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'PackageFile' }
     | { readonly __typename: 'PackageTag' }
     | { readonly __typename: 'PackageVersion' }
+    | { readonly __typename: 'ParentIssueAddedEvent' }
+    | { readonly __typename: 'ParentIssueRemovedEvent' }
     | { readonly __typename: 'PinnedDiscussion' }
+    | { readonly __typename: 'PinnedEnvironment' }
     | { readonly __typename: 'PinnedEvent' }
     | { readonly __typename: 'PinnedIssue' }
     | { readonly __typename: 'PrivateRepositoryForkingDisableAuditEntry' }
@@ -160,6 +186,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'ProjectV2ItemFieldTextValue' }
     | { readonly __typename: 'ProjectV2IterationField' }
     | { readonly __typename: 'ProjectV2SingleSelectField' }
+    | { readonly __typename: 'ProjectV2StatusUpdate' }
     | { readonly __typename: 'ProjectV2View' }
     | { readonly __typename: 'ProjectV2Workflow' }
     | { readonly __typename: 'PublicKey' }
@@ -207,6 +234,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'PullRequestThread' }
     | { readonly __typename: 'Push' }
     | { readonly __typename: 'PushAllowance' }
+    | { readonly __typename: 'Query' }
     | { readonly __typename: 'Reaction' }
     | { readonly __typename: 'ReadyForReviewEvent' }
     | { readonly __typename: 'Ref' }
@@ -262,6 +290,8 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'Status' }
     | { readonly __typename: 'StatusCheckRollup' }
     | { readonly __typename: 'StatusContext' }
+    | { readonly __typename: 'SubIssueAddedEvent' }
+    | { readonly __typename: 'SubIssueRemovedEvent' }
     | { readonly __typename: 'SubscribedEvent' }
     | { readonly __typename: 'Tag' }
     | { readonly __typename: 'Team' }
@@ -285,6 +315,7 @@ export type GetPrDataQuery = {
     | { readonly __typename: 'UserBlockedEvent' }
     | { readonly __typename: 'UserContentEdit' }
     | { readonly __typename: 'UserList' }
+    | { readonly __typename: 'UserNamespaceRepository' }
     | { readonly __typename: 'UserStatus' }
     | { readonly __typename: 'VerifiableDomain' }
     | { readonly __typename: 'Workflow' }

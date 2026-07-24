@@ -23,5 +23,5 @@ inputs:
     default: dismiss-all
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/main.cjs'
