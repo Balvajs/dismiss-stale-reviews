@@ -38,63 +38,63 @@ export const groupReviewsByCommit = async <TReview extends Review>({
       reviews: typeof latestReviews
     }
   > = {}
-  await Promise.all(
-    latestReviews.map(async review => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      const reviewCommit = review.commit?.oid!
-      const basehead = `${reviewCommit}..${headCommit}`
+  // reviews must be processed sequentially — parallel processing raced on the
+  // group existence check and dropped reviews sharing the same commit
+  for (const review of latestReviews) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    const reviewCommit = review.commit?.oid!
+    const basehead = `${reviewCommit}..${headCommit}`
 
-      // if group exists, just push the review to the group
-      if (groupedReviewsByCommit[basehead]) {
-        groupedReviewsByCommit[basehead].reviews.push(review)
+    // if group exists, just push the review to the group
+    if (groupedReviewsByCommit[basehead]) {
+      groupedReviewsByCommit[basehead].reviews.push(review)
 
-        return
-      }
+      continue
+    }
 
-      try {
-        // check if commit exists in history
-        await git.catFile(['commit', reviewCommit])
-      } catch {
-        // if commit doesn't exist, make related approve ready for dismiss and continue
-        console.log(
-          '\n',
-          chalk.yellow(
-            `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
-          ),
-          '\n',
-          chalk.yellow(`Approval by ${review.author?.login} will be removed.`),
-          '\n',
+    try {
+      // check if commit exists in history
+      await git.catFile(['commit', reviewCommit])
+    } catch {
+      // if commit doesn't exist, make related approve ready for dismiss and continue
+      console.log(
+        '\n',
+        chalk.yellow(
+          `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
+        ),
+        '\n',
+        chalk.yellow(`Approval by ${review.author?.login} will be removed.`),
+        '\n',
+      )
+      reviewsWithoutHistory.push(review)
+
+      continue
+    }
+
+    const filesChangedByHeadCommit = await getHeadDiffSinceReview({
+      reviewAssociatedSha: reviewCommit,
+      headSha: headCommit,
+      baseBranch,
+    })
+
+    debug(`Changes in ${basehead}:\n${filesChangedByHeadCommit.join('\n')}`)
+
+    groupedReviewsByCommit[basehead] = {
+      reviews: [review],
+      // filter out ignored files
+      filesChangedByHeadCommit: filesChangedByHeadCommit
+        .filter(
+          filename =>
+            !ignoreFiles?.some(pattern =>
+              minimatch(filename, pattern, { dot: true }),
+            ),
         )
-        reviewsWithoutHistory.push(review)
-
-        return
-      }
-
-      const filesChangedByHeadCommit = await getHeadDiffSinceReview({
-        reviewAssociatedSha: reviewCommit,
-        headSha: headCommit,
-        baseBranch,
-      })
-
-      debug(`Changes in ${basehead}:\n${filesChangedByHeadCommit.join('\n')}`)
-
-      groupedReviewsByCommit[basehead] = {
-        reviews: [review],
-        // filter out ignored files
-        filesChangedByHeadCommit: filesChangedByHeadCommit
-          .filter(
-            filename =>
-              !ignoreFiles?.some(pattern =>
-                minimatch(filename, pattern, { dot: true }),
-              ),
-          )
-          .map(filename => ({
-            owners: codeowners.getOwner(filename),
-            filename,
-          })),
-      }
-    }),
-  )
+        .map(filename => ({
+          owners: codeowners.getOwner(filename),
+          filename,
+        })),
+    }
+  }
 
   return { reviewsWithoutHistory, groupedReviewsByCommit }
 }

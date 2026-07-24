@@ -57480,50 +57480,48 @@ var groupReviewsByCommit = async ({
   const git = simpleGit();
   const reviewsWithoutHistory = [];
   const groupedReviewsByCommit = {};
-  await Promise.all(
-    latestReviews.map(async (review) => {
-      const reviewCommit = review.commit?.oid;
-      const basehead = `${reviewCommit}..${headCommit}`;
-      if (groupedReviewsByCommit[basehead]) {
-        groupedReviewsByCommit[basehead].reviews.push(review);
-        return;
-      }
-      try {
-        await git.catFile(["commit", reviewCommit]);
-      } catch {
-        console.log(
-          "\n",
-          chalk2.yellow(
-            `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`
-          ),
-          "\n",
-          chalk2.yellow(`Approval by ${review.author?.login} will be removed.`),
-          "\n"
-        );
-        reviewsWithoutHistory.push(review);
-        return;
-      }
-      const filesChangedByHeadCommit = await getHeadDiffSinceReview({
-        reviewAssociatedSha: reviewCommit,
-        headSha: headCommit,
-        baseBranch
-      });
-      (0, import_core.debug)(`Changes in ${basehead}:
+  for (const review of latestReviews) {
+    const reviewCommit = review.commit?.oid;
+    const basehead = `${reviewCommit}..${headCommit}`;
+    if (groupedReviewsByCommit[basehead]) {
+      groupedReviewsByCommit[basehead].reviews.push(review);
+      continue;
+    }
+    try {
+      await git.catFile(["commit", reviewCommit]);
+    } catch {
+      console.log(
+        "\n",
+        chalk2.yellow(
+          `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`
+        ),
+        "\n",
+        chalk2.yellow(`Approval by ${review.author?.login} will be removed.`),
+        "\n"
+      );
+      reviewsWithoutHistory.push(review);
+      continue;
+    }
+    const filesChangedByHeadCommit = await getHeadDiffSinceReview({
+      reviewAssociatedSha: reviewCommit,
+      headSha: headCommit,
+      baseBranch
+    });
+    (0, import_core.debug)(`Changes in ${basehead}:
 ${filesChangedByHeadCommit.join("\n")}`);
-      groupedReviewsByCommit[basehead] = {
-        reviews: [review],
-        // filter out ignored files
-        filesChangedByHeadCommit: filesChangedByHeadCommit.filter(
-          (filename) => !ignoreFiles?.some(
-            (pattern) => minimatch(filename, pattern, { dot: true })
-          )
-        ).map((filename) => ({
-          owners: codeowners.getOwner(filename),
-          filename
-        }))
-      };
-    })
-  );
+    groupedReviewsByCommit[basehead] = {
+      reviews: [review],
+      // filter out ignored files
+      filesChangedByHeadCommit: filesChangedByHeadCommit.filter(
+        (filename) => !ignoreFiles?.some(
+          (pattern) => minimatch(filename, pattern, { dot: true })
+        )
+      ).map((filename) => ({
+        owners: codeowners.getOwner(filename),
+        filename
+      }))
+    };
+  }
   return { reviewsWithoutHistory, groupedReviewsByCommit };
 };
 
@@ -57654,12 +57652,6 @@ ${changedFilesOwnedByReviewAuthor.join(
           );
           reviewsToDismiss.push(review);
           isDismissed = true;
-        } else if (!changedFilesTeamOwners.length) {
-          console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.
-The review from ${author?.login} won't be dismissed.
-`
-          );
         } else {
           for (const teamOwnership of changedFilesTeamOwners) {
             if (teamMembers[teamOwnership]?.includes(author.login)) {
