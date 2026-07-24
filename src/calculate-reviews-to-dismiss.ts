@@ -120,12 +120,6 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
         reviewsToDismiss.push(review)
         isDismissed = true
-      }
-      // if the files are not owned by teams we can exit early, the user is already checked
-      else if (!changedFilesTeamOwners.length) {
-        console.log(
-          `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
-        )
       } else {
         for (const teamOwnership of changedFilesTeamOwners) {
           if (teamMembers[teamOwnership]?.includes(author.login)) {
