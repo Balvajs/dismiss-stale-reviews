@@ -66160,6 +66160,7 @@ ${changedFilesOwnedByAuthorsTeam.join(
             );
             reviewsToDismiss.push(review);
             isDismissed = true;
+            break;
           } else {
             debug(`User ${author.login} is not member of ${teamOwnership} team`);
           }

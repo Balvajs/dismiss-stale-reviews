@@ -138,6 +138,9 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
             reviewsToDismiss.push(review)
             isDismissed = true
+            // one owning team is enough, checking the rest would push the same
+            // review again
+            break
           } else {
             debug(`User ${author.login} is not member of ${teamOwnership} team`)
           }
