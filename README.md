@@ -65,3 +65,7 @@ jobs:
 | force-push-action | enum     | `"dismiss-all"`         | What should happen if the git diff couldn't be resolved due to force push. Valid options are `"dismiss-all"` and `"dismiss-none"`.       |
 
 \* required
+
+## Development
+
+Every same-repository PR runs e2e tests that exercise the built action against real fixture pull requests (fork PRs have no access to the e2e secrets, so the job is skipped for them) — see [docs/e2e.md](docs/e2e.md).
