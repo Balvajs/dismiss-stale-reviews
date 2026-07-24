@@ -38,7 +38,7 @@ export default [
   stylistic.configs.recommended,
   js.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.cjs'],
     rules: {
       /**
        * SECTION START: Disabled rules colliding with Prettier
