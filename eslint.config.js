@@ -35,7 +35,7 @@ export default [
     },
   },
   ...recommendedConfig,
-  stylistic.configs['recommended-flat'],
+  stylistic.configs.recommended,
   js.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

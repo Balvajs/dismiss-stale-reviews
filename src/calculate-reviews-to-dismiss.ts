@@ -86,82 +86,78 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         }),
     )
 
-    // for loop is used to synchronously go through all commits and team data can be fetched first without overfetching
-    await Promise.all(
-      reviews.map(review => {
-        const { author } = review
-        let isDismissed = false
+    // loop is used to synchronously go through all commits and team data can be fetched first without overfetching
+    for (const review of reviews) {
+      const { author } = review
+      let isDismissed = false
+
+      console.log(
+        `Considering review from ${author?.login} and file changes between ${review.commit?.oid} (reviewed commit) and ${headCommit} (head commit)`,
+      )
+
+      // in case there is no diff because head and review commit matches, skip that review
+      if (review.commit?.oid === headCommit) {
+        console.log(
+          'The review commit sha is the same as head commit sha. That means that there were no changes since the review, or the base branch was merged/rebased cleanly.',
+        )
+      } else if (
+        !author ||
+        // if review author is mentioned directly as an owner of changed files, dismiss their review
+        (author.login && changedFilesOwners.includes(`@${author.login}`))
+      ) {
+        const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit
+          .filter(
+            ({ owners }) =>
+              !!owners.find(owner => owner === `@${author?.login}`),
+          )
+          .map(({ filename }) => filename)
 
         console.log(
-          `Considering review from ${author?.login} and file changes between ${review.commit?.oid} (reviewed commit) and ${headCommit} (head commit)`,
+          `Changed files owned by ${author?.login}:\n${changedFilesOwnedByReviewAuthor.join(
+            '\n',
+          )}`,
         )
 
-        // in case there is no diff because head and review commit matches, skip that review
-        if (review.commit?.oid === headCommit) {
-          console.log(
-            'The review commit sha is the same as head commit sha. That means that there were no changes since the review, or the base branch was merged/rebased cleanly.',
-          )
-        } else if (
-          !author ||
-          // if review author is mentioned directly as an owner of changed files, dismiss their review
-          (author.login && changedFilesOwners.includes(`@${author.login}`))
-        ) {
-          const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit
-            .filter(
-              ({ owners }) =>
-                !!owners.find(owner => owner === `@${author?.login}`),
+        reviewsToDismiss.push(review)
+        isDismissed = true
+      }
+      // if the files are not owned by teams we can exit early, the user is already checked
+      else if (!changedFilesTeamOwners.length) {
+        console.log(
+          `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
+        )
+      } else {
+        for (const teamOwnership of changedFilesTeamOwners) {
+          if (teamMembers[teamOwnership]?.includes(author.login)) {
+            const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
+              .filter(
+                ({ owners }) =>
+                  !!owners.find(owner => owner === `@${teamOwnership}`),
+              )
+              .map(({ filename }) => filename)
+
+            console.log(
+              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
+                '\n',
+              )}`,
             )
-            .map(({ filename }) => filename)
 
-          console.log(
-            `Changed files owned by ${author?.login}:\n${changedFilesOwnedByReviewAuthor.join(
-              '\n',
-            )}`,
-          )
-
-          reviewsToDismiss.push(review)
-          isDismissed = true
-        }
-        // if the files are not owned by teams we can exit early, the user is already checked
-        else if (!changedFilesTeamOwners.length) {
-          console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
-          )
-        } else {
-          for (const teamOwnership of changedFilesTeamOwners) {
-            if (teamMembers[teamOwnership]?.includes(author.login)) {
-              const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
-                .filter(
-                  ({ owners }) =>
-                    !!owners.find(owner => owner === `@${teamOwnership}`),
-                )
-                .map(({ filename }) => filename)
-
-              console.log(
-                `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
-                  '\n',
-                )}`,
-              )
-
-              reviewsToDismiss.push(review)
-              isDismissed = true
-            } else {
-              debug(
-                `User ${author.login} is not member of ${teamOwnership} team`,
-              )
-            }
+            reviewsToDismiss.push(review)
+            isDismissed = true
+          } else {
+            debug(`User ${author.login} is not member of ${teamOwnership} team`)
           }
         }
+      }
 
-        if (isDismissed) {
-          console.log(`The review from ${author?.login} will be dismissed.\n`)
-        } else {
-          console.log(
-            `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
-          )
-        }
-      }),
-    )
+      if (isDismissed) {
+        console.log(`The review from ${author?.login} will be dismissed.\n`)
+      } else {
+        console.log(
+          `Review author ${author?.login} doesn't own any of changed files, nor is member of any team owning changed files.\nThe review from ${author?.login} won't be dismissed.\n`,
+        )
+      }
+    }
   }
 
   return {
