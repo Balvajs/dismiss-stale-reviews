@@ -65,3 +65,7 @@ Thumbs.db
 # Ignore built ts files
 __tests__/runner/*
 lib/**/*
+
+# Local agent tooling config
+.claude
+.superset
