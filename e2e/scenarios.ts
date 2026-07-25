@@ -1,5 +1,5 @@
-import type { ActionInputs } from './run-action.ts'
 import type { FileMap } from './fixtures.ts'
+import type { ActionInputs } from './run-action.ts'
 
 type ReviewerRole = 'reviewer1' | 'reviewer2'
 

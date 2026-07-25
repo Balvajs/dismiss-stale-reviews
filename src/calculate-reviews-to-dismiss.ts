@@ -1,7 +1,8 @@
 import { debug } from '@actions/core'
-import { groupReviewsByCommit } from './group-reviews-by-commit.ts'
-import { getOctokit } from './get-octokit.ts'
+
+import type { getOctokit } from './get-octokit.ts'
 import { getTeamData } from './get-team-data.ts'
+import { groupReviewsByCommit } from './group-reviews-by-commit.ts'
 
 export interface Review {
   author: {
@@ -11,6 +12,26 @@ export interface Review {
     oid: string
   } | null
 }
+
+/**
+ * Find the first team owning changed files that the review author belongs to.
+ * One owning team is enough — checking the rest would push the same review
+ * again.
+ */
+const findAuthorsOwningTeam = (
+  teams: string[],
+  teamMembers: Record<string, string[]>,
+  authorLogin: string,
+) =>
+  teams.find(team => {
+    if (teamMembers[team]?.includes(authorLogin)) {
+      return true
+    }
+
+    debug(`User ${authorLogin} is not member of ${team} team`)
+
+    return false
+  })
 
 export const calculateReviewToDismiss = async <TReview extends Review>({
   latestReviews,
@@ -35,19 +56,18 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
 
   const filesWithoutOwner = [
     ...new Set(
-      Object.values(groupedReviewsByCommit)
-        .map(({ filesChangedByHeadCommit }) =>
+      Object.values(groupedReviewsByCommit).flatMap(
+        ({ filesChangedByHeadCommit }) =>
           filesChangedByHeadCommit
-            .filter(({ owners }) => !owners.length)
+            .filter(({ owners }) => owners.length === 0)
             .map(({ filename }) => filename),
-        )
-        .flat(),
+      ),
     ),
   ]
 
   // if there are some files without owner, we are not able to assign a review to those files
   // and because of that we need to dismiss all reviews
-  if (filesWithoutOwner.length) {
+  if (filesWithoutOwner.length > 0) {
     return {
       filesWithoutOwner,
     }
@@ -62,7 +82,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
   )) {
     // list of unique file owners
     const changedFilesOwners = [
-      ...new Set(filesChangedByHeadCommit.map(({ owners }) => owners).flat()),
+      ...new Set(filesChangedByHeadCommit.flatMap(({ owners }) => owners)),
     ]
 
     const changedFilesTeamOwners = changedFilesOwners
@@ -76,13 +96,12 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         .filter(team => !Object.keys(teamMembers).includes(team))
         .map(async team => {
           const teamHandle = team.split('/')
-          teamMembers[team] = (
-            await getTeamData({
-              octokit,
-              organizationLogin: teamHandle[0],
-              teamSlug: teamHandle[1],
-            })
-          ).members
+          const teamData = await getTeamData({
+            octokit,
+            organizationLogin: teamHandle[0],
+            teamSlug: teamHandle[1],
+          })
+          teamMembers[team] = teamData.members
         }),
     )
 
@@ -106,10 +125,7 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         (author.login && changedFilesOwners.includes(`@${author.login}`))
       ) {
         const changedFilesOwnedByReviewAuthor = filesChangedByHeadCommit
-          .filter(
-            ({ owners }) =>
-              !!owners.find(owner => owner === `@${author?.login}`),
-          )
+          .filter(({ owners }) => owners.includes(`@${author?.login}`))
           .map(({ filename }) => filename)
 
         console.log(
@@ -121,29 +137,25 @@ export const calculateReviewToDismiss = async <TReview extends Review>({
         reviewsToDismiss.push(review)
         isDismissed = true
       } else {
-        for (const teamOwnership of changedFilesTeamOwners) {
-          if (teamMembers[teamOwnership]?.includes(author.login)) {
-            const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
-              .filter(
-                ({ owners }) =>
-                  !!owners.find(owner => owner === `@${teamOwnership}`),
-              )
-              .map(({ filename }) => filename)
+        const owningTeam = findAuthorsOwningTeam(
+          changedFilesTeamOwners,
+          teamMembers,
+          author.login,
+        )
 
-            console.log(
-              `Review author ${author?.login} is member of ${teamOwnership} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
-                '\n',
-              )}`,
-            )
+        if (owningTeam !== undefined) {
+          const changedFilesOwnedByAuthorsTeam = filesChangedByHeadCommit
+            .filter(({ owners }) => owners.includes(`@${owningTeam}`))
+            .map(({ filename }) => filename)
 
-            reviewsToDismiss.push(review)
-            isDismissed = true
-            // one owning team is enough, checking the rest would push the same
-            // review again
-            break
-          } else {
-            debug(`User ${author.login} is not member of ${teamOwnership} team`)
-          }
+          console.log(
+            `Review author ${author.login} is member of ${owningTeam} team, which owns following changed files:\n${changedFilesOwnedByAuthorsTeam.join(
+              '\n',
+            )}`,
+          )
+
+          reviewsToDismiss.push(review)
+          isDismissed = true
         }
       }
 

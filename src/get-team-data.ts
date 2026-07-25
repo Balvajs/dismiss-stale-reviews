@@ -1,10 +1,9 @@
-import { isPresent } from './type-guards.ts'
-import { getOctokit } from './get-octokit.ts'
-
 import type {
   GetTeamDataQuery,
   GetTeamDataQueryVariables,
 } from './__generated__/get-team-data.graphql.ts'
+import type { getOctokit } from './get-octokit.ts'
+import { isPresent } from './type-guards.ts'
 
 const getPullRequestQuery = /* GraphQL */ `
   query getTeamData($orgLogin: String!, $teamSlug: String!, $cursor: String) {
@@ -38,11 +37,11 @@ export const getTeamData = async ({
       orgLogin: organizationLogin,
       teamSlug,
     } as GetTeamDataQueryVariables)
-    .catch(e => {
+    .catch((error: unknown) => {
       console.error(
         'Something went wrong during fetching team members data. Make sure that the github token has read access to organization members.',
       )
-      throw e
+      throw error
     })
 
   if (!organization) {

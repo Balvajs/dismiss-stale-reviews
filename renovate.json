@@ -23,6 +23,17 @@
       "groupName": "bun"
     },
     {
+      "description": "oxlint-tsgolint embeds the TS compiler and declares no peer dep on it",
+      "matchDepNames": ["typescript", "oxlint-tsgolint"],
+      "groupName": "typescript"
+    },
+    {
+      "description": "oxfmt is pre-1.0, a minor can reformat every file in the repo",
+      "matchDepNames": ["oxfmt"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
+    },
+    {
       "matchManagers": ["npm"],
       "postUpgradeTasks": {
         "commands": ["bun install", "bun generate", "bun package"],

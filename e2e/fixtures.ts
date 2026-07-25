@@ -1,6 +1,5 @@
-import { retry } from 'radashi'
-
 import type { Octokit } from '@octokit/core'
+import { retry } from 'radashi'
 
 export type FileMap = Record<string, string>
 
@@ -133,7 +132,9 @@ export const approvePullRequest = async ({
       repo,
       pull_number: pullNumber,
       event: 'APPROVE',
-      ...(commitId ? { commit_id: commitId } : {}),
+      ...(commitId !== undefined && commitId !== ''
+        ? { commit_id: commitId }
+        : {}),
     },
   )
 }
@@ -257,7 +258,7 @@ export const waitForApprovals = async ({
       login => !approvedLogins.has(login),
     )
 
-    if (missingLogins.length) {
+    if (missingLogins.length > 0) {
       throw new Error(
         `Approvals from ${missingLogins.join(', ')} at ${expectedCommitSha} didn't reach the GraphQL view within the retry budget`,
       )

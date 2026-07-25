@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node16",
-    "module": "node16",
+    "module": "nodenext",
     "target": "esnext",
     "outDir": "./lib",
     "rootDir": "./",
@@ -11,10 +10,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node", "jest"],
+    "types": ["node"],
     "noEmit": true,
     "noImplicitReturns": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "dist"]
 }

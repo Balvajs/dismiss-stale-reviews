@@ -1,4 +1,5 @@
-import { normalize } from 'path'
+import { normalize } from 'node:path'
+
 import { simpleGit } from 'simple-git'
 
 /**
@@ -16,39 +17,38 @@ export const getHeadDiffSinceReview = async ({
   const git = simpleGit()
 
   // this diff contains all changes between head and review associated commit, including changes in merge commits
-  const headAndReviewDiff = (
-    await git.diffSummary([`${reviewAssociatedSha}..${headSha}`])
-  ).files.map(({ file }) => file)
+  const headAndReviewSummary = await git.diffSummary([
+    `${reviewAssociatedSha}..${headSha}`,
+  ])
+  const headAndReviewDiff = headAndReviewSummary.files.map(({ file }) => file)
   // this diff basically the same as the PR
-  const mainAndSecondCommitDiff = (
-    await git.diffSummary([`origin/${baseBranch}...${headSha}`])
-  ).files.map(({ file }) => file)
+  const mainAndSecondCommitSummary = await git.diffSummary([
+    `origin/${baseBranch}...${headSha}`,
+  ])
+  const mainAndSecondCommitDiff = new Set(
+    mainAndSecondCommitSummary.files.map(({ file }) => file),
+  )
 
   const intersectionFiles = headAndReviewDiff.filter(file =>
-    mainAndSecondCommitDiff.includes(file),
+    mainAndSecondCommitDiff.has(file),
   )
 
   const diffFiles: string[] = []
 
   // match file rename string e.g. `.github/workflows/{dismiss-reviews.yml => pull-request.yml}`
-  const fileRenameRegex = /{(.*) => (.*)}/
+  const fileRenameRegex = /\{(?<from>.*) => (?<to>.*)\}/u
 
   // find if files from intersectionFiles changed between head and review associated commit relatively to base branch
   await Promise.all(
     intersectionFiles.map(async file => {
       const fileRenameMatch = fileRenameRegex.exec(file)
 
-      if (fileRenameMatch) {
-        const path1 = normalize(
-          file.replace(fileRenameRegex, fileRenameMatch[1]),
-        )
-        const path2 = normalize(
-          file.replace(fileRenameRegex, fileRenameMatch[2]),
-        )
-        // push original file name to diffFiles
-        diffFiles.push(path1)
-        // push new file name to diffFiles
-        diffFiles.push(path2)
+      if (fileRenameMatch?.groups) {
+        const { from, to } = fileRenameMatch.groups
+        const path1 = normalize(file.replace(fileRenameRegex, from))
+        const path2 = normalize(file.replace(fileRenameRegex, to))
+        // push the original and the new file name to diffFiles
+        diffFiles.push(path1, path2)
 
         console.debug('Filename change:', path1, path2)
 

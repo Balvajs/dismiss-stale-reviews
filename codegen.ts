@@ -1,13 +1,12 @@
-import path from 'path'
+import path from 'node:path'
 
+import type { CodegenConfig } from '@graphql-codegen/cli'
 import { schema } from '@octokit/graphql-schema'
-
-import { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   schema: schema.idl,
   documents: 'src/**/*.ts',
-  emitLegacyCommonJSImports: false,
+  importExtension: '.js',
   generates: {
     '/': {
       preset: 'near-operation-file',
@@ -40,7 +39,7 @@ const config: CodegenConfig = {
         },
       ],
       hooks: {
-        afterOneFileWrite: 'prettier --write',
+        afterOneFileWrite: 'oxfmt --write -c oxfmt.config.ts',
       },
     },
   },

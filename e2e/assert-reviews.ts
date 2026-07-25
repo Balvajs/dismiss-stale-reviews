@@ -1,6 +1,5 @@
-import { retry } from 'radashi'
-
 import type { Octokit } from '@octokit/core'
+import { retry } from 'radashi'
 
 export interface ExpectedReview {
   login: string
@@ -75,14 +74,16 @@ export const assertReviewStates = async ({
         return [`dismissal event for ${login} is not visible yet`]
       }
 
-      return dismissalEvent.dismissal_message?.includes('Some error occurred')
+      return dismissalEvent.dismissal_message?.includes(
+        'Some error occurred',
+      ) === true
         ? [
             `review from ${login} was dismissed by the action's error fallback, not by the expected code path`,
           ]
         : []
     })
 
-    if (mismatches.length) {
+    if (mismatches.length > 0) {
       throw new Error(
         `Scenario "${scenarioName}" failed:\n${mismatches.join('\n')}`,
       )
