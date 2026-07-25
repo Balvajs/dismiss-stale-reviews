@@ -1,5 +1,4 @@
-import { debug } from '@actions/core'
-
+import { debug } from './debug.ts'
 import type { getOctokit } from './get-octokit.ts'
 import { getTeamData } from './get-team-data.ts'
 import { groupReviewsByCommit } from './group-reviews-by-commit.ts'

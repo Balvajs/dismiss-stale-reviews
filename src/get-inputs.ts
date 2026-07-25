@@ -1,4 +1,21 @@
-import { getInput, getMultilineInput } from '@actions/core'
+/**
+ * The runner passes every input of `action.yml` as an `INPUT_<NAME>`
+ * environment variable, uppercased and with spaces replaced by underscores.
+ *
+ * @see https://docs.github.com/actions/reference/workflows-and-actions/metadata-syntax#inputs
+ */
+const getInput = (name: string) =>
+  (process.env[`INPUT_${name.replaceAll(' ', '_').toUpperCase()}`] ?? '').trim()
+
+const getRequiredInput = (name: string) => {
+  const value = getInput(name)
+
+  if (!value) {
+    throw new Error(`Input required and not supplied: ${name}`)
+  }
+
+  return value
+}
 
 function isValidDismissActionInput(
   dismissAction: string,
@@ -7,10 +24,14 @@ function isValidDismissActionInput(
 }
 
 export const getInputs = () => {
-  const ghToken = getInput('token', { required: true })
-  const ignoreFiles = getMultilineInput('ignore-files')
-  const noOwnerAction = getInput('no-owner-action', { required: true })
-  const forcePushAction = getInput('force-push-action', { required: true })
+  const ghToken = getRequiredInput('token')
+  // the list of file patterns is new line separated
+  const ignoreFiles = getInput('ignore-files')
+    .split('\n')
+    .map(pattern => pattern.trim())
+    .filter(pattern => pattern !== '')
+  const noOwnerAction = getRequiredInput('no-owner-action')
+  const forcePushAction = getRequiredInput('force-push-action')
 
   if (!isValidDismissActionInput(noOwnerAction)) {
     throw new Error(

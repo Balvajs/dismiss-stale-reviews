@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 import { omit } from 'radashi'
 
-const distPath = fileURLToPath(new URL('../dist/main.cjs', import.meta.url))
+const distPath = fileURLToPath(new URL('../dist/main.mjs', import.meta.url))
 
 export interface ActionInputs {
   ignoreFiles?: string[]
@@ -29,7 +29,7 @@ const execute = (
 
 /**
  * Run the built action the same way the actions runner does: `node
- * dist/main.cjs` with the input/event contract passed via environment
+ * dist/main.mjs` with the input/event contract passed via environment
  * variables, with cwd set to a fresh full clone of the fixture repository.
  */
 export const runAction = async ({

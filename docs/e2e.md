@@ -1,7 +1,7 @@
 # E2E tests
 
 The `e2e` job in [`test.yml`](../.github/workflows/test.yml) runs the built
-action (`dist/main.cjs`) against real, ephemeral pull requests in the sandbox
+action (`dist/main.mjs`) against real, ephemeral pull requests in the sandbox
 repository [`balvajs-actions/dismiss-stale-reviews-e2e`](https://github.com/balvajs-actions/dismiss-stale-reviews-e2e)
 and asserts the resulting review states (`DISMISSED` / still `APPROVED`)
 through the GitHub API.
@@ -19,7 +19,7 @@ For every scenario in [`e2e/scenarios.ts`](../e2e/scenarios.ts) the harness
 4. Pushes a follow-up commit (or force-pushes, for the force-push scenario).
 5. Clones the fixture repo with full history into a temp dir, checks out the
    head branch, writes a synthetic `event.json`, and spawns
-   `node dist/main.cjs` with the same env-var contract the actions runner
+   `node dist/main.mjs` with the same env-var contract the actions runner
    uses (`GITHUB_EVENT_PATH`, `INPUT_TOKEN`, `INPUT_IGNORE-FILES`,
    `INPUT_NO-OWNER-ACTION`, `INPUT_FORCE-PUSH-ACTION`).
 6. Polls the review states via the API (bounded retries) and compares them
