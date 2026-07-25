@@ -1,8 +1,8 @@
 import { debug } from '@actions/core'
-import { simpleGit } from 'simple-git'
 import { Chalk } from 'chalk'
 import Codeowners from 'codeowners'
 import { minimatch } from 'minimatch'
+import { simpleGit } from 'simple-git'
 
 import { getHeadDiffSinceReview } from './get-head-diff-since-review.ts'
 
@@ -21,7 +21,7 @@ export const groupReviewsByCommit = async <TReview extends Review>({
   latestReviews,
   headCommit,
   baseBranch,
-  ignoreFiles,
+  ignoreFiles = [],
 }: {
   latestReviews: TReview[]
   headCommit: string
@@ -41,12 +41,20 @@ export const groupReviewsByCommit = async <TReview extends Review>({
   // reviews must be processed sequentially — parallel processing raced on the
   // group existence check and dropped reviews sharing the same commit
   for (const review of latestReviews) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    const reviewCommit = review.commit?.oid!
+    const reviewCommit = review.commit?.oid
+
+    // without a commit there is no diff to resolve, treat it like a commit
+    // missing from the history and let the caller dismiss the review
+    if (reviewCommit === undefined) {
+      reviewsWithoutHistory.push(review)
+
+      continue
+    }
+
     const basehead = `${reviewCommit}..${headCommit}`
 
     // if group exists, just push the review to the group
-    if (groupedReviewsByCommit[basehead]) {
+    if (basehead in groupedReviewsByCommit) {
       groupedReviewsByCommit[basehead].reviews.push(review)
 
       continue
@@ -85,7 +93,7 @@ export const groupReviewsByCommit = async <TReview extends Review>({
       filesChangedByHeadCommit: filesChangedByHeadCommit
         .filter(
           filename =>
-            !ignoreFiles?.some(pattern =>
+            !ignoreFiles.some(pattern =>
               minimatch(filename, pattern, { dot: true }),
             ),
         )

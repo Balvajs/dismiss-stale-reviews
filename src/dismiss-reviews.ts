@@ -1,9 +1,8 @@
-import type { getOctokit } from './get-octokit.ts'
-
 import type {
   DismissReviewMutation,
   DismissReviewMutationVariables,
 } from './__generated__/dismiss-reviews.graphql.ts'
+import type { getOctokit } from './get-octokit.ts'
 
 const requestReviewsMutation = /* GraphQL */ `
   mutation dismissReview($message: String!, $pullRequestReviewId: ID!) {
@@ -23,8 +22,8 @@ export const dismissReviews = async ({
   octokit: ReturnType<typeof getOctokit>
   message: string
   reviewsToDismiss: { id: string; author: { login: string } | null }[]
-}) =>
-  Promise.all(
+}) => {
+  await Promise.all(
     reviewsToDismiss.map(async ({ id: pullRequestReviewId, author }) => {
       try {
         await octokit.graphql<DismissReviewMutation>(requestReviewsMutation, {
@@ -36,3 +35,4 @@ export const dismissReviews = async ({
       }
     }),
   )
+}

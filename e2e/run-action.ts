@@ -22,7 +22,9 @@ const execute = (
   new Promise<number>((resolve, reject) => {
     const child = spawn(command, args, { ...options, stdio: 'inherit' })
     child.on('error', reject)
-    child.on('close', exitCode => resolve(exitCode ?? 1))
+    child.on('close', exitCode => {
+      resolve(exitCode ?? 1)
+    })
   })
 
 /**

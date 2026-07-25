@@ -3,7 +3,7 @@ import { Octokit } from '@octokit/core'
 const requireEnv = (name: string) => {
   const value = process.env[name]
 
-  if (!value) {
+  if (value === undefined || value === '') {
     throw new Error(`Missing required environment variable ${name}`)
   }
 

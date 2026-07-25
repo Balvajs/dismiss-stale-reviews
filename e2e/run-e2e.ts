@@ -1,6 +1,7 @@
 import { mapValues, tryit } from 'radashi'
 
-import { getConfig } from './config.ts'
+import { assertReviewStates } from './assert-reviews.ts'
+import { getConfig, type E2eConfig } from './config.ts'
 import {
   approvePullRequest,
   closePullRequest,
@@ -13,11 +14,7 @@ import {
   waitForHeadCommit,
 } from './fixtures.ts'
 import { runAction } from './run-action.ts'
-import { assertReviewStates } from './assert-reviews.ts'
-import { getScenarios } from './scenarios.ts'
-
-import type { E2eConfig } from './config.ts'
-import type { Scenario } from './scenarios.ts'
+import { getScenarios, type Scenario } from './scenarios.ts'
 
 const runScenario = async (config: E2eConfig, scenario: Scenario) => {
   const { appOctokit: octokit, fixtureOwner: owner, fixtureRepo: repo } = config
@@ -33,7 +30,9 @@ const runScenario = async (config: E2eConfig, scenario: Scenario) => {
   try {
     const mainSha = await getBranchSha({ ...target, branch: 'main' })
     await createBranch({ ...target, branch: baseBranch, fromSha: mainSha })
-    cleanups.push(() => deleteBranch({ ...target, branch: baseBranch }))
+    cleanups.push(async () => {
+      await deleteBranch({ ...target, branch: baseBranch })
+    })
 
     const initialFiles = mapValues(scenario.pullRequestFiles, () => 'initial\n')
     const baseSha = await createCommit({
@@ -44,7 +43,9 @@ const runScenario = async (config: E2eConfig, scenario: Scenario) => {
     })
 
     await createBranch({ ...target, branch: headBranch, fromSha: baseSha })
-    cleanups.push(() => deleteBranch({ ...target, branch: headBranch }))
+    cleanups.push(async () => {
+      await deleteBranch({ ...target, branch: headBranch })
+    })
 
     const reviewedSha = await createCommit({
       ...target,
@@ -59,9 +60,9 @@ const runScenario = async (config: E2eConfig, scenario: Scenario) => {
       base: baseBranch,
       title: `e2e: ${scenario.name} (run ${config.runId})`,
     })
-    cleanups.push(() =>
-      closePullRequest({ ...target, pullNumber: pullRequest.number }),
-    )
+    cleanups.push(async () => {
+      await closePullRequest({ ...target, pullNumber: pullRequest.number })
+    })
 
     for (const reviewer of scenario.approvals) {
       await approvePullRequest({
@@ -85,7 +86,7 @@ const runScenario = async (config: E2eConfig, scenario: Scenario) => {
       branch: headBranch,
       files: scenario.followUp.files,
       message: `e2e: ${scenario.name} follow-up`,
-      ...(scenario.followUp.forcePush
+      ...(scenario.followUp.forcePush === true
         ? { parentSha: baseSha, force: true }
         : {}),
     })
@@ -149,7 +150,7 @@ const run = async () => {
     }
   }
 
-  if (failures.length) {
+  if (failures.length > 0) {
     console.error(`\nFailed scenarios: ${failures.join(', ')}`)
     process.exit(1)
   }

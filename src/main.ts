@@ -1,12 +1,13 @@
+import { debug } from '@actions/core'
 import { context } from '@actions/github'
 import { Chalk } from 'chalk'
-import { debug } from '@actions/core'
 
 import { calculateReviewToDismiss } from './calculate-reviews-to-dismiss.ts'
 import { dismissReviews } from './dismiss-reviews.ts'
-import { getPrData } from './get-pr-data.ts'
-import { getOctokit } from './get-octokit.ts'
 import { getInputs } from './get-inputs.ts'
+import { getOctokit } from './get-octokit.ts'
+import { getPrData } from './get-pr-data.ts'
+import { isPresent } from './type-guards.ts'
 
 const chalk = new Chalk({ level: 2 })
 
@@ -19,7 +20,7 @@ const logReviewsToDismiss = (
     chalk.green(
       `Reviews to dismiss: ${reviewsToDismiss
         .map(({ author }) => author?.login ?? 'unknownLogin')
-        .join()}`,
+        .join(',')}`,
     ),
   )
 }
@@ -47,12 +48,12 @@ const run = async () => {
   })
 
   const latestApprovedReviews = latestReviews.filter(
-    ({ state, commit }) => commit && state === 'APPROVED',
+    ({ state, commit }) => isPresent(commit) && state === 'APPROVED',
   )
 
   debug(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`)
 
-  if (!latestApprovedReviews.length) {
+  if (latestApprovedReviews.length === 0) {
     console.log(chalk.green('No reviews to dismiss!'))
 
     return
@@ -69,7 +70,10 @@ const run = async () => {
     })
 
     // if there are some files without history let the users know and dismiss reviews calculated for dismiss
-    if (reviewsToDismissContext.reviewsWithoutHistory?.length) {
+    if (
+      reviewsToDismissContext.reviewsWithoutHistory !== undefined &&
+      reviewsToDismissContext.reviewsWithoutHistory.length > 0
+    ) {
       logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss)
 
       console.log(
@@ -104,7 +108,7 @@ const run = async () => {
   
           </p>
         </details>
-      `.replace(/  +/g, ' '),
+      `.replaceAll(/  +/gu, ' '),
       })
     }
     // if there are any files without owner, dismiss all reviews
@@ -140,13 +144,13 @@ const run = async () => {
 
             - \`${reviewsToDismissContext.filesWithoutOwner
               .join('`\n- `')
-              .replace(/_/g, '&#95;')}\`
+              .replaceAll('_', '&#95;')}\`
 
             </p>
           </details>
-        `.replace(/  +/g, ' '),
+        `.replaceAll(/  +/gu, ' '),
       })
-    } else if (reviewsToDismissContext.reviewsToDismiss.length) {
+    } else if (reviewsToDismissContext.reviewsToDismiss.length > 0) {
       logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss)
 
       await dismissReviews({
@@ -157,8 +161,8 @@ const run = async () => {
     } else {
       console.log(chalk.green('No reviews to dismiss!'))
     }
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     await dismissReviews({
       octokit,
       message:
@@ -168,4 +172,7 @@ const run = async () => {
   }
 }
 
-void run()
+run().catch((error: unknown) => {
+  console.error(error)
+  process.exitCode = 1
+})

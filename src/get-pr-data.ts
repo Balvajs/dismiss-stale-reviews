@@ -1,10 +1,9 @@
-import { isPresent } from './type-guards.ts'
-import { getOctokit } from './get-octokit.ts'
-
 import type {
   GetPrDataQuery,
   GetPrDataQueryVariables,
 } from './__generated__/get-pr-data.graphql.ts'
+import type { getOctokit } from './get-octokit.ts'
+import { isPresent } from './type-guards.ts'
 
 const getPullRequestQuery = /* GraphQL */ `
   query getPrData($nodeId: ID!, $cursor: String) {
