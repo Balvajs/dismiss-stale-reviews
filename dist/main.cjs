@@ -19656,9 +19656,9 @@ var require_dist = __commonJS({
   }
 });
 
-// node_modules/locate-path/node_modules/path-exists/index.js
+// node_modules/path-exists/index.js
 var require_path_exists = __commonJS({
-  "node_modules/locate-path/node_modules/path-exists/index.js"(exports2, module2) {
+  "node_modules/path-exists/index.js"(exports2, module2) {
     "use strict";
     var fs3 = require("fs");
     module2.exports = (fp) => new Promise((resolve) => {
@@ -19823,9 +19823,9 @@ var require_find_up = __commonJS({
   }
 });
 
-// node_modules/codeowners/node_modules/ignore/ignore.js
+// node_modules/ignore/ignore.js
 var require_ignore = __commonJS({
-  "node_modules/codeowners/node_modules/ignore/ignore.js"(exports2, module2) {
+  "node_modules/ignore/ignore.js"(exports2, module2) {
     "use strict";
     var _createClass = /* @__PURE__ */ (function() {
       function defineProperties(target, props) {
