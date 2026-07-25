@@ -70,6 +70,15 @@ export default defineConfig({
   },
   overrides: [
     {
+      // these two read the `INPUT_*` and `GITHUB_*` variables the runner
+      // invokes the action through — the rule keeps every other file from
+      // reaching for the environment instead of going through them
+      files: ['src/get-inputs.ts', 'src/main.ts'],
+      rules: {
+        'node/no-process-env': 'off',
+      },
+    },
+    {
       files: ['e2e/**'],
       rules: {
         // the e2e harness reads its configuration straight from the environment

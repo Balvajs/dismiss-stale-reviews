@@ -1,10 +1,10 @@
 import { styleText } from 'node:util'
 
-import { debug } from '@actions/core'
 import Codeowners from 'codeowners'
 import { minimatch } from 'minimatch'
 import { simpleGit } from 'simple-git'
 
+import { debug } from './debug.ts'
 import { getHeadDiffSinceReview } from './get-head-diff-since-review.ts'
 
 // the runner's stdout is not a TTY, `validateStream: false` emits ANSI anyway
