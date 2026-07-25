@@ -20,7 +20,7 @@
     "package": "tsup src/main.ts --clean",
     "test": "vitest run --passWithNoTests",
     "generate": "graphql-codegen-esm --config codegen.ts",
-    "all": "bun run type-check && bun run format-check && bun run lint && bun run package",
+    "all": "bun run type-check && bun run format-check && bun run lint && bun run test && bun run package",
     "semantic-release": "semantic-release",
     "prepare": "husky"
   },
