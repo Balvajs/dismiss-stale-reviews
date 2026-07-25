@@ -25,6 +25,29 @@ jobs:
 
       - run: bun all
 
+  runner: # the runner must be able to load `main:` from action.yml
+    # one clone and one API call — the 1 vCPU image is enough, and it ships
+    # both git and node
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read # for checkout
+      pull-requests: read # the action reads the PR data via GraphQL
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # the action diffs against `origin/<base branch>`, which a shallow
+          # checkout doesn't have — without the full history it throws and the
+          # error path tries to dismiss every approval of this PR
+          fetch-depth: 0
+
+      # runs against this very PR, so every input is set to a no-op — the step
+      # only proves the runner executes the committed dist/main.mjs
+      - uses: ./
+        with:
+          ignore-files: '**'
+          no-owner-action: dismiss-none
+          force-push-action: dismiss-none
+
   e2e: # run the built action against real fixture PRs and assert review states
     # fork PRs have no access to the e2e secrets
     if: ${{ !github.event.pull_request.head.repo.fork }}

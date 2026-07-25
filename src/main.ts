@@ -1,6 +1,7 @@
+import { styleText } from 'node:util'
+
 import { debug } from '@actions/core'
 import { context } from '@actions/github'
-import { Chalk } from 'chalk'
 
 import { calculateReviewToDismiss } from './calculate-reviews-to-dismiss.ts'
 import { dismissReviews } from './dismiss-reviews.ts'
@@ -9,7 +10,11 @@ import { getOctokit } from './get-octokit.ts'
 import { getPrData } from './get-pr-data.ts'
 import { isPresent } from './type-guards.ts'
 
-const chalk = new Chalk({ level: 2 })
+// the runner's stdout is not a TTY, `validateStream: false` emits ANSI anyway
+const green = (text: string) =>
+  styleText('green', text, { validateStream: false })
+const yellow = (text: string) =>
+  styleText('yellow', text, { validateStream: false })
 
 const logReviewsToDismiss = (
   reviewsToDismiss: { author?: { login: string } | null }[],
@@ -17,7 +22,7 @@ const logReviewsToDismiss = (
   debug(`Reviews to dismiss: ${JSON.stringify(reviewsToDismiss, null, 2)}`)
 
   console.log(
-    chalk.green(
+    green(
       `Reviews to dismiss: ${reviewsToDismiss
         .map(({ author }) => author?.login ?? 'unknownLogin')
         .join(',')}`,
@@ -54,7 +59,7 @@ const run = async () => {
   debug(`Approving reviews: ${JSON.stringify(latestApprovedReviews, null, 2)}`)
 
   if (latestApprovedReviews.length === 0) {
-    console.log(chalk.green('No reviews to dismiss!'))
+    console.log(green('No reviews to dismiss!'))
 
     return
   }
@@ -77,7 +82,7 @@ const run = async () => {
       logReviewsToDismiss(reviewsToDismissContext.reviewsToDismiss)
 
       console.log(
-        chalk.yellow(
+        yellow(
           `Files diff can't be resolved for following reviews due to force push:\n${reviewsToDismissContext.reviewsWithoutHistory
             .map(({ author }) => author?.login)
             .join('\n')}\n`,
@@ -86,7 +91,7 @@ const run = async () => {
 
       if (forcePushAction === 'dismiss-none') {
         console.log(
-          chalk.yellow(
+          yellow(
             '"force-push-action" is set to "dismiss-none", so no reviews are dismissed.',
           ),
         )
@@ -116,15 +121,14 @@ const run = async () => {
       logReviewsToDismiss(latestApprovedReviews)
 
       console.log(
-        chalk.yellow(
-          'Files without owner:\n',
-          reviewsToDismissContext.filesWithoutOwner.join('/n'),
+        yellow(
+          `Files without owner:\n${reviewsToDismissContext.filesWithoutOwner.join('\n')}`,
         ),
       )
 
       if (noOwnerAction === 'dismiss-none') {
         console.log(
-          chalk.yellow(
+          yellow(
             '"no-owner-action" is set to "dismiss-none", so no reviews are dismissed.',
           ),
         )
@@ -159,7 +163,7 @@ const run = async () => {
         message: 'Stale reviews were dismissed based on ownership',
       })
     } else {
-      console.log(chalk.green('No reviews to dismiss!'))
+      console.log(green('No reviews to dismiss!'))
     }
   } catch (error) {
     console.error(error)

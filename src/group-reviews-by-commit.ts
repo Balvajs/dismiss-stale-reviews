@@ -1,12 +1,15 @@
+import { styleText } from 'node:util'
+
 import { debug } from '@actions/core'
-import { Chalk } from 'chalk'
 import Codeowners from 'codeowners'
 import { minimatch } from 'minimatch'
 import { simpleGit } from 'simple-git'
 
 import { getHeadDiffSinceReview } from './get-head-diff-since-review.ts'
 
-const chalk = new Chalk({ level: 2 })
+// the runner's stdout is not a TTY, `validateStream: false` emits ANSI anyway
+const yellow = (text: string) =>
+  styleText('yellow', text, { validateStream: false })
 
 interface Review {
   author: {
@@ -67,11 +70,11 @@ export const groupReviewsByCommit = async <TReview extends Review>({
       // if commit doesn't exist, make related approve ready for dismiss and continue
       console.log(
         '\n',
-        chalk.yellow(
+        yellow(
           `Commit '${reviewCommit}' doesn't exist in the history. It may be because it was overwritten by force push or because it's outside of checkout depth.`,
         ),
         '\n',
-        chalk.yellow(`Approval by ${review.author?.login} will be removed.`),
+        yellow(`Approval by ${review.author?.login} will be removed.`),
         '\n',
       )
       reviewsWithoutHistory.push(review)

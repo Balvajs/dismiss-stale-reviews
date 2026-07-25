@@ -1,8 +1,16 @@
-# `dist/main.cjs` is a special file in Actions.
+# `dist/main.mjs` is a special file in Actions.
 # When you reference an action with `uses:` in a workflow,
-# `main.cjs` is the code that will run.
+# `main.mjs` is the code that will run.
 # For our project, we generate this file through a build process from other source files.
-# We need to make sure the checked-in `main.cjs` actually matches what we expect it to be.
+# We need to make sure the checked-in `main.mjs` actually matches what we expect it to be.
+#
+# Two things make the bundle machine-specific and this job fail:
+# - the `--define __filename=…` in the `package` script. Without it bun writes
+#   the build-time absolute path of every bundled CJS module that reads
+#   `__filename` (undici, via @octokit/action) into the bundle.
+# - a `node_modules` that was not installed clean. bun install neither prunes
+#   nor re-hoists, and the bundle embeds each module's resolved path, so a
+#   nested copy produces different bytes than a hoisted one.
 name: Check dist/
 
 on:

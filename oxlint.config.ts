@@ -25,9 +25,10 @@ export default defineConfig({
     // git operations share one working directory and must run sequentially
     'no-await-in-loop': 'off',
     'max-lines-per-function': 'off',
-    // action output is printed with chalk-formatted console.log on purpose
+    // action output is printed with colored console.log on purpose
     'no-console': 'off',
-    // the action is bundled to CJS (dist/main.cjs), which has no top-level await
+    // `run()` is invoked with `.catch()` so a failure sets process.exitCode
+    // instead of producing an unhandled rejection
     'unicorn/prefer-top-level-await': 'off',
 
     // style picks — the category as a whole is unusable because it contains
@@ -56,8 +57,6 @@ export default defineConfig({
     // evaluated and rejected, each one conflicts with intentional code here:
     // - no-eq-null / eqeqeq null option: `isPresent` compares against both
     //   null and undefined on purpose
-    // - unicorn/import-style: demands a default chalk import, but the action
-    //   needs `new Chalk({ level: 2 })` to force colors in CI
     // - promise/avoid-new: the e2e harness must bridge `spawn`'s callbacks
     // - typescript/promise-function-async: fights require-await, return-await
     //   and the mock signatures in the test files
