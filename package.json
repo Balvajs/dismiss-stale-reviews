@@ -43,7 +43,7 @@
     "graphql": "17.0.2",
     "husky": "9.1.7",
     "lint-staged": "17.2.0",
-    "minimatch": "10.2.5",
+    "minimatch": "10.2.6",
     "oxfmt": "0.60.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",
