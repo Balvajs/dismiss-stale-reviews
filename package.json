@@ -47,7 +47,7 @@
     "oxfmt": "0.60.0",
     "oxlint": "1.78.0",
     "oxlint-tsgolint": "7.0.2001",
-    "radashi": "12.9.1",
+    "radashi": "12.9.4",
     "semantic-release": "25.0.8",
     "semantic-release-major-tag": "0.3.2",
     "simple-git": "3.36.0",
